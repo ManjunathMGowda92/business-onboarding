@@ -1,0 +1,83 @@
+package org.fourstack.business.service;
+
+import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.fourstack.business.config.KafkaPropertiesConfig;
+import org.fourstack.business.entity.event.Message;
+import org.fourstack.business.entity.event.TopicConfig;
+import org.fourstack.business.enums.EventType;
+import org.fourstack.business.mapper.ResponseMapper;
+import org.fourstack.business.model.Acknowledgement;
+import org.fourstack.business.model.B2BIdRegisterRequest;
+import org.fourstack.business.model.BusinessRegisterRequest;
+import org.fourstack.business.model.CheckBusinessRequest;
+import org.fourstack.business.model.CommonData;
+import org.fourstack.business.model.SearchBusinessRequest;
+import org.fourstack.business.model.ValidationResult;
+import org.fourstack.business.utils.BusinessUtil;
+import org.fourstack.business.validator.FieldFormatValidator;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
+
+@Service
+@RequiredArgsConstructor(onConstructor_ = @Lazy)
+public class KafkaPublisherService {
+    private final ResponseMapper responseMapper;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaPropertiesConfig propertiesConfig;
+
+    public Acknowledgement publishBusiness(BusinessRegisterRequest request, String endPoint) {
+        CommonData commonData = request.getCommonData();
+        Message<BusinessRegisterRequest, Acknowledgement> message = responseMapper.constructMessage(request,
+                EventType.REQ_CREATE_BUSINESS, commonData.getHead().getMsgId(), commonData.getTxn().getId(), endPoint);
+        publishMessage(message);
+        return message.getAck();
+    }
+
+    public Acknowledgement publishBusiness(B2BIdRegisterRequest request, String endPoint) {
+        CommonData commonData = request.getCommonData();
+        Message<B2BIdRegisterRequest, Acknowledgement> message = responseMapper.constructMessage(request,
+                EventType.REQ_ADD_B2B, commonData.getHead().getMsgId(), commonData.getTxn().getId(), endPoint);
+        publishMessage(message);
+        return message.getAck();
+    }
+
+    public Acknowledgement publishBusiness(CheckBusinessRequest request, String endPoint) {
+        CommonData commonData = request.getCommonData();
+        Message<CheckBusinessRequest, Acknowledgement> message = responseMapper.constructMessage(request,
+                EventType.REQ_CHECK_BUSINESS, commonData.getHead().getMsgId(), commonData.getTxn().getId(), endPoint);
+        publishMessage(message);
+        return message.getAck();
+    }
+
+    public Acknowledgement publishBusiness(SearchBusinessRequest request, String endPoint) {
+        CommonData commonData = request.getCommonData();
+        Message<SearchBusinessRequest, Acknowledgement> message = responseMapper.constructMessage(request,
+                EventType.REQ_SEARCH_BUSINESS, commonData.getHead().getMsgId(), commonData.getTxn().getId(), endPoint);
+        publishMessage(message);
+        return message.getAck();
+    }
+
+
+    private <R, A> void publishMessage(Message<R, A> message) {
+        TopicConfig topicConfiguration = getTopicConfiguration(message.getEventType());
+        if (BusinessUtil.isNotNull(topicConfiguration)) {
+            String topicName = topicConfiguration.getTopicName();
+            ProducerRecord<String, String> producerRecord = getProducerRecord(message, topicName);
+            kafkaTemplate.send(producerRecord);
+        }
+    }
+
+    private <R, A> ProducerRecord<String, String> getProducerRecord(Message<R, A> message, String topicName) {
+        String result = BusinessUtil.convertToString(message);
+        return new ProducerRecord<>(topicName, message.getIdentifierKey(), result);
+    }
+
+    private TopicConfig getTopicConfiguration(EventType eventType) {
+        Map<String, TopicConfig> topicDetails = propertiesConfig.getTopicDetails();
+        return topicDetails.get(eventType.name());
+    }
+}

@@ -1,0 +1,14 @@
+package org.fourstack.business.enums;
+
+public enum TransactionSubStatus {
+    TXN_VALIDATION_FAILURE,
+    BUSINESS_VALIDATION_FAILURE,
+    INVALID_TRANSACTION_RECEIVED,
+    OUTBOUND_400_ERROR,
+    OUTBOUND_TIME_OUT,
+    OUTBOUND_500_ERROR,
+    OUTBOUND_HTTP_NOT_SENT,
+    NEW,
+    IN_PROGRESS,
+    SENT_TO_TARGET
+}

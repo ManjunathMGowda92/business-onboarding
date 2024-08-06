@@ -1,0 +1,61 @@
+<validations>
+    <validation name="HEADER_VALIDATIONS">
+        <rule identifier="ver" fieldName="commonData.head.ver" expression="^[0-9]{1,3}[\.][0-9]{1,3}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="msgId" fieldName="commonData.head.msgId" expression="^MSG[A-Za-z0-9]{32}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="aiId" fieldName="commonData.head.aiId" expression="^[A-Z0-9]{4}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="ouId" fieldName="commonData.head.ouId" expression="^[A-Z0-9]{4}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="orgSysId" fieldName="commonData.head.orgSysId" expression="^$|[A-Za-z0-9]{4,10}$" errorCode="INP0002" errorMessage="Invalid field format" isOptional="yes"/>
+        <rule identifier="prodType" fieldName="commonData.head.prodType" expression="BUSINESS" errorCode="INP0002" errorMessage="Invalid field format"/>
+    </validation>
+    <validation name="TRANSACTION_VALIDATIONS">
+        <rule identifier="id" fieldName="commonData.txn.id" expression="^TXN[A-Za-z0-9]{32}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="refId" fieldName="commonData.txn.refId" expression="^$|([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format" isOptional="yes"/>
+        <rule identifier="refUrl" fieldName="commonData.txn.refUrl" expression="^$|([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format" isOptional="yes"/>
+        <rule identifier="type" fieldName="commonData.txn.type" expression="BUSINESS ENTITY" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="note" fieldName="commonData.txn.note" expression="^$|([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format" isOptional="yes"/>
+    </validation>
+    <validation name="DEVICE_VALIDATIONS">
+        <rule identifier="tag.name" fieldName="commonData.device.tag.name" expression="GEOCODE|IP|AGENT_ID" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="tag.value" fieldName="commonData.device.tag.value" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+    </validation>
+    <validation name="INSTITUTE_VALIDATIONS">
+        <rule identifier="objectId" fieldName="institute.objectId" expression="^ORG[A-Za-z0-9]{32}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="name" fieldName="institute.name" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="alias" fieldName="institute.alias" expression="^$|([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format" isOptional="yes"/>
+        <rule identifier="defaultB2bId" fieldName="institute.defaultB2bId" expression="^([^\\&quot;]){1,100}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="mccCode" fieldName="institute.mccCode" expression="^[0-9]{4}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="lei.documentName" fieldName="institute.lei.documentName" expression="PAN" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="lei.type" fieldName="institute.lei.type" expression="SOLE PROP|COMPANY|HUF" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="lei.value" fieldName="institute.lei.value" expression="^[A-Z0-9]{10}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="lei.registeredName" fieldName="institute.lei.registeredName" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+    </validation>
+    <validation name="BUSINESS_IDENTIFIER_VALIDATIONS">
+        <rule identifier="documentName" fieldName="documentName" expression="GSTIN|UDYAM|SHOP ESTABLISHMENT NUMBER|TAN|FSSAI" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="value" fieldName="value" expression="^([^\\&quot;]){1,100}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="registeredName" fieldName="registeredName" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+    </validation>
+    <validation name="ADDRESS_VALIDATIONS">
+        <rule identifier="addressLine1" fieldName="institute.addresses.addressLine1" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="addressLine2" fieldName="institute.addresses.addressLine2" expression="^$|([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format" isOptional="yes"/>
+        <rule identifier="city" fieldName="institute.addresses.city" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="state" fieldName="institute.addresses.state" expression="ANDAMAN AND NICOBAR ISLANDS|CHANDIGARH|DADRA AND NAGAR HAVELI AND DAMAN AND DIU|DELHI|JAMMU AND KASHMIR|LADAKH|LAKSHADWEEP|PUDUCHERRY|ANDHRA PRADESH|ARUNACHAL PRADESH|ASSAM|BIHAR|CHHATTISGARH|GOA|GUJARAT|HARYANA|HIMACHAL PRADESH|JHARKHAND|KARNATAKA|KERALA|MADHYA PRADESH|MAHARASHTRA|NAGPUR|MANIPUR|MEGHALAYA|MIZORAM|NAGALAND|ODISHA|PUNJAB|RAJASTHAN|SIKKIM|TAMIL NADU|TELANGANA|TRIPURA|UTTAR PRADESH|UTTARAKHAND|WEST BENGAL" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="country" fieldName="institute.addresses.country" expression="INDIA" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="pincode" fieldName="institute.addresses.pincode" expression="^[0-9]{6}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+    </validation>
+    <validation name="BANK_ACCOUNT_VALIDATIONS">
+        <rule identifier="businessVPA" fieldName="institute.bankAccounts.businessVPA" expression="^([^\\&quot;]){1,32}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="type" fieldName="institute.bankAccounts.type" expression="SAVINGS|CURRENT" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="accountNum" fieldName="institute.bankAccounts.accountNum" expression="^[0-9]{12,14}" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="ifsc" fieldName="institute.bankAccounts.ifsc" expression="^[A-Z0-9]{11}" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="beneficiaryName" fieldName="institute.bankAccounts.beneficiaryName" expression="^([^\\&quot;]){1,50}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+    </validation>
+    <validation name="CONTACT_VALIDATIONS">
+        <rule identifier="type" fieldName="type" expression="MOBILE" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="countryCode" fieldName="countryCode" expression="^[+][0-9]{1,4}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="phoneNumber" fieldName="phoneNumber" expression="^[0-9]{10}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+    </validation>
+    <validation name="ADDITIONAL_INFO_VALIDATIONS">
+        <rule identifier="name" fieldName="additionalInfoList.name" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="value" fieldName="additionalInfoList.value" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+    </validation>
+</validations>

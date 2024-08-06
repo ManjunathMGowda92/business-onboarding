@@ -1,0 +1,39 @@
+spring:
+  application:
+  name: business-onboarding-be
+
+server:
+  port: 8085
+
+kafka:
+  configurations:
+    producer:
+      bootstrap-servers: "localhost:9092, localhost:9093"
+      key-serializer: "org.apache.kafka.common.serialization.StringSerializer"
+      value-serializer: "org.apache.kafka.common.serialization.StringSerializer"
+      retries: 1
+    consumer:
+      bootstrap-servers: "localhost:9092"
+  topic-details:
+    REQ_CREATE_BUSINESS:
+      topicName: BUSINESS-REQUEST
+      partitionCount: 4
+      replicaCount: 1
+      reAssignmentRequired: false
+    REQ_KYC_PUBLISH:
+      topicName: KYC-REQUEST
+      partitionCount: 4
+      replicaCount: 1
+      reAssignmentRequired: false
+    REQ_BROADCAST_MSG:
+      topicName: BROADCAST-REQUEST
+      partitionCount: 8
+      replicaCount: 1
+      reAssignmentRequired: false
+    REQ_ADD_B2B:
+      topicName: B2B-CREATE-REQUEST
+      partitionCount: 4
+      replicaCount: 1
+      reAssignmentRequired: false
+
+
