@@ -1,21 +1,22 @@
 package org.fourstack.business.validator;
 
-import org.fourstack.business.constants.LoggerConstants;
 import org.fourstack.business.constants.ValidationConstants;
 import org.fourstack.business.exceptions.ValidationException;
 import org.fourstack.business.model.AdditionalInfo;
 import org.fourstack.business.model.Address;
+import org.fourstack.business.model.B2BId;
+import org.fourstack.business.model.B2BIdRegisterRequest;
 import org.fourstack.business.model.BankAccount;
 import org.fourstack.business.model.BusinessIdentifier;
 import org.fourstack.business.model.BusinessRegisterRequest;
 import org.fourstack.business.model.CommonData;
 import org.fourstack.business.model.ContactNumber;
 import org.fourstack.business.model.Institute;
+import org.fourstack.business.model.RequesterB2BId;
 import org.fourstack.business.model.ValidationResult;
 import org.fourstack.business.utils.BusinessUtil;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,6 +30,37 @@ public class FieldFormatValidator {
         validateInstitute(request.getInstitute());
         validateAdditionalInfoList(request.getAdditionalInfoList());
         return BusinessUtil.generateSuccessValidation();
+    }
+
+    public ValidationResult validateB2BIdRequest(B2BIdRegisterRequest request) {
+        validateRequest(request);
+        validateCommonRequestData(request.getCommonData());
+        validateOnboardingB2BId(request.getOnboardingB2BIds());
+        validateB2BIds(request.getRegB2BIds().getIds());
+        return BusinessUtil.generateSuccessValidation();
+    }
+
+    private void validateB2BIds(List<B2BId> ids) {
+        if (BusinessUtil.isCollectionNotNullOrEmpty(ids)) {
+            ids.forEach(this::validateB2BId);
+        }
+    }
+
+    private void validateB2BId(B2BId b2BId) {
+        DefaultValidator<B2BId> validator = new DefaultValidator<>();
+        validator.validate(ValidationConstants.B2B_ID_VALIDATIONS, b2BId);
+    }
+
+    private void validateOnboardingB2BId(RequesterB2BId onboardingB2BIds) {
+        DefaultValidator<RequesterB2BId> validator = new DefaultValidator<>();
+        validator.validate(ValidationConstants.REQUESTER_B2B_VALIDATIONS, onboardingB2BIds);
+    }
+
+    private void validateRequest(B2BIdRegisterRequest request) {
+        validateCommonData(request.getCommonData());
+        BusinessUtil.validateObject(request.getOnboardingB2BIds(), "onboardingB2BIds");
+        BusinessUtil.validateObject(request.getRegB2BIds(), "regB2BIds");
+        BusinessUtil.validateObject(request.getRegB2BIds().getIds(), "regB2BIds.ids");
     }
 
     private void validateRequest(BusinessRegisterRequest request) {

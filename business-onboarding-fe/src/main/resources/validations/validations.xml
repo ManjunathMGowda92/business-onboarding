@@ -58,4 +58,28 @@
         <rule identifier="name" fieldName="additionalInfoList.name" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="value" fieldName="additionalInfoList.value" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
     </validation>
+    <validation name="REQUESTER_B2B_VALIDATIONS">
+        <rule identifier="onboardingB2BIds.requestorB2BId" fieldName="onboardingB2BIds.requestorB2BId" expression="^([^\\&quot;]){1,100}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+    </validation>
+    <validation name="B2B_ID_VALIDATIONS">
+        <rule identifier="value" fieldName="regB2BIds.ids.value" expression="^([^\\&quot;]){1,100}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="privacyType" fieldName="regB2BIds.ids.privacyType" expression="PRIVATE|PUBLIC" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="reason" fieldName="regB2BIds.ids.reason" expression="^([^\\&quot;]){1,100}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="description" fieldName="regB2BIds.ids.description" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="businessIdentifier.documentName" fieldName="regB2BIds.ids.businessIdentifier.documentName" expression="GSTIN|UDYAM|SHOP ESTABLISHMENT NUMBER|TAN|FSSAI" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="businessIdentifier.value" fieldName="regB2BIds.ids.businessIdentifier.value" expression="^([^\\&quot;]){1,100}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="businessIdentifier.registeredName" fieldName="regB2BIds.ids.businessIdentifier.registeredName" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+    </validation>
+    <validation name="EDIT_B2B_ID_VALIDATIONS">
+        <rule identifier="value" fieldName="regB2BIds.editIds.value" expression="^([^\\&quot;]){1,100}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="action" fieldName="regB2BIds.editIds.action" expression="REACTIVATE|DEACTIVATE|UPDATE" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="privacyType" fieldName="regB2BIds.editIds.privacyType" expression="PRIVATE|PUBLIC" errorCode="INP0002" errorMessage="Invalid field format" isOptional="yes"/>
+        <rule identifier="reason" fieldName="regB2BIds.editIds.reason" expression="^$|([^\\&quot;]){1,100}$" errorCode="INP0002" errorMessage="Invalid field format" isOptional="yes"/>
+        <rule identifier="description" fieldName="regB2BIds.editIds.description" expression="^$|([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format" isOptional="yes"/>
+    </validation>
+    <validation name="EDIT_B2B_IDENTIFIER_VALIDATIONS">
+        <rule identifier="businessIdentifier.documentName" fieldName="regB2BIds.editIds.businessIdentifier.documentName" expression="GSTIN|UDYAM|SHOP ESTABLISHMENT NUMBER|TAN|FSSAI" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="businessIdentifier.value" fieldName="regB2BIds.editIds.businessIdentifier.value" expression="^([^\\&quot;]){1,100}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="businessIdentifier.registeredName" fieldName="regB2BIds.editIds.businessIdentifier.registeredName" expression="^$|([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format" isOptional="yes"/>
+    </validation>
 </validations>

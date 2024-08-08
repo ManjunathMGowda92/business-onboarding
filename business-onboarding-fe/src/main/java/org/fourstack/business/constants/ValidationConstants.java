@@ -14,4 +14,6 @@ public final class ValidationConstants {
     public static final String BANK_ACCOUNT_VALIDATIONS= "BANK_ACCOUNT_VALIDATIONS";
     public static final String CONTACT_VALIDATIONS= "CONTACT_VALIDATIONS";
     public static final String ADDITIONAL_INFO_VALIDATIONS= "ADDITIONAL_INFO_VALIDATIONS";
+    public static final String REQUESTER_B2B_VALIDATIONS= "REQUESTER_B2B_VALIDATIONS";
+    public static final String B2B_ID_VALIDATIONS= "B2B_ID_VALIDATIONS";
 }
