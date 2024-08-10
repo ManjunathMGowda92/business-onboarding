@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.fourstack.business.constants.AppConstants;
 import org.fourstack.business.constants.LoggerConstants;
 import org.fourstack.business.enums.OperationStatus;
 import org.fourstack.business.exceptions.MissingFieldException;
@@ -15,6 +16,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class BusinessUtil {
     private BusinessUtil() {
@@ -157,5 +160,19 @@ public final class BusinessUtil {
 
     public static MissingFieldException generateMissingFieldException(String fieldName, String message) {
         return new MissingFieldException(message, fieldName);
+    }
+
+    public static boolean validatePanFormat(String panValue) {
+        Pattern pattern = Pattern.compile(AppConstants.PAN_REGEX);
+        Matcher matcher = pattern.matcher(panValue);
+        return matcher.matches();
+    }
+
+    public static boolean validatePanAndBusinessType(String panValue, String businessType) {
+        if ("SOLE PROP".equals(businessType)) {
+            return panValue.charAt(3) == 'P';
+        } else {
+            return panValue.charAt(3) != 'P';
+        }
     }
 }

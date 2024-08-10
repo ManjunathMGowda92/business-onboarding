@@ -25,7 +25,7 @@
         <rule identifier="defaultB2bId" fieldName="institute.defaultB2bId" expression="^([^\\&quot;]){1,100}$" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="mccCode" fieldName="institute.mccCode" expression="^[0-9]{4}$" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="lei.documentName" fieldName="institute.lei.documentName" expression="PAN" errorCode="INP0002" errorMessage="Invalid field format"/>
-        <rule identifier="lei.type" fieldName="institute.lei.type" expression="SOLE PROP|COMPANY|HUF" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="lei.type" fieldName="institute.lei.type" expression="SOLE PROP|COMPANY|HUF|TRUST|GOVERNMENT AGENCY" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="lei.value" fieldName="institute.lei.value" expression="^[A-Z0-9]{10}$" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="lei.registeredName" fieldName="institute.lei.registeredName" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
     </validation>
@@ -59,7 +59,7 @@
         <rule identifier="value" fieldName="additionalInfoList.value" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
     </validation>
     <validation name="REQUESTER_B2B_VALIDATIONS">
-        <rule identifier="onboardingB2BIds.requestorB2BId" fieldName="onboardingB2BIds.requestorB2BId" expression="^([^\\&quot;]){1,100}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="onboardingB2BIds.requesterB2BId" fieldName="onboardingB2BIds.requesterB2BId" expression="^([^\\&quot;]){1,100}$" errorCode="INP0002" errorMessage="Invalid field format"/>
     </validation>
     <validation name="B2B_ID_VALIDATIONS">
         <rule identifier="value" fieldName="regB2BIds.ids.value" expression="^([^\\&quot;]){1,100}$" errorCode="INP0002" errorMessage="Invalid field format"/>
@@ -81,5 +81,11 @@
         <rule identifier="businessIdentifier.documentName" fieldName="regB2BIds.editIds.businessIdentifier.documentName" expression="GSTIN|UDYAM|SHOP ESTABLISHMENT NUMBER|TAN|FSSAI" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="businessIdentifier.value" fieldName="regB2BIds.editIds.businessIdentifier.value" expression="^([^\\&quot;]){1,100}$" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="businessIdentifier.registeredName" fieldName="regB2BIds.editIds.businessIdentifier.registeredName" expression="^$|([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format" isOptional="yes"/>
+    </validation>
+    <validation name="CHECK_INSTITUTE_VALIDATIONS">
+        <rule identifier="documentName" fieldName="checkInstitute.documentName" expression="PAN" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="value" fieldName="checkInstitute.value" expression="^[A-Z0-9]{1,50}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="type" fieldName="checkInstitute.value" expression="SOLE PROP|COMPANY|HUF|TRUST|GOVERNMENT AGENCY" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="registeredName" fieldName="checkInstitute.registeredName" expression="^$|([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format" isOptional="yes"/>
     </validation>
 </validations>

@@ -97,7 +97,12 @@ public class BusinessService {
 
     private Acknowledgement processCheckBusinessRequest(CheckBusinessRequest request, String endPoint) {
         logger.info("Execution process started for CheckBusinessRequest");
-        return publisherService.publishBusiness(request, endPoint);
+        ValidationResult result = formatValidator.validateCheckBusiness(request);
+        if (BusinessUtil.isNotNull(result) && OperationStatus.SUCCESS.equals(result.status())) {
+            return publisherService.publishBusiness(request, endPoint);
+        }
+        return generateNegativeAck(endPoint, AppConstants.ERROR_500, AppConstants.INTERNAL_SERVER_ERROR,
+                null, null, null);
     }
 
     private Acknowledgement processSearchBusinessRequest(SearchBusinessRequest request, String endPoint) {
