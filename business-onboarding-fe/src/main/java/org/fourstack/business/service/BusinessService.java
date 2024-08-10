@@ -76,7 +76,7 @@ public class BusinessService {
     }
 
     private Acknowledgement processBusinessRequest(BusinessRegisterRequest request, String endPoint) {
-        logger.info("{} - Execution process started for Business Request", this.getClass().getSimpleName());
+        logger.info("Execution process started for BusinessRegisterRequest");
         ValidationResult validationResult = formatValidator.validateBusiness(request);
         if (BusinessUtil.isNotNull(validationResult) && OperationStatus.SUCCESS.equals(validationResult.status())) {
             return publisherService.publishBusiness(request, endPoint);
@@ -86,14 +86,27 @@ public class BusinessService {
     }
 
     private Acknowledgement processCreateB2BRequest(B2BIdRegisterRequest request, String endPoint) {
-        return publisherService.publishBusiness(request, endPoint);
+        logger.info("Execution process started for B2BIdRegisterRequest");
+        ValidationResult result = formatValidator.validateB2BIdRequest(request);
+        if (BusinessUtil.isNotNull(result) && OperationStatus.SUCCESS.equals(result.status())) {
+            return publisherService.publishBusiness(request, endPoint);
+        }
+        return generateNegativeAck(endPoint, AppConstants.ERROR_500, AppConstants.INTERNAL_SERVER_ERROR,
+                null, null, null);
     }
 
     private Acknowledgement processCheckBusinessRequest(CheckBusinessRequest request, String endPoint) {
-        return publisherService.publishBusiness(request, endPoint);
+        logger.info("Execution process started for CheckBusinessRequest");
+        ValidationResult result = formatValidator.validateCheckBusiness(request);
+        if (BusinessUtil.isNotNull(result) && OperationStatus.SUCCESS.equals(result.status())) {
+            return publisherService.publishBusiness(request, endPoint);
+        }
+        return generateNegativeAck(endPoint, AppConstants.ERROR_500, AppConstants.INTERNAL_SERVER_ERROR,
+                null, null, null);
     }
 
     private Acknowledgement processSearchBusinessRequest(SearchBusinessRequest request, String endPoint) {
+        logger.info("Execution process started for SearchBusinessRequest");
         return publisherService.publishBusiness(request, endPoint);
     }
 

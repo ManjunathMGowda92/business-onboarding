@@ -6,13 +6,12 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
-
 @Data
-public class SearchBusinessRequest implements Serializable {
+public class EditB2BIdRequest implements Serializable {
     @Serial
-    private static final long serialVersionUID = 5825364528864303365L;
-    private RequesterB2B onboardingB2BIds;
-    private SearchRequest search;
+    private static final long serialVersionUID = 6164980099147900300L;
     private CommonData commonData;
+    private RequesterB2B onboardingB2BIds;
+    private RegEditB2BIds regB2BIds;
     private List<AdditionalInfo> additionalInfoList;
 }
