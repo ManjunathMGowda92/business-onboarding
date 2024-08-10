@@ -1,5 +1,6 @@
 package org.fourstack.business.validator;
 
+import org.fourstack.business.constants.AppConstants;
 import org.fourstack.business.constants.ValidationConstants;
 import org.fourstack.business.enums.ErrorCodeScenario;
 import org.fourstack.business.enums.OperationStatus;
@@ -17,6 +18,9 @@ import org.fourstack.business.model.CommonData;
 import org.fourstack.business.model.ContactNumber;
 import org.fourstack.business.model.Institute;
 import org.fourstack.business.model.RequesterB2B;
+import org.fourstack.business.model.SearchBusinessRequest;
+import org.fourstack.business.model.SearchCriteria;
+import org.fourstack.business.model.SearchRequest;
 import org.fourstack.business.model.ValidationResult;
 import org.fourstack.business.utils.BusinessUtil;
 import org.springframework.stereotype.Service;
@@ -50,6 +54,7 @@ public class FieldFormatValidator {
 
     public ValidationResult validateCheckBusiness(CheckBusinessRequest request) {
         validateRequest(request);
+        validateCommonRequestData(request.getCommonData());
         DefaultValidator<CheckInstitute> validator = new DefaultValidator<>();
         CheckInstitute checkInstitute = request.getCheckInstitute();
         validator.validate(ValidationConstants.CHECK_INSTITUTE_VALIDATIONS, checkInstitute);
@@ -60,6 +65,44 @@ public class FieldFormatValidator {
         }
         validateAdditionalInfoList(request.getAdditionalInfoList());
         return BusinessUtil.generateSuccessValidation();
+    }
+
+    public ValidationResult validateSearchBusiness(SearchBusinessRequest request) {
+        validateRequest(request);
+        validateCommonRequestData(request.getCommonData());
+        validateOnboardingB2BId(request.getOnboardingB2BIds());
+        return validateSearchRequest(request.getSearch());
+    }
+
+    private ValidationResult validateSearchRequest(SearchRequest search) {
+        for (SearchCriteria criteria : search.getCriteria()) {
+            ValidationResult result = validateSearchCriteria(criteria);
+            if (BusinessUtil.isNotNull(result) && OperationStatus.FAILURE.equals(result.status())) {
+                return result;
+            }
+        }
+        return BusinessUtil.generateSuccessValidation();
+    }
+
+    private ValidationResult validateSearchCriteria(SearchCriteria searchCriteria) {
+        DefaultValidator<SearchCriteria> validator = new DefaultValidator<>();
+        validator.validate(ValidationConstants.SEARCH_CRITERIA_VALIDATIONS, searchCriteria);
+        String searchParameter = searchCriteria.getSearchParameter();
+        if (AppConstants.PAN.equals(searchParameter)) {
+            boolean isValidPan = BusinessUtil.validatePanFormat(searchCriteria.getValue());
+            if (!isValidPan) {
+                return BusinessUtil.generateFailureValidation(ErrorCodeScenario.BONB_0001.getErrorCode(),
+                        ErrorCodeScenario.BONB_0001.getErrorMsg(), ValidationConstants.SEARCH_CRITERIA_VALUE);
+            }
+        }
+        return BusinessUtil.generateSuccessValidation();
+    }
+
+    private void validateRequest(SearchBusinessRequest request) {
+        validateCommonData(request.getCommonData());
+        BusinessUtil.validateObject(request.getOnboardingB2BIds(), ValidationConstants.ONBOARDING_B2B_IDS);
+        BusinessUtil.validateObject(request.getSearch(), ValidationConstants.SEARCH);
+        BusinessUtil.validateObject(request.getSearch().getCriteria(), ValidationConstants.SEARCH_CRITERIA);
     }
 
     private ValidationResult validateOnboardingPan(String panValue, String businessType, String fieldName) {
