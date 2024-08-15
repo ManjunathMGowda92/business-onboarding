@@ -12,6 +12,7 @@ import org.fourstack.business.entity.OrgIdEntity;
 import org.fourstack.business.entity.OuEntity;
 import org.fourstack.business.enums.EntityStatus;
 import org.fourstack.business.enums.ErrorScenarioCode;
+import org.fourstack.business.mapper.ResponseMapper;
 import org.fourstack.business.model.AiOuMappingDetails;
 import org.fourstack.business.model.B2BId;
 import org.fourstack.business.model.B2BIdRegisterRequest;
@@ -38,6 +39,7 @@ import java.util.Set;
 public class BusinessValidator {
     private final DbOperationService dbOperationService;
     private final MultipleBusinessAllowedConfig multipleBusinessAllowedConfig;
+    private final ResponseMapper responseMapper;
 
 
     public void businessRegisterValidations(BusinessRegisterRequest request) {
@@ -89,7 +91,7 @@ public class BusinessValidator {
 
         boolean businessExist = dbOperationService.checkIsBusinessExist(checkInstitute.getValue());
         boolean isMultipleBusinessAllowed = checkMultipleBusinessAllowedForLeiType(checkInstitute.getType());
-        return dbOperationService.generateCheckInstituteResponse(request.getCheckInstitute(), businessExist, isMultipleBusinessAllowed);
+        return responseMapper.generateCheckInstituteResponse(request.getCheckInstitute(), businessExist, isMultipleBusinessAllowed);
     }
 
     public void searchBusinessValidations(SearchBusinessRequest request) {

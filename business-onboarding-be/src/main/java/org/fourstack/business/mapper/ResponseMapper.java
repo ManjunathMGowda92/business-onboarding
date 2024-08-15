@@ -1,20 +1,41 @@
 package org.fourstack.business.mapper;
 
+import lombok.RequiredArgsConstructor;
+import org.fourstack.business.entity.BusinessEntity;
+import org.fourstack.business.entity.OrgIdEntity;
+import org.fourstack.business.enums.BooleanStatus;
 import org.fourstack.business.enums.OperationStatus;
 import org.fourstack.business.model.Acknowledgement;
 import org.fourstack.business.model.B2BIdRegisterRequest;
 import org.fourstack.business.model.B2BIdRegisterResponse;
+import org.fourstack.business.model.BusinessDetails;
 import org.fourstack.business.model.BusinessRegisterRequest;
 import org.fourstack.business.model.BusinessRegisterResponse;
+import org.fourstack.business.model.CheckInstitute;
+import org.fourstack.business.model.CheckInstituteResponse;
 import org.fourstack.business.model.CommonRequestData;
 import org.fourstack.business.model.CommonResponseData;
 import org.fourstack.business.model.Head;
+import org.fourstack.business.model.Institute;
+import org.fourstack.business.model.InstituteInfo;
 import org.fourstack.business.model.Response;
+import org.fourstack.business.service.DbOperationService;
 import org.fourstack.business.utils.BusinessUtil;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
 @Component
+@RequiredArgsConstructor(onConstructor_ = @Lazy)
 public class ResponseMapper {
+    private final DbOperationService dbOperationService;
 
     public Acknowledgement getSuccessAck(String msgId, String txnId, String apiEndpoint) {
         Acknowledgement ack = new Acknowledgement();
@@ -110,5 +131,44 @@ public class ResponseMapper {
         responseData.setHead(commonData.getHead());
         responseData.setTxn(commonData.getTxn());
         return responseData;
+    }
+
+    public CheckInstituteResponse generateCheckInstituteResponse(CheckInstitute checkInstitute, boolean isBusinessExist,
+                                                                 boolean isMultipleBusinessAllowed) {
+        CheckInstituteResponse instituteResponse = new CheckInstituteResponse();
+        InstituteInfo instituteInfo = new InstituteInfo();
+        instituteInfo.setIsMultipleOrgAllowed(isMultipleBusinessAllowed ? BooleanStatus.YES : BooleanStatus.NO);
+        if (isBusinessExist) {
+            instituteInfo.setIsBusinessExist(BooleanStatus.YES);
+            Map<String, BusinessEntity> businessEntityMap = dbOperationService.retrieveBusinessEntities(checkInstitute.getValue());
+            List<BusinessDetails> businessDetails = businessEntityMap.values()
+                    .stream().map(BusinessEntity::getInstitute)
+                    .filter(Objects::nonNull)
+                    .map(this::extractBusinessDetails)
+                    .toList();
+            instituteInfo.setBusinessDetails(businessDetails);
+        } else {
+            instituteInfo.setIsBusinessExist(BooleanStatus.NO);
+            BusinessDetails businessDetails = getBusinessDetails(checkInstitute.getRegisteredName(), Collections.emptyList());
+            instituteInfo.setBusinessDetails(List.of(businessDetails));
+        }
+        return instituteResponse;
+    }
+
+    private BusinessDetails extractBusinessDetails(Institute institute) {
+        Optional<OrgIdEntity> orgIdEntity = dbOperationService.retrieveOrgIdEntity(institute.getObjectId());
+        if (orgIdEntity.isPresent()) {
+            Set<String> b2BIds = BusinessUtil.extractAllB2BIds(orgIdEntity.get());
+            return getBusinessDetails(orgIdEntity.get().getBusinessName(), b2BIds);
+        } else {
+            return getBusinessDetails(institute.getName(), List.of(institute.getDefaultB2bId()));
+        }
+    }
+
+    private BusinessDetails getBusinessDetails(String businessName, Collection<String> b2bIds) {
+        BusinessDetails details = new BusinessDetails();
+        details.setBusinessName(businessName);
+        details.setB2bIds(b2bIds);
+        return details;
     }
 }
