@@ -88,4 +88,9 @@
         <rule identifier="type" fieldName="checkInstitute.value" expression="SOLE PROP|COMPANY|HUF|TRUST|GOVERNMENT AGENCY" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="registeredName" fieldName="checkInstitute.registeredName" expression="^$|([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format" isOptional="yes"/>
     </validation>
+    <validation name="SEARCH_CRITERIA_VALIDATIONS">
+        <rule identifier="searchParameter" fieldName="search.criteria.searchParameter" expression="PAN|B2BID|GSTIN|UDYAM|SHOP ESTABLISHMENT NUMBER|TAN|FSSAI" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="operator" fieldName="search.criteria.operator" expression="EXACT" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="value" fieldName="search.criteria.value" expression="^([^\\&quot;]){1,100}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+    </validation>
 </validations>

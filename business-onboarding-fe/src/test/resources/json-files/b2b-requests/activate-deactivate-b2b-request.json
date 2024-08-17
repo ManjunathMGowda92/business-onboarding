@@ -1,0 +1,48 @@
+{
+  "commonData": {
+    "head": {
+      "ver": "123.1",
+      "ts": "2024-08-05T10:00:21+05:30",
+      "msgId": "MSGGMTS6BJJEE274C20240805T100021398",
+      "aiId": "AI01",
+      "ouId": "OU010",
+      "orgSysId": "ORG08",
+      "prodType": "BUSINESS"
+    },
+    "txn": {
+      "id": "TXNGMTX6BJJEE274C20240805T100021398",
+      "ts": "2024-08-05T10:00:21+05:30",
+      "refId": "",
+      "refUrl": "http://localhost:9876",
+      "type": "BUSINESS ENTITY",
+      "note": "Creating Entity"
+    },
+    "device": {
+      "tag": {
+        "name": "GEOCODE",
+        "value": "986578"
+      }
+    }
+  },
+  "onboardingB2BIds": {
+    "requestorB2BId": "My Company Org"
+  },
+  "regB2BIds": {
+    "ids": [
+      {
+        "value": "four stack developers",
+        "action": "DEACTIVATE"
+      },
+      {
+        "value": "private four stack developers",
+        "action": "REACTIVATE"
+      }
+    ]
+  },
+  "additionalInfoList": [
+    {
+      "name": "MOCK_ACK",
+      "value": "Yes"
+    }
+  ]
+}

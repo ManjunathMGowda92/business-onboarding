@@ -11,6 +11,6 @@ public class CheckBusinessRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = -8974870624020770782L;
     private CommonData commonData;
-    private CheckInstitute checkInstitute;
+        private CheckInstitute checkInstitute;
     private List<AdditionalInfo> additionalInfoList;
 }

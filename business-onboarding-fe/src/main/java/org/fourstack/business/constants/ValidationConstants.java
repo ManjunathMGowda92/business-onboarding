@@ -1,6 +1,7 @@
 package org.fourstack.business.constants;
 
 public final class ValidationConstants {
+
     private ValidationConstants(){
     }
 
@@ -17,6 +18,10 @@ public final class ValidationConstants {
     public static final String REQUESTER_B2B_VALIDATIONS= "REQUESTER_B2B_VALIDATIONS";
     public static final String B2B_ID_VALIDATIONS= "B2B_ID_VALIDATIONS";
     public static final String CHECK_INSTITUTE_VALIDATIONS= "CHECK_INSTITUTE_VALIDATIONS";
+    public static final String SEARCH_CRITERIA_VALIDATIONS = "SEARCH_CRITERIA_VALIDATIONS";
+    public static final String SEARCH_CRITERIA_VALUE = "search.criteria.value";
+    public static final String SEARCH = "search";
+    public static final String SEARCH_CRITERIA = "search.criteria";
 
     public static final String INSTITUTE_PRIMARY_IDENTIFIER = "institute.primaryIdentifier";
     public static final String INSTITUTE_PRIMARY_CONTACT = "institute.primaryContact";
