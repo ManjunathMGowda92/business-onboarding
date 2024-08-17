@@ -5,6 +5,8 @@ import org.fourstack.business.dao.service.MasterDataService;
 import org.fourstack.business.dao.service.TransactionDataService;
 import org.fourstack.business.entity.event.B2BIdRegisterEvent;
 import org.fourstack.business.entity.event.BusinessEvent;
+import org.fourstack.business.entity.event.CheckInstituteEvent;
+import org.fourstack.business.entity.event.SearchBusinessEvent;
 import org.fourstack.business.enums.ErrorScenarioCode;
 import org.fourstack.business.enums.EventWebhookType;
 import org.fourstack.business.enums.TransactionStatus;
@@ -12,8 +14,10 @@ import org.fourstack.business.enums.TransactionSubStatus;
 import org.fourstack.business.exception.HttpFailureException;
 import org.fourstack.business.model.B2BIdRegisterResponse;
 import org.fourstack.business.model.BusinessRegisterResponse;
+import org.fourstack.business.model.CheckBusinessResponse;
 import org.fourstack.business.model.Head;
 import org.fourstack.business.model.MessageTransaction;
+import org.fourstack.business.model.SearchBusinessResponse;
 import org.fourstack.business.model.TransactionError;
 import org.fourstack.business.model.WebhookRequest;
 import org.fourstack.business.utils.BusinessUtil;
@@ -54,6 +58,8 @@ public class HttpClientService {
             switch (request) {
                 case BusinessEvent businessEvent -> constructAndSendBusinessResponse(businessEvent, transaction);
                 case B2BIdRegisterEvent b2bIdEvent -> constructAndSendB2BResponse(b2bIdEvent, transaction);
+                case CheckInstituteEvent checkEvent -> constructAndSendResponse(checkEvent, transaction);
+                case SearchBusinessEvent searchEvent -> constructAndSendResponse(searchEvent, transaction);
                 default ->
                         logger.error("{} - Invalid Object type for outbound request : {}", this.getClass().getSimpleName(), request);
             }
@@ -69,6 +75,22 @@ public class HttpClientService {
                     TransactionSubStatus.OUTBOUND_HTTP_NOT_SENT, txnErrors);
             transactionDataService.auditOutboundTransaction(transaction);
         }
+    }
+
+    private void constructAndSendResponse(SearchBusinessEvent searchEvent, MessageTransaction transaction) {
+        SearchBusinessResponse response = searchEvent.getResponse();
+        Head head = response.getCommonData().getHead();
+        WebhookRequest webhookRequest = constructWebhookRequest(response, HttpMethod.POST,
+                EventWebhookType.RESP_SEARCH_ENTITY, head.getAiId(), head.getOuId());
+        sendOutboundRequest(webhookRequest, transaction);
+    }
+
+    private void constructAndSendResponse(CheckInstituteEvent checkEvent, MessageTransaction transaction) {
+        CheckBusinessResponse response = checkEvent.getResponse();
+        Head head = response.getCommonData().getHead();
+        WebhookRequest webhookRequest = constructWebhookRequest(response, HttpMethod.POST,
+                EventWebhookType.RESP_CHECK_ENTITY, head.getAiId(), head.getOuId());
+        sendOutboundRequest(webhookRequest, transaction);
     }
 
     private void constructAndSendB2BResponse(B2BIdRegisterEvent b2bIdEvent, MessageTransaction transaction) {
