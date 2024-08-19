@@ -4,11 +4,10 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
 
 @Data
 public class CheckInstituteResponse implements Serializable {
     @Serial
     private static final long serialVersionUID = 5902701386971970469L;
-    private List<InstituteInfo> institutes;
+    private InstituteInfo instituteInfo;
 }
