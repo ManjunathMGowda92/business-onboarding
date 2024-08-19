@@ -4,6 +4,7 @@ import org.fourstack.business.constants.AppConstants;
 import org.fourstack.business.constants.ValidationConstants;
 import org.fourstack.business.enums.ErrorCodeScenario;
 import org.fourstack.business.enums.OperationStatus;
+import org.fourstack.business.exceptions.MissingFieldException;
 import org.fourstack.business.exceptions.ValidationException;
 import org.fourstack.business.model.AdditionalInfo;
 import org.fourstack.business.model.Address;
@@ -173,6 +174,7 @@ public class FieldFormatValidator {
 
     private ValidationResult validateInstitute(Institute institute) {
         DefaultValidator<Institute> validator = new DefaultValidator<>();
+        BusinessUtil.validateObject(institute.getLei(), "institute.lei");
         validator.validate(ValidationConstants.INSTITUTE_VALIDATIONS, institute);
         ValidationResult result = validateOnboardingPan(institute.getLei().getValue(), institute.getLei().getType(),
                 ValidationConstants.INSTITUTE_LIE_VALUE);
@@ -180,7 +182,7 @@ public class FieldFormatValidator {
             return result;
         }
         BusinessUtil.validateObject(institute.getPrimaryIdentifier(), ValidationConstants.INSTITUTE_PRIMARY_IDENTIFIER);
-        validateIdentifier(institute.getPrimaryIdentifier());
+        validateIdentifier(institute.getPrimaryIdentifier(), "institute.primaryIdentifier");
         validateOtherIdentifiers(institute.getOtherIdentifiers());
         validateAddressList(institute.getAddresses());
         validateBankAccounts(institute.getBankAccounts());
@@ -254,14 +256,22 @@ public class FieldFormatValidator {
         if (BusinessUtil.isCollectionNotNullOrEmpty(otherIdentifiers)) {
             otherIdentifiers.forEach(identifier -> {
                 BusinessUtil.validateObject(identifier, ValidationConstants.INSTITUTE_OTHER_IDENTIFIERS);
-                validateIdentifier(identifier);
+                validateIdentifier(identifier, "institute.otherIdentifiers");
             });
         }
     }
 
-    private void validateIdentifier(BusinessIdentifier primaryIdentifier) {
-        DefaultValidator<BusinessIdentifier> validator = new DefaultValidator<>();
-        validator.validate(ValidationConstants.BUSINESS_IDENTIFIER_VALIDATIONS, primaryIdentifier);
+    private void validateIdentifier(BusinessIdentifier primaryIdentifier, String parentObjectName) {
+        try {
+            DefaultValidator<BusinessIdentifier> validator = new DefaultValidator<>();
+            validator.validate(ValidationConstants.BUSINESS_IDENTIFIER_VALIDATIONS, primaryIdentifier);
+        } catch (MissingFieldException exception) {
+            throw new MissingFieldException(exception.getMessage(),
+                    parentObjectName.concat(".").concat(exception.getFieldName()));
+        } catch (ValidationException exception) {
+            throw new ValidationException(exception.getMessage(), exception.getErrorCode(), exception.getErrorMessage(),
+                    parentObjectName.concat(".").concat(exception.getFieldName()));
+        }
     }
 
     private void validateCommonRequestData(CommonData commonData) {
