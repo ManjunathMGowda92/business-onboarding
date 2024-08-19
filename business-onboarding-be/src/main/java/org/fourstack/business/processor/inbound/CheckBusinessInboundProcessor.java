@@ -3,7 +3,7 @@ package org.fourstack.business.processor.inbound;
 import org.fourstack.business.config.ApplicationConfig;
 import org.fourstack.business.constants.BusinessConstants;
 import org.fourstack.business.dao.service.TransactionDataService;
-import org.fourstack.business.entity.event.BusinessEvent;
+import org.fourstack.business.entity.event.CheckInstituteEvent;
 import org.fourstack.business.entity.event.Message;
 import org.fourstack.business.enums.ErrorScenarioCode;
 import org.fourstack.business.enums.EventType;
@@ -13,8 +13,9 @@ import org.fourstack.business.exception.ValidationException;
 import org.fourstack.business.mapper.EntityMapper;
 import org.fourstack.business.mapper.ResponseMapper;
 import org.fourstack.business.model.Acknowledgement;
-import org.fourstack.business.model.BusinessRegisterRequest;
-import org.fourstack.business.model.BusinessRegisterResponse;
+import org.fourstack.business.model.CheckBusinessRequest;
+import org.fourstack.business.model.CheckBusinessResponse;
+import org.fourstack.business.model.CheckInstituteResponse;
 import org.fourstack.business.model.CommonRequestData;
 import org.fourstack.business.model.MessageTransaction;
 import org.fourstack.business.model.Transaction;
@@ -26,17 +27,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BusinessTransactionInboundProcessor extends DefaultTransactionInboundProcessor {
-    private static final Logger logger = LoggerFactory.getLogger(BusinessTransactionInboundProcessor.class);
+public class CheckBusinessInboundProcessor extends DefaultTransactionInboundProcessor {
+    private static final Logger logger = LoggerFactory.getLogger(CheckBusinessInboundProcessor.class);
 
     private final EntityMapper entityMapper;
     private final ResponseMapper responseMapper;
     private final BusinessValidator businessValidator;
 
-    public BusinessTransactionInboundProcessor(TransactionDataService transactionDataService, ApplicationConfig appConfig,
-                                               EntityMapper entityMapper, ResponseMapper responseMapper,
-                                               BusinessValidator businessValidator) {
-        super(transactionDataService, appConfig);
+    protected CheckBusinessInboundProcessor(TransactionDataService transactionDataService,
+                                            ApplicationConfig applicationConfig, EntityMapper entityMapper,
+                                            ResponseMapper responseMapper, BusinessValidator businessValidator) {
+        super(transactionDataService, applicationConfig);
         this.entityMapper = entityMapper;
         this.responseMapper = responseMapper;
         this.businessValidator = businessValidator;
@@ -44,8 +45,8 @@ public class BusinessTransactionInboundProcessor extends DefaultTransactionInbou
 
     @Override
     public MessageTransaction transform(Message<?, ?> message) {
-        if (message.getRequest() instanceof BusinessRegisterRequest request) {
-            logger.info("Transforming the Business Message");
+        if (message.getRequest() instanceof CheckBusinessRequest request) {
+            logger.info("Transforming the Check Business Message");
             return constructTransaction(message, request);
         }
         logger.error("Invalid request received for processing");
@@ -53,14 +54,30 @@ public class BusinessTransactionInboundProcessor extends DefaultTransactionInbou
                 ErrorScenarioCode.GEN_0007.getErrorMsg());
     }
 
+    private MessageTransaction constructTransaction(Message<?, ?> message, CheckBusinessRequest request) {
+        CheckInstituteEvent event = new CheckInstituteEvent();
+        event.setRequest(request);
+        CommonRequestData commonData = request.getCommonData();
+        Transaction txn = commonData.getTxn();
+        MessageTransaction transaction = entityMapper.constructTransaction(txn.getId(), commonData.getHead().getMsgId(),
+                getEventType(), TransactionType.INQUIRY, txn.getTs(), event);
+        if (message.getAck() instanceof Acknowledgement acknowledgement) {
+            transaction.setAcknowledgement(acknowledgement);
+        }
+        return transaction;
+    }
+
     @Override
     public void validate(MessageTransaction transaction) {
-        if (transaction.getRequest() instanceof BusinessEvent event) {
+        if (transaction.getRequest() instanceof CheckInstituteEvent event) {
             try {
-                businessValidator.businessRegisterValidations(event.getRequest());
+                CheckInstituteResponse instituteResponse = businessValidator.checkBusinessValidations(event.getRequest());
+                CheckBusinessResponse businessResponse = responseMapper.generateSuccessCheckBusinessResponse(event.getRequest(), instituteResponse);
+                event.setResponse(businessResponse);
+                transaction.setResponseStatus(HttpStatus.OK);
             } catch (ValidationException exception) {
-                setErrorDetails(transaction, event, exception.getErrorCode(),
-                        exception.getErrorMsg(), exception.getErrorField(), exception.getMessage());
+                setErrorDetails(transaction, event, exception.getErrorCode(), exception.getErrorMsg(),
+                        exception.getErrorField(), exception.getMessage());
                 transaction.setResponseStatus(HttpStatus.BAD_REQUEST);
                 throw exception;
             } catch (Exception exception) {
@@ -73,11 +90,11 @@ public class BusinessTransactionInboundProcessor extends DefaultTransactionInbou
         }
     }
 
-    private void setErrorDetails(MessageTransaction transaction, BusinessEvent event, String errorCode, String errorMsg,
-                                 String errorField, String message) {
-        logger.error("Exception occurred while validating BusinessRegisterRequest : {} - {} -{}",
+    private void setErrorDetails(MessageTransaction transaction, CheckInstituteEvent event, String errorCode,
+                                 String errorMsg, String errorField, String message) {
+        logger.error("Exception occurred while validating CheckBusinessRequest : {} - {} -{}",
                 errorCode, errorMsg, message);
-        BusinessRegisterResponse response = responseMapper.generateFailureBusinessResponse(event.getRequest(),
+        CheckBusinessResponse response = responseMapper.generateFailureCheckBusinessResponse(event.getRequest(),
                 errorCode, errorMsg, errorField);
         event.setResponse(response);
         transaction.setResponseMessage(message);
@@ -85,32 +102,18 @@ public class BusinessTransactionInboundProcessor extends DefaultTransactionInbou
 
     @Override
     public EventType getEventType() {
-        return EventType.REQ_CREATE_BUSINESS;
+        return EventType.REQ_CHECK_BUSINESS;
     }
 
     @Override
     public void handleTransactionErrors(MessageTransaction transaction, TransactionError txnError) {
-        logger.info("{} - Handling Transaction Errors : {} - {}", this.getClass().getSimpleName(),
-                txnError.getErrorCode(), txnError.getErrorMsg());
-        if (transaction.getRequest() instanceof BusinessEvent event) {
-            BusinessRegisterResponse response = responseMapper.generateFailureBusinessResponse(event.getRequest(),
+        logger.info(" Handling Transaction Errors : {} - {}", txnError.getErrorCode(), txnError.getErrorMsg());
+        if (transaction.getRequest() instanceof CheckInstituteEvent event) {
+            CheckBusinessResponse response = responseMapper.generateFailureCheckBusinessResponse(event.getRequest(),
                     txnError.getErrorCode(), txnError.getErrorMsg(), txnError.getErrorField());
             event.setResponse(response);
             transaction.setResponseStatus(HttpStatus.BAD_REQUEST);
             transaction.setResponseMessage("Transaction Error occurred");
         }
-    }
-
-    private MessageTransaction constructTransaction(Message<?, ?> message, BusinessRegisterRequest request) {
-        BusinessEvent event = new BusinessEvent();
-        event.setRequest(request);
-        CommonRequestData commonData = request.getCommonData();
-        Transaction txn = commonData.getTxn();
-        MessageTransaction transaction = entityMapper.constructTransaction(txn.getId(), commonData.getHead().getMsgId(),
-                getEventType(), TransactionType.ENTITY, txn.getTs(), event);
-        if (message.getAck() instanceof Acknowledgement acknowledgement) {
-            transaction.setAcknowledgement(acknowledgement);
-        }
-        return transaction;
     }
 }

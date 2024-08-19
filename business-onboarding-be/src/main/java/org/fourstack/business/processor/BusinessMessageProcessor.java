@@ -15,6 +15,8 @@ import org.fourstack.business.model.Head;
 import org.fourstack.business.model.Institute;
 import org.fourstack.business.model.MessageTransaction;
 import org.fourstack.business.service.HttpClientService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 @Service("businessMessageProcessor")
 @RequiredArgsConstructor(onConstructor_ = @Lazy)
 public class BusinessMessageProcessor implements MessageProcessor {
+    private static final Logger logger = LoggerFactory.getLogger(BusinessMessageProcessor.class);
     private final BusinessTransactionInboundProcessor businessInboundProcessor;
     private final BusinessEntityDataService businessEntityDataService;
     private final OrgEntityDataService orgEntityDataService;
@@ -38,6 +41,7 @@ public class BusinessMessageProcessor implements MessageProcessor {
     @Override
     public void executeBusinessTransactions(MessageTransaction transaction) {
         if (transaction.getRequest() instanceof BusinessEvent event) {
+            logger.info("Executing the Business Transactions on BusinessRegisterRequest");
             BusinessEntity businessEntity = businessEntityDataService.createBusinessEntity(event.getRequest());
             orgEntityDataService.createOrgIdEntity(businessEntity);
             Institute institute = businessEntity.getInstitute();
@@ -60,6 +64,7 @@ public class BusinessMessageProcessor implements MessageProcessor {
 
     @Override
     public void sendOutboundRequest(MessageTransaction transaction) {
+        logger.info("Calling HttpClientService for sending outbound request on BusinessRegisterRequest");
         httpClientService.constructAndSendOutboundRequest(transaction);
     }
 }

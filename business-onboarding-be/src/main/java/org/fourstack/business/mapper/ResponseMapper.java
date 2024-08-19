@@ -11,6 +11,8 @@ import org.fourstack.business.model.B2BIdRegisterResponse;
 import org.fourstack.business.model.BusinessDetails;
 import org.fourstack.business.model.BusinessRegisterRequest;
 import org.fourstack.business.model.BusinessRegisterResponse;
+import org.fourstack.business.model.CheckBusinessRequest;
+import org.fourstack.business.model.CheckBusinessResponse;
 import org.fourstack.business.model.CheckInstitute;
 import org.fourstack.business.model.CheckInstituteResponse;
 import org.fourstack.business.model.CommonRequestData;
@@ -51,9 +53,9 @@ public class ResponseMapper {
         BusinessRegisterResponse businessResponse = generateBusinessRegisterResponse(request);
         CommonResponseData commonData = businessResponse.getCommonData();
         Head head = commonData.getHead();
-        Response build = generateSuccessResponse(head.getMsgId());
+        Response response = generateSuccessResponse(head.getMsgId());
         head.setMsgId(BusinessUtil.generateAlphaNumericID(32, "MSG"));
-        commonData.setResponse(build);
+        commonData.setResponse(response);
         businessResponse.setCommonData(commonData);
         return businessResponse;
     }
@@ -63,33 +65,33 @@ public class ResponseMapper {
         BusinessRegisterResponse businessResponse = generateBusinessRegisterResponse(request);
         CommonResponseData commonData = businessResponse.getCommonData();
         Head head = commonData.getHead();
-        Response build = generateFailureResponse(head.getMsgId(), errorCode, errorMsg, errorField);
+        Response response = generateFailureResponse(head.getMsgId(), errorCode, errorMsg, errorField);
         head.setMsgId(BusinessUtil.generateAlphaNumericID(32, "MSG"));
-        commonData.setResponse(build);
+        commonData.setResponse(response);
         businessResponse.setCommonData(commonData);
         return businessResponse;
     }
 
     public B2BIdRegisterResponse generateSuccessB2BResponse(B2BIdRegisterRequest request) {
-        B2BIdRegisterResponse response = generateB2BRegisterResponse(request);
-        CommonResponseData commonData = response.getCommonData();
+        B2BIdRegisterResponse businessResponse = generateB2BRegisterResponse(request);
+        CommonResponseData commonData = businessResponse.getCommonData();
         Head head = commonData.getHead();
-        Response build = generateSuccessResponse(head.getMsgId());
+        Response response = generateSuccessResponse(head.getMsgId());
         head.setMsgId(BusinessUtil.generateAlphaNumericID(32, "MSG"));
-        commonData.setResponse(build);
-        response.setCommonData(commonData);
-        return response;
+        commonData.setResponse(response);
+        businessResponse.setCommonData(commonData);
+        return businessResponse;
     }
 
     public B2BIdRegisterResponse generateFailureB2BResponse(B2BIdRegisterRequest request, String errorCode,
                                                             String errorMsg, String errorField) {
-        B2BIdRegisterResponse response = generateB2BRegisterResponse(request);
-        CommonResponseData commonData = response.getCommonData();
+        B2BIdRegisterResponse businessResponse = generateB2BRegisterResponse(request);
+        CommonResponseData commonData = businessResponse.getCommonData();
         Head head = commonData.getHead();
-        Response build = generateFailureResponse(head.getMsgId(), errorCode, errorMsg, errorField);
+        Response response = generateFailureResponse(head.getMsgId(), errorCode, errorMsg, errorField);
         head.setMsgId(BusinessUtil.generateAlphaNumericID(32, "MSG"));
-        commonData.setResponse(build);
-        return response;
+        commonData.setResponse(response);
+        return businessResponse;
     }
 
     private B2BIdRegisterResponse generateB2BRegisterResponse(B2BIdRegisterRequest request) {
@@ -153,6 +155,37 @@ public class ResponseMapper {
             instituteInfo.setBusinessDetails(List.of(businessDetails));
         }
         return instituteResponse;
+    }
+
+    public CheckBusinessResponse generateSuccessCheckBusinessResponse(CheckBusinessRequest request,
+                                                                      CheckInstituteResponse instituteResponse) {
+        CheckBusinessResponse businessResponse = generateCheckBusinessResponse(request);
+        businessResponse.setInstituteStatus(instituteResponse);
+        CommonResponseData commonData = businessResponse.getCommonData();
+        Head head = commonData.getHead();
+        Response response = generateSuccessResponse(head.getMsgId());
+        head.setMsgId(BusinessUtil.generateAlphaNumericID(32, "MSG"));
+        commonData.setResponse(response);
+        return businessResponse;
+    }
+
+    public CheckBusinessResponse generateFailureCheckBusinessResponse(CheckBusinessRequest request, String errorCode,
+                                                                      String errorMsg, String errorField) {
+        CheckBusinessResponse businessResponse = generateCheckBusinessResponse(request);
+        CommonResponseData commonData = businessResponse.getCommonData();
+        Head head = commonData.getHead();
+        Response response = generateFailureResponse(head.getMsgId(), errorCode, errorMsg, errorField);
+        head.setMsgId(BusinessUtil.generateAlphaNumericID(32, "MSG"));
+        commonData.setResponse(response);
+        return businessResponse;
+    }
+
+    private CheckBusinessResponse generateCheckBusinessResponse(CheckBusinessRequest request) {
+        CheckBusinessResponse response = new CheckBusinessResponse();
+        response.setCheckInstitute(request.getCheckInstitute());
+        response.setAdditionalInfoList(request.getAdditionalInfoList());
+        response.setCommonData(constructCommonDataForResponse(request.getCommonData()));
+        return response;
     }
 
     private BusinessDetails extractBusinessDetails(Institute institute) {

@@ -19,13 +19,18 @@ public class DefaultMessageConsumer {
     @Qualifier("b2bIdMessageProcessor")
     private final MessageProcessor b2bIdMessageProcessor;
 
+    @Qualifier("checkBusinessMessageProcessor")
+    private final MessageProcessor checkBusinessProcessor;
+
     public DefaultMessageConsumer(MessageProcessor businessMessageProcessor,
-                                  MessageProcessor b2bIdMessageProcessor) {
+                                  MessageProcessor b2bIdMessageProcessor,
+                                  MessageProcessor checkBusinessProcessor) {
         this.businessMessageProcessor = businessMessageProcessor;
         this.b2bIdMessageProcessor = b2bIdMessageProcessor;
+        this.checkBusinessProcessor = checkBusinessProcessor;
     }
 
-    @KafkaListener(topics = {"BUSINESS-REQUEST", "B2B-CREATE-REQUEST"})
+    @KafkaListener(topics = {"BUSINESS-REQUEST", "B2B-CREATE-REQUEST", "CHECK-BUSINESS-REQUEST"})
     public void consumeMessages(String message) {
         logger.info("{} - Message received from Kafka - {}", this.getClass().getSimpleName(), message);
         Message<?, ?> messageObj = constructMessage(message);
@@ -64,6 +69,7 @@ public class DefaultMessageConsumer {
         switch (eventType) {
             case REQ_CREATE_BUSINESS -> businessMessageProcessor.processMessage(message);
             case REQ_ADD_B2B -> b2bIdMessageProcessor.processMessage(message);
+            case REQ_CHECK_BUSINESS -> checkBusinessProcessor.processMessage(message);
             default -> logger.error("{} - Unknown Event type received for message - {}",
                     this.getClass().getSimpleName(), eventType);
         }
