@@ -20,18 +20,18 @@ kafka:
       partitionCount: 4
       replicaCount: 1
       reAssignmentRequired: false
-    REQ_KYC_PUBLISH:
-      topicName: KYC-REQUEST
+    REQ_ADD_B2B:
+      topicName: B2B-CREATE-REQUEST
       partitionCount: 4
       replicaCount: 1
       reAssignmentRequired: false
-    REQ_BROADCAST_MSG:
-      topicName: BROADCAST-REQUEST
-      partitionCount: 8
+    REQ_CHECK_BUSINESS:
+      topicName: CHECK-BUSINESS-REQUEST
+      partitionCount: 4
       replicaCount: 1
       reAssignmentRequired: false
-    REQ_ADD_B2B:
-      topicName: B2B-CREATE-REQUEST
+    REQ_SEARCH_BUSINESS:
+      topicName: SEARCH-BUSINESS-REQUEST
       partitionCount: 4
       replicaCount: 1
       reAssignmentRequired: false

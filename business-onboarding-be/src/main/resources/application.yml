@@ -15,6 +15,11 @@ application:
     transaction-time-out: 180
 
 kafka:
+  topic-names:
+    - BUSINESS-REQUEST
+    - B2B-CREATE-REQUEST
+    - CHECK-BUSINESS-REQUEST
+    - SEARCH-BUSINESS-REQUEST
   configurations:
     producer:
       bootstrap-servers: "localhost:9092, localhost:9093"
@@ -26,11 +31,6 @@ kafka:
       key-serializer: "org.apache.kafka.common.serialization.StringDeserializer"
       value-serializer: "org.apache.kafka.common.serialization.StringDeserializer"
   topic-details:
-    REQ_CREATE_BUSINESS:
-      topicName: BUSINESS-REQUEST
-      partitionCount: 4
-      replicaCount: 1
-      reAssignmentRequired: false
     REQ_KYC_PUBLISH:
       topicName: KYC-REQUEST
       partitionCount: 4
@@ -39,11 +39,6 @@ kafka:
     REQ_BROADCAST_MSG:
       topicName: BROADCAST-REQUEST
       partitionCount: 8
-      replicaCount: 1
-      reAssignmentRequired: false
-    REQ_ADD_B2B:
-      topicName: B2B-CREATE-REQUEST
-      partitionCount: 4
       replicaCount: 1
       reAssignmentRequired: false
 

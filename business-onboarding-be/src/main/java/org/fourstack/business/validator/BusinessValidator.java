@@ -26,6 +26,8 @@ import org.fourstack.business.model.Institute;
 import org.fourstack.business.model.SearchBusinessRequest;
 import org.fourstack.business.service.DbOperationService;
 import org.fourstack.business.utils.BusinessUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +39,7 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Lazy)
 public class BusinessValidator {
+    private static final Logger logger = LoggerFactory.getLogger(BusinessValidator.class);
     private final DbOperationService dbOperationService;
     private final MultipleBusinessAllowedConfig multipleBusinessAllowedConfig;
     private final ResponseMapper responseMapper;
@@ -86,6 +89,7 @@ public class BusinessValidator {
     }
 
     public CheckInstituteResponse checkBusinessValidations(CheckBusinessRequest request) {
+        logger.info("Business Validations for CheckBusinessRequest");
         validateAiAndOuEntities(request.getCommonData().getHead());
         CheckInstitute checkInstitute = request.getCheckInstitute();
 
