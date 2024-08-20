@@ -14,17 +14,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class DefaultMessageConsumer {
     private static final Logger logger = LoggerFactory.getLogger(DefaultMessageConsumer.class);
-    @Qualifier("businessMessageProcessor")
     private final MessageProcessor businessMessageProcessor;
-    @Qualifier("b2bIdMessageProcessor")
     private final MessageProcessor b2bIdMessageProcessor;
-
-    @Qualifier("checkBusinessMessageProcessor")
     private final MessageProcessor checkBusinessProcessor;
 
-    public DefaultMessageConsumer(MessageProcessor businessMessageProcessor,
-                                  MessageProcessor b2bIdMessageProcessor,
-                                  MessageProcessor checkBusinessProcessor) {
+    public DefaultMessageConsumer(@Qualifier("businessMessageProcessor") MessageProcessor businessMessageProcessor,
+                                  @Qualifier("b2bIdMessageProcessor") MessageProcessor b2bIdMessageProcessor,
+                                  @Qualifier("checkBusinessMessageProcessor") MessageProcessor checkBusinessProcessor) {
         this.businessMessageProcessor = businessMessageProcessor;
         this.b2bIdMessageProcessor = b2bIdMessageProcessor;
         this.checkBusinessProcessor = checkBusinessProcessor;

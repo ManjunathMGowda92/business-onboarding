@@ -6,9 +6,7 @@ import org.fourstack.business_mock_server.model.B2BIdRegisterResponse;
 import org.fourstack.business_mock_server.model.BusinessRegisterResponse;
 import org.fourstack.business_mock_server.model.CheckBusinessResponse;
 import org.fourstack.business_mock_server.model.CommonResponseData;
-import org.fourstack.business_mock_server.model.Head;
 import org.fourstack.business_mock_server.model.SearchBusinessResponse;
-import org.fourstack.business_mock_server.model.Transaction;
 import org.fourstack.business_mock_server.util.MockServerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +20,8 @@ public class BusinessResponseService {
     private static final Logger logger = LoggerFactory.getLogger(BusinessResponseService.class);
 
     public Acknowledgement processResponseData(Object response, String endpoint) {
-        logger.info("{} - Request received : {}", this.getClass().getSimpleName(), MockServerUtil.convertToString(response));
+        String data = MockServerUtil.convertToString(response);
+        logger.info("{} - Request received : {}", this.getClass().getSimpleName(), data);
         return switch (response) {
             case BusinessRegisterResponse businessResponse ->
                     generateAcknowledgement(endpoint, businessResponse.getCommonData());

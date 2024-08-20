@@ -1,7 +1,6 @@
 package org.fourstack.business.exceptions;
 
 import lombok.Getter;
-import org.fourstack.business.utils.BusinessUtil;
 
 @Getter
 public class ValidationException extends RuntimeException {
