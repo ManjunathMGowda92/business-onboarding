@@ -27,7 +27,6 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
-      run: echo "$GITHUB_REPOSITORY"
     - name: Build with Maven
       run: mvn -B package --file ./business-onboarding-be/pom.xml
 
