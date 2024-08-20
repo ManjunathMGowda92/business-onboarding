@@ -33,7 +33,7 @@ jobs:
     - name: Display the data
       run: pwd
     - name: Display the files
-      run: ll
+      run: ls
     - name: Build with Maven
       run: mvn -B package --file pom.xml
       working-directory: business-onboarding-be
