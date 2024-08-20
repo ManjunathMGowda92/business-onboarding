@@ -13,9 +13,11 @@ import org.fourstack.business.validator.FieldFormatValidator;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 
 @SpringBootTest
-public class BaseTest {
+@EmbeddedKafka( ports = {9092})
+public abstract class BaseTest {
     private final FileContentLoader fileContentLoader = new FileContentLoader();
     @InjectMocks
     protected FieldFormatValidator formatValidator;

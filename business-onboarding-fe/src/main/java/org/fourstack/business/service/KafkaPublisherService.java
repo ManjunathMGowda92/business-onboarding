@@ -16,15 +16,20 @@ import org.fourstack.business.model.SearchBusinessRequest;
 import org.fourstack.business.model.ValidationResult;
 import org.fourstack.business.utils.BusinessUtil;
 import org.fourstack.business.validator.FieldFormatValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Lazy)
 public class KafkaPublisherService {
+    private static final Logger logger = LoggerFactory.getLogger(KafkaPublisherService.class);
     private final ResponseMapper responseMapper;
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final KafkaPropertiesConfig propertiesConfig;
@@ -67,7 +72,16 @@ public class KafkaPublisherService {
         if (BusinessUtil.isNotNull(topicConfiguration)) {
             String topicName = topicConfiguration.getTopicName();
             ProducerRecord<String, String> producerRecord = getProducerRecord(message, topicName);
-            kafkaTemplate.send(producerRecord);
+            logger.info("Publishing message to kafka topic : {}", topicName);
+            CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(producerRecord);
+            future.whenCompleteAsync((result, exception) -> {
+                if (BusinessUtil.isNull(exception)) {
+                    logger.info("Message published to kafka topic : {}", topicName);
+                } else {
+                    logger.error("Exception in publishing the message to topic : {}, message: {}",
+                            topicName, exception.getMessage());
+                }
+            });
         }
     }
 
