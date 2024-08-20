@@ -34,9 +34,11 @@ public class BusinessIdentifierDataService {
         if (BusinessUtil.isCollectionNotNullOrEmpty(businessIdentifiers)) {
             List<BusinessIdentifierEntity> identifierEntities = businessIdentifiers.stream()
                     .map(identifier -> entityMapper.constructIdentifierEntity(businessRole, aiId, orgId, identifier))
-                    .peek(entity -> entity.setStatus(EntityStatus.INACTIVE))
-                    .peek(this::updateEntityKey)
-                    .toList();
+                    .map(entity -> {
+                        entity.setStatus(EntityStatus.INACTIVE);
+                        updateEntityKey(entity);
+                        return entity;
+                    }).toList();
             identifierEntityRepository.saveAll(identifierEntities);
         }
     }

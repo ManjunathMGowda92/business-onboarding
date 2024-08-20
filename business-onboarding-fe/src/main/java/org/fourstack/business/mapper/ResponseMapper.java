@@ -42,7 +42,6 @@ public class ResponseMapper {
         message.setRequestObjType(request.getClass());
         message.setAckObjType(ack.getClass());
         message.setEventType(eventType);
-        //message.setIdentifierKey(eventType.name());
         message.setIdentifierKey(msgId);
         return message;
     }

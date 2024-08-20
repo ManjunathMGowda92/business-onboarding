@@ -2,7 +2,6 @@ package org.fourstack.business.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.fourstack.business.enums.EntityStatus;
 import org.fourstack.business.model.KycOuStatus;
 import org.springframework.data.mongodb.core.mapping.Document;
 

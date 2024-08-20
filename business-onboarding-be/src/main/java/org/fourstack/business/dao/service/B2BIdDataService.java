@@ -34,8 +34,11 @@ public class B2BIdDataService {
         if (BusinessUtil.isCollectionNotNullOrEmpty(b2BIds)) {
             List<B2BIdentifierEntity> identifierEntities = b2BIds.stream()
                     .map(b2BId -> entityMapper.constructB2BIdEntity(role, aiId, ouId, orgId, requesterB2BId, b2BId))
-                    .peek(entity -> entity.setStatus(EntityStatus.ACTIVE))
-                    .peek(entity -> entity.setKey(KeyGenerationUtil.generateB2BIdentifierKey(entity.getB2bIdValue())))
+                    .map(entity -> {
+                        entity.setStatus(EntityStatus.ACTIVE);
+                        entity.setKey(KeyGenerationUtil.generateB2BIdentifierKey(entity.getB2bIdValue()));
+                        return entity;
+                    })
                     .toList();
             b2bIdRepository.saveAll(identifierEntities);
         }
