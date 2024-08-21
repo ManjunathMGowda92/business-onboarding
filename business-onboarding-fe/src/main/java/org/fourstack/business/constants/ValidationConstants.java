@@ -33,7 +33,9 @@ public final class ValidationConstants {
     public static final String INSTITUTE_ADDRESSES = "institute.addresses";
     public static final String INSTITUTE_OTHER_IDENTIFIERS = "institute.otherIdentifiers";
     public static final String COMMON_DATA_HEAD = "commonData.head";
+    public static final String HEAD_TS = "commonData.head.ts";
     public static final String COMMON_DATA_TXN = "commonData.txn";
+    public static final String TXN_TS = "commonData.txn.ts";
     public static final String COMMON_DATA_DEVICE = "commonData.device";
     public static final String COMMON_DATA_DEVICE_TAG = "commonData.device.tag";
     public static final String COMMON_DATA = "commonData";

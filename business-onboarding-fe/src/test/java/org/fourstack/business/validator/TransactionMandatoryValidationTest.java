@@ -35,17 +35,18 @@ class TransactionMandatoryValidationTest extends BaseTest {
         assertMissingFieldException(exception, "commonData.txn.id");
     }
 
-    /*@ParameterizedTest
+    @ParameterizedTest
     @NullSource
     @ValueSource(strings = {""})
     @DisplayName("TxnMandatoryValidations: Mandatory validation for commonData.txn.ts")
     void testTxnTimeStampFailure(String ts) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getCommonData().getTxn().setTs(ts);
         MissingFieldException exception = Assertions.assertThrows(MissingFieldException.class,
                 () -> formatValidator.validateBusiness(businessRequest));
         assertMissingFieldException(exception, "commonData.txn.ts");
-    }*/
+    }
 
     @ParameterizedTest
     @NullSource
@@ -65,6 +66,7 @@ class TransactionMandatoryValidationTest extends BaseTest {
     @DisplayName("TxnMandatoryValidations: success validation for commonData.txn.refId")
     void testSuccessValidationForTxnRefIdNullOrEmpty(String refId) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getCommonData().getTxn().setRefId(refId);
         ValidationResult result = formatValidator.validateBusiness(businessRequest);
         assertSuccessValidation(result);
@@ -76,6 +78,7 @@ class TransactionMandatoryValidationTest extends BaseTest {
     @DisplayName("TxnMandatoryValidations: success validation for commonData.txn.refUrl")
     void testSuccessValidationForTxnRefUrlNullOrEmpty(String refUrl) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getCommonData().getTxn().setRefUrl(refUrl);
         ValidationResult result = formatValidator.validateBusiness(businessRequest);
         assertSuccessValidation(result);
@@ -87,6 +90,7 @@ class TransactionMandatoryValidationTest extends BaseTest {
     @DisplayName("TxnMandatoryValidations: success validation for commonData.txn.note")
     void testSuccessValidationForTxnNoteNullOrEmpty(String note) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getCommonData().getTxn().setNote(note);
         ValidationResult result = formatValidator.validateBusiness(businessRequest);
         assertSuccessValidation(result);

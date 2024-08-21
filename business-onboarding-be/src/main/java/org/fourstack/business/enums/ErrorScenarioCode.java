@@ -19,6 +19,7 @@ public enum ErrorScenarioCode {
     TXN_0002("TXN0002", "Duplicate transaction Id"),
     TXN_0003("TXN0003", "Transaction is already in completed state"),
     TXN_0004("TXN0004", "Transaction time is beyond server time configured"),
+    TXN_0005("TXN0005", "Mismatch between the date provided and system date"),
 
     BU_ONB_0001("ONB0001", "Business Entity already Exist and multiple " +
             "Business not allowed for lei value and type combination"),

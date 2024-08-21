@@ -17,13 +17,16 @@ import org.fourstack.business.model.CheckBusinessRequest;
 import org.fourstack.business.model.CheckInstitute;
 import org.fourstack.business.model.CommonData;
 import org.fourstack.business.model.ContactNumber;
+import org.fourstack.business.model.Head;
 import org.fourstack.business.model.Institute;
 import org.fourstack.business.model.RequesterB2B;
 import org.fourstack.business.model.SearchBusinessRequest;
 import org.fourstack.business.model.SearchCriteria;
 import org.fourstack.business.model.SearchRequest;
+import org.fourstack.business.model.Transaction;
 import org.fourstack.business.model.ValidationResult;
 import org.fourstack.business.utils.BusinessUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,13 +36,13 @@ import java.util.regex.Pattern;
 @Service
 public class FieldFormatValidator {
 
+    @Value("${server.request.timeout:200}")
+    private int requestTimeOut;
+
     public ValidationResult validateBusiness(BusinessRegisterRequest request) {
         validateRequest(request);
         validateCommonRequestData(request.getCommonData());
-        ValidationResult result = validateInstitute(request.getInstitute());
-        if (BusinessUtil.isNotNull(result) && OperationStatus.FAILURE.equals(result.status())) {
-            return result;
-        }
+        validateInstitute(request.getInstitute());
         validateAdditionalInfoList(request.getAdditionalInfoList());
         return BusinessUtil.generateSuccessValidation();
     }
@@ -59,11 +62,8 @@ public class FieldFormatValidator {
         DefaultValidator<CheckInstitute> validator = new DefaultValidator<>();
         CheckInstitute checkInstitute = request.getCheckInstitute();
         validator.validate(ValidationConstants.CHECK_INSTITUTE_VALIDATIONS, checkInstitute);
-        ValidationResult result = validateOnboardingPan(checkInstitute.getValue(), checkInstitute.getType(),
+        validateOnboardingPan(checkInstitute.getValue(), checkInstitute.getType(),
                 ValidationConstants.CHECK_INSTITUTE_VALUE);
-        if (BusinessUtil.isNotNull(result) && OperationStatus.FAILURE.equals(result.status())) {
-            return result;
-        }
         validateAdditionalInfoList(request.getAdditionalInfoList());
         return BusinessUtil.generateSuccessValidation();
     }
@@ -78,7 +78,7 @@ public class FieldFormatValidator {
     private ValidationResult validateSearchRequest(SearchRequest search) {
         for (SearchCriteria criteria : search.getCriteria()) {
             ValidationResult result = validateSearchCriteria(criteria);
-            if (BusinessUtil.isNotNull(result) && OperationStatus.FAILURE.equals(result.status())) {
+            if (OperationStatus.FAILURE.equals(result.status())) {
                 return result;
             }
         }
@@ -92,8 +92,9 @@ public class FieldFormatValidator {
         if (AppConstants.PAN.equals(searchParameter)) {
             boolean isValidPan = BusinessUtil.validatePanFormat(searchCriteria.getValue());
             if (!isValidPan) {
-                return BusinessUtil.generateFailureValidation(ErrorCodeScenario.BONB_0001.getErrorCode(),
-                        ErrorCodeScenario.BONB_0001.getErrorMsg(), ValidationConstants.SEARCH_CRITERIA_VALUE);
+                ErrorCodeScenario error = ErrorCodeScenario.BONB_0001;
+                throw BusinessUtil.generateValidationException("PAN format validation failure",
+                        error.getErrorCode(), error.getErrorMsg(), ValidationConstants.SEARCH_CRITERIA_VALUE);
             }
         }
         return BusinessUtil.generateSuccessValidation();
@@ -106,18 +107,17 @@ public class FieldFormatValidator {
         BusinessUtil.validateObject(request.getSearch().getCriteria(), ValidationConstants.SEARCH_CRITERIA);
     }
 
-    private ValidationResult validateOnboardingPan(String panValue, String businessType, String fieldName) {
+    private void validateOnboardingPan(String panValue, String businessType, String fieldName) {
         boolean isValidPan = BusinessUtil.validatePanFormat(panValue);
         if (!isValidPan) {
-            return BusinessUtil.generateFailureValidation(ErrorCodeScenario.BONB_0001.getErrorCode(),
-                    ErrorCodeScenario.BONB_0001.getErrorMsg(), fieldName);
+            throw BusinessUtil.generateValidationException("PAN format validation failure",
+                    ErrorCodeScenario.BONB_0001.getErrorCode(), ErrorCodeScenario.BONB_0001.getErrorMsg(), fieldName);
         }
-        boolean inValidPanCombo = BusinessUtil.validatePanAndBusinessType(panValue, businessType);
-        if (inValidPanCombo) {
-            return BusinessUtil.generateFailureValidation(ErrorCodeScenario.BONB_0002.getErrorCode(),
-                    ErrorCodeScenario.BONB_0002.getErrorMsg(), fieldName);
+        boolean isValidPanCombo = BusinessUtil.validatePanAndBusinessType(panValue, businessType);
+        if (!isValidPanCombo) {
+            throw BusinessUtil.generateValidationException("PAN and Business Type combination failure",
+                    ErrorCodeScenario.BONB_0002.getErrorCode(), ErrorCodeScenario.BONB_0002.getErrorMsg(), fieldName);
         }
-        return BusinessUtil.generateSuccessValidation();
     }
 
     private void validateRequest(CheckBusinessRequest request) {
@@ -172,15 +172,12 @@ public class FieldFormatValidator {
         validator.validate(ValidationConstants.ADDITIONAL_INFO_VALIDATIONS, additionalInfo);
     }
 
-    private ValidationResult validateInstitute(Institute institute) {
+    private void validateInstitute(Institute institute) {
         DefaultValidator<Institute> validator = new DefaultValidator<>();
         BusinessUtil.validateObject(institute.getLei(), "institute.lei");
         validator.validate(ValidationConstants.INSTITUTE_VALIDATIONS, institute);
-        ValidationResult result = validateOnboardingPan(institute.getLei().getValue(), institute.getLei().getType(),
+        validateOnboardingPan(institute.getLei().getValue(), institute.getLei().getType(),
                 ValidationConstants.INSTITUTE_LIE_VALUE);
-        if (BusinessUtil.isNotNull(result) && OperationStatus.FAILURE.equals(result.status())) {
-            return result;
-        }
         BusinessUtil.validateObject(institute.getPrimaryIdentifier(), ValidationConstants.INSTITUTE_PRIMARY_IDENTIFIER);
         validateIdentifier(institute.getPrimaryIdentifier(), "institute.primaryIdentifier");
         validateOtherIdentifiers(institute.getOtherIdentifiers());
@@ -191,7 +188,6 @@ public class FieldFormatValidator {
         validateContactNumbers(institute.getContactNumbers());
         validateEmail(institute.getPrimaryEmail(), true, ValidationConstants.INSTITUTE_PRIMARY_EMAIL);
         validateEmails(institute.getEmails());
-        return BusinessUtil.generateSuccessValidation();
     }
 
     private void validateEmails(List<String> emails) {
@@ -207,7 +203,7 @@ public class FieldFormatValidator {
         Pattern pattern = Pattern.compile(ValidationConstants.EMAIL_PATTERN);
         Matcher matcher = pattern.matcher(email);
         if (!matcher.matches()) {
-            throw new ValidationException("Email is not matched with pattern", ErrorCodeScenario.INPUT_0002.getErrorCode(),
+            throw BusinessUtil.generateValidationException("Email is not matched with pattern", ErrorCodeScenario.INPUT_0002.getErrorCode(),
                     ErrorCodeScenario.INPUT_0002.getErrorMsg(), fieldName);
         }
     }
@@ -279,5 +275,19 @@ public class FieldFormatValidator {
         defaultValidator.validate(ValidationConstants.HEADER_VALIDATIONS, commonData.getHead());
         defaultValidator.validate(ValidationConstants.TRANSACTION_VALIDATIONS, commonData.getTxn());
         defaultValidator.validate(ValidationConstants.DEVICE_VALIDATIONS, commonData.getDevice());
+        validateTimeStamps(commonData.getHead(), commonData.getTxn());
+    }
+
+    private void validateTimeStamps(Head head, Transaction txn) {
+        BusinessUtil.validateObject(head.getTs(), ValidationConstants.HEAD_TS);
+        BusinessUtil.validateTimeStampAndGetDifference(head.getTs(), ValidationConstants.HEAD_TS);
+
+        BusinessUtil.validateObject(txn.getTs(), ValidationConstants.TXN_TS);
+        long timeDifference = BusinessUtil.validateTimeStampAndGetDifference(txn.getTs(), ValidationConstants.TXN_TS);
+        if (timeDifference >= requestTimeOut) {
+            throw BusinessUtil.generateValidationException("Request time is beyond the server timestamp",
+                    ErrorCodeScenario.TXN_0004.getErrorCode(), ErrorCodeScenario.TXN_0004.getErrorMsg(),
+                    ValidationConstants.TXN_TS);
+        }
     }
 }

@@ -20,6 +20,8 @@ import org.fourstack.business.validator.FieldFormatValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -32,9 +34,9 @@ public class BusinessService {
     private final KafkaPublisherService publisherService;
     private final ResponseMapper responseMapper;
 
-    public Acknowledgement processRequest(Object request, String endPoint) {
+    public ResponseEntity<Acknowledgement> processRequest(Object request, String endPoint) {
         try {
-            return switch (request) {
+            Acknowledgement acknowledgement = switch (request) {
                 case BusinessRegisterRequest businessRequest -> processBusinessRequest(businessRequest, endPoint);
                 case B2BIdRegisterRequest businessRequest -> processCreateB2BRequest(businessRequest, endPoint);
                 case CheckBusinessRequest businessRequest -> processCheckBusinessRequest(businessRequest, endPoint);
@@ -42,21 +44,22 @@ public class BusinessService {
                 default -> generateNegativeAck(endPoint, AppConstants.ERROR_500, AppConstants.INTERNAL_SERVER_ERROR,
                         "Unknown Request Type", null, null);
             };
+            return generateResponse(acknowledgement);
         } catch (ValidationException exception) {
             logger.error("{} - Validation Exception occurred - {}", this.getClass().getSimpleName(),
                     exception.getErrorResponse());
             CommonData commonData = getCommonDataRequest(request);
-            return generateNegativeAck(endPoint, exception.getErrorCode(), exception.getErrorMessage(),
-                    exception.getFieldName(), commonData.getHead(), commonData.getTxn());
+            return generateResponse(generateNegativeAck(endPoint, exception.getErrorCode(), exception.getErrorMessage(),
+                    exception.getFieldName(), commonData.getHead(), commonData.getTxn()));
         } catch (MissingFieldException exception) {
             logger.error("{} - Missing Filed Exception - {}", this.getClass().getSimpleName(),
                     exception.getFieldName());
             CommonData commonData = getCommonDataRequest(request);
-            return generateNegativeAck(endPoint, "INP0001", "Mandatory field missing",
-                    exception.getFieldName(), commonData.getHead(), commonData.getTxn());
+            return generateResponse(generateNegativeAck(endPoint, "INP0001", "Mandatory field missing",
+                    exception.getFieldName(), commonData.getHead(), commonData.getTxn()));
         } catch (Exception exception) {
-            return generateNegativeAck(endPoint, AppConstants.ERROR_500, AppConstants.INTERNAL_SERVER_ERROR,
-                    null, null, null);
+            return generateResponse(generateNegativeAck(endPoint, AppConstants.ERROR_500, AppConstants.INTERNAL_SERVER_ERROR,
+                    null, null, null));
         }
     }
 
@@ -122,5 +125,21 @@ public class BusinessService {
         String txnId = Objects.nonNull(txn) ? txn.getId()
                 : BusinessUtil.generateUniqueId(AppConstants.PREFIX_TXN);
         return responseMapper.getFailureAck(msgId, txnId, endPoint, errorCode, message, fieldName);
+    }
+
+    private ResponseEntity<Acknowledgement> generateResponse(Acknowledgement acknowledgement) {
+        OperationStatus result = acknowledgement.getResult();
+        if (OperationStatus.SUCCESS.equals(result)) {
+            return ResponseEntity.ok(acknowledgement);
+        } else {
+            String errorCode = acknowledgement.getErrorCode();
+            if (AppConstants.ERROR_500.equals(errorCode)) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(acknowledgement);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(acknowledgement);
+            }
+        }
     }
 }

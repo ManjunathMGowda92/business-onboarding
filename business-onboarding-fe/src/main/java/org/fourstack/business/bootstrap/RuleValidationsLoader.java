@@ -1,6 +1,6 @@
 package org.fourstack.business.bootstrap;
 
-import org.fourstack.business.exceptions.DataLoadingException;
+import org.fourstack.business.exceptions.InvalidInputException;
 import org.fourstack.business.model.Validation;
 import org.fourstack.business.model.Validations;
 import org.fourstack.business.utils.BusinessUtil;
@@ -48,7 +48,7 @@ public class RuleValidationsLoader implements CommandLineRunner {
             }
             return builder.toString();
         } catch (Exception exception) {
-            throw new DataLoadingException("Exception in loading validations.xml : " + exception.getMessage(), exception);
+            throw new InvalidInputException("Exception in loading validations.xml : " + exception.getMessage(), exception);
         }
     }
 

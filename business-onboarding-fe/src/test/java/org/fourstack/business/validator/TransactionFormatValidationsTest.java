@@ -6,8 +6,12 @@ import org.fourstack.business.exceptions.ValidationException;
 import org.fourstack.business.model.BusinessRegisterRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 class TransactionFormatValidationsTest extends BaseTest {
 
@@ -21,6 +25,40 @@ class TransactionFormatValidationsTest extends BaseTest {
         ValidationException validationException = Assertions.assertThrows(ValidationException.class,
                 () -> formatValidator.validateBusiness(businessRequest));
         assertValidationException(validationException, ErrorCodeScenario.INPUT_0002, "commonData.txn.id");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"87687", "tnf098970", "TXNGMTS64C8B9H1*8(0240731T224737243", "2024-08-21T39:10:42.6279215+05:30"})
+    @DisplayName("TransactionValidations: format validations for commonData.txn.ts")
+    void testTxnTsValidationFailure(String timestamp) {
+        BusinessRegisterRequest businessRequest = getBusinessRequest();
+        businessRequest.getCommonData().getTxn().setId(timestamp);
+        ValidationException validationException = Assertions.assertThrows(ValidationException.class,
+                () -> formatValidator.validateBusiness(businessRequest));
+        assertValidationException(validationException, ErrorCodeScenario.INPUT_0002, "commonData.txn.id");
+    }
+
+    @Test
+    @DisplayName("TransactionValidations: format validations for commonData.txn.ts")
+    void testTxnTsValidationFailureForAheadTime() {
+        BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
+        businessRequest.getCommonData().getTxn().setTs(LocalDateTime.now().plusMinutes(5).format(DateTimeFormatter.ISO_DATE_TIME));
+        ValidationException validationException = Assertions.assertThrows(ValidationException.class,
+                () -> formatValidator.validateBusiness(businessRequest));
+        assertValidationException(validationException, ErrorCodeScenario.TXN_0004, "commonData.txn.ts");
+    }
+
+
+    @Test
+    @DisplayName("TransactionValidations: format validations for commonData.txn.ts")
+    void testTxnTsValidationFailureForPreviousTime() {
+        BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
+        businessRequest.getCommonData().getTxn().setTs(LocalDateTime.now().minusMinutes(4).format(DateTimeFormatter.ISO_DATE_TIME));
+        ValidationException validationException = Assertions.assertThrows(ValidationException.class,
+                () -> formatValidator.validateBusiness(businessRequest));
+        assertValidationException(validationException, ErrorCodeScenario.TXN_0004, "commonData.txn.ts");
     }
 
     @ParameterizedTest

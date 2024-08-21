@@ -5,6 +5,7 @@ import org.fourstack.business.enums.OperationStatus;
 import org.fourstack.business.exceptions.MissingFieldException;
 import org.fourstack.business.exceptions.ValidationException;
 import org.fourstack.business.model.BusinessRegisterRequest;
+import org.fourstack.business.model.CommonData;
 import org.fourstack.business.model.ValidationResult;
 import org.fourstack.business.utils.BusinessUtil;
 import org.fourstack.business.utils.FileContentLoader;
@@ -53,5 +54,10 @@ public abstract class BaseTest {
     protected void assertSuccessValidation(ValidationResult result) {
         Assertions.assertNotNull(result);
         Assertions.assertEquals(OperationStatus.SUCCESS, result.status());
+    }
+
+    protected void setTimeStamp(CommonData commonData) {
+        commonData.getHead().setTs(BusinessUtil.getCurrentTimeStamp());
+        commonData.getTxn().setTs(BusinessUtil.getCurrentTimeStamp());
     }
 }
