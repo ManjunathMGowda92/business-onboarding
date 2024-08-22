@@ -11,7 +11,7 @@ public final class BusinessConstants {
     public static final String TAN = "TAN";
     public static final String SHOP_ESTABLISHMENT_NUM = "SHOP ESTABLISHMENT NUMBER";
     public static final String FSSAI = "FSSAI";
-
+    public static final int DEFAULT_TXN_TIME_OUT = 180;
     public static final String ERROR_500 = "500";
     public static final String INTERNAL_SERVER_ERROR = "INTERNAL SERVER ERROR. Please contact respective team";
     public static final String FORMAT_YYYY_MM_DD_HH_MM_SS_SSS = "yyyymmddHHMMssSSS";

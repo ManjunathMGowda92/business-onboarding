@@ -34,6 +34,8 @@ public class KafkaConfigurations {
         producerConfigs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, producer.getKeySerializer());
         producerConfigs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, producer.getValueSerializer());
         producerConfigs.put(ProducerConfig.RETRIES_CONFIG, producer.getRetries());
+        producerConfigs.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 60000);
+        producerConfigs.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, 60000);
         return producerConfigs;
     }
 

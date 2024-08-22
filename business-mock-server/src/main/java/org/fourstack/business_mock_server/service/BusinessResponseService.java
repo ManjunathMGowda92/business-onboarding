@@ -1,6 +1,7 @@
 package org.fourstack.business_mock_server.service;
 
 import org.fourstack.business_mock_server.enums.OperationStatus;
+import org.fourstack.business_mock_server.exceptions.InvalidInputException;
 import org.fourstack.business_mock_server.model.Acknowledgement;
 import org.fourstack.business_mock_server.model.B2BIdRegisterResponse;
 import org.fourstack.business_mock_server.model.BusinessRegisterResponse;
@@ -33,7 +34,7 @@ public class BusinessResponseService {
                     generateAcknowledgement(endpoint, searchResponse.getCommonData());
             default -> {
                 logger.error("Invalid Response received");
-                throw new RuntimeException("Invalid Response");
+                throw new InvalidInputException("Invalid Response received");
             }
         };
     }

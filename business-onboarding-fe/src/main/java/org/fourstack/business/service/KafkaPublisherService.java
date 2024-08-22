@@ -3,6 +3,7 @@ package org.fourstack.business.service;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.fourstack.business.config.KafkaPropertiesConfig;
+import org.fourstack.business.dao.KafkaMessagePersisterService;
 import org.fourstack.business.entity.event.Message;
 import org.fourstack.business.entity.event.TopicConfig;
 import org.fourstack.business.enums.EventType;
@@ -13,9 +14,7 @@ import org.fourstack.business.model.BusinessRegisterRequest;
 import org.fourstack.business.model.CheckBusinessRequest;
 import org.fourstack.business.model.CommonData;
 import org.fourstack.business.model.SearchBusinessRequest;
-import org.fourstack.business.model.ValidationResult;
 import org.fourstack.business.utils.BusinessUtil;
-import org.fourstack.business.validator.FieldFormatValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -33,6 +32,7 @@ public class KafkaPublisherService {
     private final ResponseMapper responseMapper;
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final KafkaPropertiesConfig propertiesConfig;
+    private final KafkaMessagePersisterService kafkaMessageService;
 
     public Acknowledgement publishBusiness(BusinessRegisterRequest request, String endPoint) {
         CommonData commonData = request.getCommonData();
@@ -77,9 +77,11 @@ public class KafkaPublisherService {
             future.whenCompleteAsync((result, exception) -> {
                 if (BusinessUtil.isNull(exception)) {
                     logger.info("Message published to kafka topic : {}", topicName);
+                    kafkaMessageService.saveKafkaAuditMessage(topicName, message);
                 } else {
                     logger.error("Exception in publishing the message to topic : {}, message: {}",
                             topicName, exception.getMessage());
+                    kafkaMessageService.saveKafkaAuditMessage(topicName, message, exception);
                 }
             });
         }

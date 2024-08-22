@@ -1,6 +1,11 @@
 spring:
   application:
   name: business-onboarding-be
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: business-onboarding
 
 server:
   port: 8085

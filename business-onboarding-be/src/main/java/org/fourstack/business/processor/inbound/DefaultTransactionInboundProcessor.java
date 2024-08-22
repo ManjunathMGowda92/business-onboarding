@@ -167,8 +167,8 @@ public abstract class DefaultTransactionInboundProcessor implements TransactionI
         Map<String, String> config = applicationConfig.getConfig();
         if (BusinessUtil.isNotNull(config)) {
             String configuredTime = config.get("transaction-time-out");
-            return BusinessUtil.getIntValue(configuredTime, 180);
+            return BusinessUtil.getIntValue(configuredTime, BusinessConstants.DEFAULT_TXN_TIME_OUT);
         }
-        return 180;
+        return BusinessConstants.DEFAULT_TXN_TIME_OUT;
     }
 }
