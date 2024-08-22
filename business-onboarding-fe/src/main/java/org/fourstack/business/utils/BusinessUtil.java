@@ -6,13 +6,20 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.fourstack.business.constants.AppConstants;
 import org.fourstack.business.constants.LoggerConstants;
+import org.fourstack.business.enums.ErrorCodeScenario;
 import org.fourstack.business.enums.OperationStatus;
+import org.fourstack.business.exceptions.InvalidInputException;
 import org.fourstack.business.exceptions.MissingFieldException;
+import org.fourstack.business.exceptions.ValidationException;
 import org.fourstack.business.model.ValidationResult;
 import org.springframework.kafka.config.TopicBuilder;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.UUID;
@@ -52,7 +59,7 @@ public final class BusinessUtil {
         try {
             return getInstance().writeValueAsString(obj);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new InvalidInputException("Exception in converting the Object to json string");
         }
     }
 
@@ -60,7 +67,7 @@ public final class BusinessUtil {
         try {
             return getInstance().readValue(source, classObj);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new InvalidInputException("Exception in converting the json string to Object");
         }
     }
 
@@ -68,7 +75,7 @@ public final class BusinessUtil {
         try {
             return getXmlMapper().readValue(source, classObj);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new InvalidInputException("Exception in converting the XML string to Object");
         }
     }
 
@@ -162,6 +169,11 @@ public final class BusinessUtil {
         return new MissingFieldException(message, fieldName);
     }
 
+    public static ValidationException generateValidationException(String message, String errorCode,
+                                                                  String errorMessage, String fieldName) {
+        return new ValidationException(message, errorCode, errorMessage, fieldName);
+    }
+
     public static boolean validatePanFormat(String panValue) {
         Pattern pattern = Pattern.compile(AppConstants.PAN_REGEX);
         Matcher matcher = pattern.matcher(panValue);
@@ -173,6 +185,23 @@ public final class BusinessUtil {
             return panValue.charAt(3) == 'P';
         } else {
             return panValue.charAt(3) != 'P';
+        }
+    }
+
+    public static long validateTimeStampAndGetDifference(String timestamp, String fieldName) {
+        try {
+            LocalDateTime dateTime = LocalDateTime.parse(timestamp, DateTimeFormatter.ISO_DATE_TIME);
+            LocalDate date = LocalDate.from(dateTime);
+            if (!LocalDate.now().isEqual(date)) {
+                throw generateValidationException("Mismatch between input and system date", ErrorCodeScenario.TXN_0005.getErrorCode(),
+                        ErrorCodeScenario.TXN_0005.getErrorMsg(), fieldName);
+            }
+            LocalDateTime currentTime = LocalDateTime.now();
+            long timeDifference = ChronoUnit.SECONDS.between(currentTime, dateTime);
+            return Math.abs(timeDifference);
+        } catch (DateTimeParseException e) {
+            throw generateValidationException("Invalid Time Format", ErrorCodeScenario.INPUT_0002.getErrorCode(),
+                    ErrorCodeScenario.INPUT_0002.getErrorMsg(), fieldName);
         }
     }
 }

@@ -33,6 +33,7 @@ class InstituteMandatoryValidationTest extends BaseTest {
     @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.objectId")
     void testInstituteObjectIdFailure(String objectId) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getInstitute().setObjectId(objectId);
         MissingFieldException exception = Assertions.assertThrows(MissingFieldException.class,
                 () -> formatValidator.validateBusiness(businessRequest));
@@ -45,6 +46,7 @@ class InstituteMandatoryValidationTest extends BaseTest {
     @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.name")
     void testInstituteNameFailure(String name) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getInstitute().setName(name);
         MissingFieldException exception = Assertions.assertThrows(MissingFieldException.class,
                 () -> formatValidator.validateBusiness(businessRequest));
@@ -57,6 +59,7 @@ class InstituteMandatoryValidationTest extends BaseTest {
     @DisplayName("InstituteMandatoryValidations: Success validation for institute.alias")
     void testInstituteAliasSuccessWhenNullOrEmpty(String alias) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getInstitute().setAlias(alias);
         ValidationResult result = formatValidator.validateBusiness(businessRequest);
         assertSuccessValidation(result);
@@ -68,6 +71,7 @@ class InstituteMandatoryValidationTest extends BaseTest {
     @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.defaultB2bId")
     void testInstituteDefaultB2BIdFailure(String defaultB2bId) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getInstitute().setDefaultB2bId(defaultB2bId);
         MissingFieldException exception = Assertions.assertThrows(MissingFieldException.class,
                 () -> formatValidator.validateBusiness(businessRequest));
@@ -80,6 +84,7 @@ class InstituteMandatoryValidationTest extends BaseTest {
     @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.mccCode")
     void testInstituteMccCodeFailure(String mccCode) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getInstitute().setMccCode(mccCode);
         MissingFieldException exception = Assertions.assertThrows(MissingFieldException.class,
                 () -> formatValidator.validateBusiness(businessRequest));
@@ -90,6 +95,7 @@ class InstituteMandatoryValidationTest extends BaseTest {
     @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.lei")
     void testInstituteLeiFailure() {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getInstitute().setLei(null);
         MissingFieldException exception = Assertions.assertThrows(MissingFieldException.class,
                 () -> formatValidator.validateBusiness(businessRequest));
@@ -102,6 +108,7 @@ class InstituteMandatoryValidationTest extends BaseTest {
     @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.lei.documentName")
     void testInstituteLeiDocumentNameFailure(String documentName) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getInstitute().getLei().setDocumentName(documentName);
         MissingFieldException exception = Assertions.assertThrows(MissingFieldException.class,
                 () -> formatValidator.validateBusiness(businessRequest));
@@ -114,6 +121,7 @@ class InstituteMandatoryValidationTest extends BaseTest {
     @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.lei.type")
     void testInstituteLeiTypeFailure(String type) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getInstitute().getLei().setType(type);
         MissingFieldException exception = Assertions.assertThrows(MissingFieldException.class,
                 () -> formatValidator.validateBusiness(businessRequest));
@@ -126,6 +134,7 @@ class InstituteMandatoryValidationTest extends BaseTest {
     @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.lei.value")
     void testInstituteLeiValueFailure(String value) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getInstitute().getLei().setValue(value);
         MissingFieldException exception = Assertions.assertThrows(MissingFieldException.class,
                 () -> formatValidator.validateBusiness(businessRequest));
@@ -138,6 +147,7 @@ class InstituteMandatoryValidationTest extends BaseTest {
     @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.lei.registeredName")
     void testInstituteLeiRegisteredNameFailure(String registeredName) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getInstitute().getLei().setRegisteredName(registeredName);
         MissingFieldException exception = Assertions.assertThrows(MissingFieldException.class,
                 () -> formatValidator.validateBusiness(businessRequest));
@@ -148,6 +158,7 @@ class InstituteMandatoryValidationTest extends BaseTest {
     @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.primaryIdentifier")
     void testInstitutePrimaryIdentifierFailure() {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getInstitute().setPrimaryIdentifier(null);
         MissingFieldException exception = Assertions.assertThrows(MissingFieldException.class,
                 () -> formatValidator.validateBusiness(businessRequest));
@@ -160,6 +171,7 @@ class InstituteMandatoryValidationTest extends BaseTest {
     @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.primaryIdentifier.documentName")
     void testInstitutePrimaryIdentifierDocumentNameFailure(String documentName) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getInstitute().getPrimaryIdentifier().setDocumentName(documentName);
         MissingFieldException exception = Assertions.assertThrows(MissingFieldException.class,
                 () -> formatValidator.validateBusiness(businessRequest));
@@ -172,6 +184,7 @@ class InstituteMandatoryValidationTest extends BaseTest {
     @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.primaryIdentifier.value")
     void testInstitutePrimaryIdentifierValueFailure(String value) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getInstitute().getPrimaryIdentifier().setValue(value);
         MissingFieldException exception = Assertions.assertThrows(MissingFieldException.class,
                 () -> formatValidator.validateBusiness(businessRequest));
@@ -184,6 +197,7 @@ class InstituteMandatoryValidationTest extends BaseTest {
     @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.primaryIdentifier.registeredName")
     void testInstitutePrimaryIdentifierRegisteredNameFailure(String registeredName) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getInstitute().getPrimaryIdentifier().setRegisteredName(registeredName);
         MissingFieldException exception = Assertions.assertThrows(MissingFieldException.class,
                 () -> formatValidator.validateBusiness(businessRequest));
@@ -194,6 +208,7 @@ class InstituteMandatoryValidationTest extends BaseTest {
     @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.otherIdentifiers")
     void testInstituteOtherIdentifiersSuccessForNull() {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getInstitute().setOtherIdentifiers(null);
         ValidationResult result = formatValidator.validateBusiness(businessRequest);
         assertSuccessValidation(result);
@@ -203,6 +218,7 @@ class InstituteMandatoryValidationTest extends BaseTest {
     @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.otherIdentifiers")
     void testInstituteOtherIdentifiersSuccessForEmptyList() {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getInstitute().setOtherIdentifiers(Collections.emptyList());
         ValidationResult result = formatValidator.validateBusiness(businessRequest);
         assertSuccessValidation(result);
@@ -214,6 +230,7 @@ class InstituteMandatoryValidationTest extends BaseTest {
     @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.otherIdentifiers.documentName")
     void testInstituteOtherIdentifiersDocumentNameFailure(String documentName) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         List<BusinessIdentifier> otherIdentifiers = businessRequest.getInstitute().getOtherIdentifiers();
         for (BusinessIdentifier otherIdentifier : otherIdentifiers) {
             otherIdentifier.setDocumentName(documentName);
@@ -229,6 +246,7 @@ class InstituteMandatoryValidationTest extends BaseTest {
     @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.otherIdentifiers.value")
     void testInstituteOtherIdentifiersValueFailure(String value) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         List<BusinessIdentifier> otherIdentifiers = businessRequest.getInstitute().getOtherIdentifiers();
         for (BusinessIdentifier otherIdentifier : otherIdentifiers) {
             otherIdentifier.setValue(value);
@@ -244,6 +262,7 @@ class InstituteMandatoryValidationTest extends BaseTest {
     @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.otherIdentifiers.registeredName")
     void testInstituteOtherIdentifiersRegisteredNameFailure(String registeredName) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         List<BusinessIdentifier> otherIdentifiers = businessRequest.getInstitute().getOtherIdentifiers();
         for (BusinessIdentifier otherIdentifier : otherIdentifiers) {
             otherIdentifier.setRegisteredName(registeredName);

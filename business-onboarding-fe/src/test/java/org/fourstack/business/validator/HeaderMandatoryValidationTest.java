@@ -46,7 +46,7 @@ class HeaderMandatoryValidationTest extends BaseTest {
 
     }
 
-    /*@ParameterizedTest
+    @ParameterizedTest
     @NullSource
     @ValueSource(strings = {""})
     @DisplayName("HeaderMandatoryValidations: Mandatory validation for commonData.head.ts")
@@ -56,7 +56,7 @@ class HeaderMandatoryValidationTest extends BaseTest {
         MissingFieldException exception = Assertions.assertThrows(MissingFieldException.class,
                 () -> formatValidator.validateBusiness(businessRequest));
         assertMissingFieldException(exception, "commonData.head.ts");
-    }*/
+    }
 
     @ParameterizedTest
     @NullSource
@@ -112,6 +112,7 @@ class HeaderMandatoryValidationTest extends BaseTest {
     @DisplayName("HeaderMandatoryValidations: validation success for commonData.head.orgSysId")
     void testSuccessValidationForOrgSysIdNullOrEmpty(String orgSysId) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
         businessRequest.getCommonData().getHead().setOrgSysId(orgSysId);
         ValidationResult result = formatValidator.validateBusiness(businessRequest);
         assertSuccessValidation(result);

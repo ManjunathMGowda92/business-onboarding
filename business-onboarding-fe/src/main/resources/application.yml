@@ -4,6 +4,8 @@ spring:
 
 server:
   port: 8085
+  request:
+    timeout: 180
 
 kafka:
   configurations:

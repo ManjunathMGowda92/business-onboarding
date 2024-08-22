@@ -6,8 +6,12 @@ import org.fourstack.business.exceptions.ValidationException;
 import org.fourstack.business.model.BusinessRegisterRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 class HeaderFormatValidationTest extends BaseTest {
@@ -21,6 +25,48 @@ class HeaderFormatValidationTest extends BaseTest {
         ValidationException validationException = Assertions.assertThrows(ValidationException.class,
                 () -> formatValidator.validateBusiness(businessRequest));
         assertValidationException(validationException, ErrorCodeScenario.INPUT_0002, "commonData.head.ver");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"1", "1.2345", "23", "234.5432", "abc.def", "*65.765", "2024-08-91T09:10:42.6279215+05:30"})
+    @DisplayName("BusinessHeaderValidation: format validations for commonData.head.ts")
+    void testHeadTsValidationFailure(String timestamp) {
+        BusinessRegisterRequest businessRequest = getBusinessRequest();
+        businessRequest.getCommonData().getHead().setTs(timestamp);
+        ValidationException validationException = Assertions.assertThrows(ValidationException.class,
+                () -> formatValidator.validateBusiness(businessRequest));
+        assertValidationException(validationException, ErrorCodeScenario.INPUT_0002, "commonData.head.ts");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"2024-08-20T09:10:42.6279215+05:30", "2024-08-21T09:10:42.6279215+05:30"})
+    @DisplayName("BusinessHeaderValidation: format validations for commonData.head.ts")
+    void testHeadTsDateCheckValidationFailure(String timestamp) {
+        BusinessRegisterRequest businessRequest = getBusinessRequest();
+        businessRequest.getCommonData().getHead().setTs(timestamp);
+        ValidationException validationException = Assertions.assertThrows(ValidationException.class,
+                () -> formatValidator.validateBusiness(businessRequest));
+        assertValidationException(validationException, ErrorCodeScenario.TXN_0005, "commonData.head.ts");
+    }
+
+    @Test
+    @DisplayName("BusinessHeaderValidation: format validations for commonData.head.ts")
+    void testHeadTsPreviousDateCheckValidationFailure() {
+        BusinessRegisterRequest businessRequest = getBusinessRequest();
+        businessRequest.getCommonData().getHead().setTs(LocalDateTime.now().minusHours(25).format(DateTimeFormatter.ISO_DATE_TIME));
+        ValidationException validationException = Assertions.assertThrows(ValidationException.class,
+                () -> formatValidator.validateBusiness(businessRequest));
+        assertValidationException(validationException, ErrorCodeScenario.TXN_0005, "commonData.head.ts");
+    }
+
+    @Test
+    @DisplayName("BusinessHeaderValidation: format validations for commonData.head.ts")
+    void testHeadTsNextDateCheckValidationFailure() {
+        BusinessRegisterRequest businessRequest = getBusinessRequest();
+        businessRequest.getCommonData().getHead().setTs(LocalDateTime.now().plusHours(25).format(DateTimeFormatter.ISO_DATE_TIME));
+        ValidationException validationException = Assertions.assertThrows(ValidationException.class,
+                () -> formatValidator.validateBusiness(businessRequest));
+        assertValidationException(validationException, ErrorCodeScenario.TXN_0005, "commonData.head.ts");
     }
 
     @ParameterizedTest
