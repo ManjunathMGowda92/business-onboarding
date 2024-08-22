@@ -39,7 +39,7 @@ class HeaderFormatValidationTest extends BaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"2024-08-20T09:10:42.6279215+05:30", "2024-08-22T09:10:42.6279215+05:30"})
+    @ValueSource(strings = {"2024-08-20T09:10:42.6279215+05:30", "2024-08-21T09:10:42.6279215+05:30"})
     @DisplayName("BusinessHeaderValidation: format validations for commonData.head.ts")
     void testHeadTsDateCheckValidationFailure(String timestamp) {
         BusinessRegisterRequest businessRequest = getBusinessRequest();
