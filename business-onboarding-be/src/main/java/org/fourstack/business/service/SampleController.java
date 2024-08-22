@@ -25,13 +25,14 @@ import java.util.Optional;
 @RequiredArgsConstructor(onConstructor_ = @Lazy)
 public class SampleController {
 
+    public static final String NO_DATA_FOUND = "No data found";
     private final MasterDataService masterDataService;
     private final BusinessValidator businessValidator;
 
     @GetMapping("/aiEntity/{id}")
     public AiEntity retrieveAiEntity(@PathVariable String id) {
         Optional<AiEntity> optionalAiEntity = masterDataService.retrieveAiEntity(id);
-        return optionalAiEntity.orElseThrow(() -> new RuntimeException("No data found"));
+        return optionalAiEntity.orElseThrow(() -> new RuntimeException(NO_DATA_FOUND));
     }
 
     @PostMapping("/aiEntity")
@@ -42,7 +43,7 @@ public class SampleController {
     @GetMapping("/ouEntity/{id}")
     public OuEntity retrieveOuEntity(@PathVariable String id) {
         Optional<OuEntity> optionalOuEntity = masterDataService.retrieveOuEntity(id);
-        return optionalOuEntity.orElseThrow(() -> new RuntimeException("No data found"));
+        return optionalOuEntity.orElseThrow(() -> new RuntimeException(NO_DATA_FOUND));
     }
 
     @PostMapping("/ouEntity")
@@ -53,7 +54,7 @@ public class SampleController {
     @GetMapping("/aiOuEntity/{aiId}/ou/{ouId}")
     public AiOuMapEntity retrieveAiOuEntity(@PathVariable String aiId, @PathVariable String ouId) {
         Optional<AiOuMapEntity> optionalAiOuMapEntity = masterDataService.retrieveAiOuMapEntity(aiId, ouId);
-        return optionalAiOuMapEntity.orElseThrow(() -> new RuntimeException("No data found"));
+        return optionalAiOuMapEntity.orElseThrow(() -> new RuntimeException(NO_DATA_FOUND));
     }
 
     @PostMapping("/aiOuEntity")

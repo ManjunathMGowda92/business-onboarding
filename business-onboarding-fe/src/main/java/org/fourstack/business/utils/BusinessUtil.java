@@ -85,6 +85,12 @@ public final class BusinessUtil {
         return dateTime.format(formatter);
     }
 
+    public static String getCurrentDate() {
+        LocalDate date = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+        return date.format(formatter);
+    }
+
     public static String generateUniqueId(String prefix) {
         StringBuilder builder = new StringBuilder();
         if (isNotNullOrEmpty(prefix)) {
