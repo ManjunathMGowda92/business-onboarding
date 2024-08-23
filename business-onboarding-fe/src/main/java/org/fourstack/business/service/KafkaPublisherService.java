@@ -13,6 +13,7 @@ import org.fourstack.business.model.B2BIdRegisterRequest;
 import org.fourstack.business.model.BusinessRegisterRequest;
 import org.fourstack.business.model.CheckBusinessRequest;
 import org.fourstack.business.model.CommonData;
+import org.fourstack.business.model.EditB2BIdRequest;
 import org.fourstack.business.model.SearchBusinessRequest;
 import org.fourstack.business.utils.BusinessUtil;
 import org.slf4j.Logger;
@@ -62,6 +63,14 @@ public class KafkaPublisherService {
         CommonData commonData = request.getCommonData();
         Message<SearchBusinessRequest, Acknowledgement> message = responseMapper.constructMessage(request,
                 EventType.REQ_SEARCH_BUSINESS, commonData.getHead().getMsgId(), commonData.getTxn().getId(), endPoint);
+        publishMessage(message);
+        return message.getAck();
+    }
+
+    public Acknowledgement publishBusiness(EditB2BIdRequest request, String endPoint) {
+        CommonData commonData = request.getCommonData();
+        Message<EditB2BIdRequest, Acknowledgement> message = responseMapper.constructMessage(request, EventType.REQ_EDIT_B2B,
+                commonData.getHead().getMsgId(), commonData.getTxn().getId(), endPoint);
         publishMessage(message);
         return message.getAck();
     }

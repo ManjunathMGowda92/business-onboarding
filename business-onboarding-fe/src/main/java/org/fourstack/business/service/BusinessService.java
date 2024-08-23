@@ -11,6 +11,7 @@ import org.fourstack.business.model.B2BIdRegisterRequest;
 import org.fourstack.business.model.BusinessRegisterRequest;
 import org.fourstack.business.model.CheckBusinessRequest;
 import org.fourstack.business.model.CommonData;
+import org.fourstack.business.model.EditB2BIdRequest;
 import org.fourstack.business.model.Head;
 import org.fourstack.business.model.SearchBusinessRequest;
 import org.fourstack.business.model.Transaction;
@@ -41,6 +42,7 @@ public class BusinessService {
                 case B2BIdRegisterRequest businessRequest -> processCreateB2BRequest(businessRequest, endPoint);
                 case CheckBusinessRequest businessRequest -> processCheckBusinessRequest(businessRequest, endPoint);
                 case SearchBusinessRequest businessRequest -> processSearchBusinessRequest(businessRequest, endPoint);
+                case EditB2BIdRequest businessRequest -> processEditB2BIdRequest(businessRequest, endPoint);
                 default -> generateNegativeAck(endPoint, AppConstants.ERROR_500, AppConstants.INTERNAL_SERVER_ERROR,
                         "Unknown Request Type", null, null);
             };
@@ -76,6 +78,11 @@ public class BusinessService {
             case SearchBusinessRequest businessRequest -> businessRequest.getCommonData();
             default -> new CommonData();
         };
+    }
+
+    private Acknowledgement processEditB2BIdRequest(EditB2BIdRequest request, String endPoint) {
+        logger.info("Execution process started for EditB2BIdRequest");
+        return publisherService.publishBusiness(request, endPoint);
     }
 
     private Acknowledgement processBusinessRequest(BusinessRegisterRequest request, String endPoint) {

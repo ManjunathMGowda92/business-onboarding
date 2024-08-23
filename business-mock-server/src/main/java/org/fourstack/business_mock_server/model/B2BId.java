@@ -9,9 +9,10 @@ import java.io.Serializable;
 public class B2BId implements Serializable {
     @Serial
     private static final long serialVersionUID = -5753448415541431686L;
-    private String value;
-    private String privacyType;
-    private String reason;
-    private String description;
-    private BusinessIdentifier businessIdentifier;
+    protected String value;
+    protected String privacyType;
+    protected String reason;
+    protected String description;
+    protected BusinessIdentifier businessIdentifier;
+    protected BankAccount bankAccount;
 }
