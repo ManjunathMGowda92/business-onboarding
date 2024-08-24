@@ -104,7 +104,8 @@ public class KafkaPublisherService {
                 }
             });
         } else {
-            throw new InvalidInputException("No Topic configured for event: "+message.getEventType());
+            logger.error("No Topic is configured for the event - {}", message.getEventType());
+            throw new InvalidInputException("No Topic configured for event: " + message.getEventType());
         }
     }
 
