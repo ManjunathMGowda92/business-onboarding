@@ -47,5 +47,10 @@ kafka:
       partitionCount: 4
       replicaCount: 1
       reAssignmentRequired: false
+    REQ_ACTIVATE_B2B:
+      topicName: ACTIVATE-DEACTIVATE-B2B
+      partitionCount: 4
+      replicaCount: 1
+      reAssignmentRequired: false
 
 
