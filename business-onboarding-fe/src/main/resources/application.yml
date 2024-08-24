@@ -42,5 +42,10 @@ kafka:
       partitionCount: 4
       replicaCount: 1
       reAssignmentRequired: false
+    REQ_EDIT_B2B:
+      topicName: B2B-EDIT-REQUEST
+      partitionCount: 4
+      replicaCount: 1
+      reAssignmentRequired: false
 
 

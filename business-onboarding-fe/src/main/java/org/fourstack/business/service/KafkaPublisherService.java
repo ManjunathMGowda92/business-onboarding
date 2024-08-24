@@ -7,8 +7,10 @@ import org.fourstack.business.dao.KafkaMessagePersisterService;
 import org.fourstack.business.entity.event.Message;
 import org.fourstack.business.entity.event.TopicConfig;
 import org.fourstack.business.enums.EventType;
+import org.fourstack.business.exceptions.InvalidInputException;
 import org.fourstack.business.mapper.ResponseMapper;
 import org.fourstack.business.model.Acknowledgement;
+import org.fourstack.business.model.ActivateB2BRequest;
 import org.fourstack.business.model.B2BIdRegisterRequest;
 import org.fourstack.business.model.BusinessRegisterRequest;
 import org.fourstack.business.model.CheckBusinessRequest;
@@ -75,6 +77,14 @@ public class KafkaPublisherService {
         return message.getAck();
     }
 
+    public Acknowledgement publishBusiness(ActivateB2BRequest request, String endPoint) {
+        CommonData commonData = request.getCommonData();
+        Message<ActivateB2BRequest, Acknowledgement> message = responseMapper.constructMessage(request, EventType.REQ_ACTIVATE_B2B,
+                commonData.getHead().getMsgId(), commonData.getTxn().getId(), endPoint);
+        publishMessage(message);
+        return message.getAck();
+    }
+
 
     private <R, A> void publishMessage(Message<R, A> message) {
         TopicConfig topicConfiguration = getTopicConfiguration(message.getEventType());
@@ -93,6 +103,8 @@ public class KafkaPublisherService {
                     kafkaMessageService.saveKafkaAuditMessage(topicName, message, exception);
                 }
             });
+        } else {
+            throw new InvalidInputException("No Topic configured for event: "+message.getEventType());
         }
     }
 

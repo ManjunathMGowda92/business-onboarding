@@ -7,6 +7,7 @@ import org.fourstack.business.exceptions.MissingFieldException;
 import org.fourstack.business.exceptions.ValidationException;
 import org.fourstack.business.mapper.ResponseMapper;
 import org.fourstack.business.model.Acknowledgement;
+import org.fourstack.business.model.ActivateB2BRequest;
 import org.fourstack.business.model.B2BIdRegisterRequest;
 import org.fourstack.business.model.BusinessRegisterRequest;
 import org.fourstack.business.model.CheckBusinessRequest;
@@ -43,6 +44,7 @@ public class BusinessService {
                 case CheckBusinessRequest businessRequest -> processCheckBusinessRequest(businessRequest, endPoint);
                 case SearchBusinessRequest businessRequest -> processSearchBusinessRequest(businessRequest, endPoint);
                 case EditB2BIdRequest businessRequest -> processEditB2BIdRequest(businessRequest, endPoint);
+                case ActivateB2BRequest businessRequest -> processActivateB2BRequest(businessRequest, endPoint);
                 default -> generateNegativeAck(endPoint, AppConstants.ERROR_500, AppConstants.INTERNAL_SERVER_ERROR,
                         "Unknown Request Type", null, null);
             };
@@ -78,6 +80,11 @@ public class BusinessService {
             case SearchBusinessRequest businessRequest -> businessRequest.getCommonData();
             default -> new CommonData();
         };
+    }
+
+    private Acknowledgement processActivateB2BRequest(ActivateB2BRequest request, String endPoint) {
+        logger.info("Execution process started for Activate Deactivate B2B Request");
+        return publisherService.publishBusiness(request, endPoint);
     }
 
     private Acknowledgement processEditB2BIdRequest(EditB2BIdRequest request, String endPoint) {

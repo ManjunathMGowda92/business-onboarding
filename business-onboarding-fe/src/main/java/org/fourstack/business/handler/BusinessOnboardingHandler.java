@@ -3,6 +3,7 @@ package org.fourstack.business.handler;
 import lombok.RequiredArgsConstructor;
 import org.fourstack.business.enums.EventWebhookType;
 import org.fourstack.business.model.Acknowledgement;
+import org.fourstack.business.model.ActivateB2BRequest;
 import org.fourstack.business.model.B2BIdRegisterRequest;
 import org.fourstack.business.model.BusinessRegisterRequest;
 import org.fourstack.business.model.CheckBusinessRequest;
@@ -47,7 +48,15 @@ public class BusinessOnboardingHandler {
         return businessService.processRequest(businessRequest, EventWebhookType.REQ_SEARCH_BUSINESS.getEndPoint());
     }
 
+    @PostMapping(value = "/reqEditId", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Acknowledgement> editB2BId(@RequestBody EditB2BIdRequest businessRequest) {
         return businessService.processRequest(businessRequest, EventWebhookType.REQ_EDIT_B2B.getEndPoint());
+    }
+
+    @PostMapping(value = "/reqChangeIdStatus", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Acknowledgement> activateDeactivateB2BId(@RequestBody ActivateB2BRequest businessRequest) {
+        return businessService.processRequest(businessRequest, EventWebhookType.REQ_ACTIVATE_DEACTIVATE_B2B.getEndPoint());
     }
 }
