@@ -14,4 +14,5 @@ public class B2BId implements Serializable {
     protected String reason;
     protected String description;
     protected BusinessIdentifier businessIdentifier;
+    protected BankAccount bankAccount;
 }
