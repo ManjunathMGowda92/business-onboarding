@@ -27,7 +27,7 @@ public final class ValidationConstants {
     public static final String INSTITUTE_PRIMARY_CONTACT = "institute.primaryContact";
     public static final String INSTITUTE_PRIMARY_EMAIL = "institute.primaryEmail";
     public static final String INSTITUTE_EMAILS = "institute.emails";
-    public static final String INSTITUTE_LIE_VALUE = "institute.lie.value";
+    public static final String INSTITUTE_LIE_VALUE = "institute.lei.value";
     public static final String INSTITUTE_CONTACT_NUMBERS = "institute.contactNumbers";
     public static final String INSTITUTE_BANK_ACCOUNTS = "institute.bankAccounts";
     public static final String INSTITUTE_ADDRESSES = "institute.addresses";

@@ -12,16 +12,22 @@ import org.fourstack.business.utils.FileContentLoader;
 import org.fourstack.business.utils.FileNameConstants;
 import org.fourstack.business.validator.FieldFormatValidator;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Random;
+
 @SpringBootTest
-@EmbeddedKafka( ports = {9092})
+@EmbeddedKafka(ports = {9092})
 public abstract class BaseTest {
+    private static final String[] ALPHABETS = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+            "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
+    private static final int[] INTEGERS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
+    private static final Random random = new Random();
+
     private final FileContentLoader fileContentLoader = new FileContentLoader();
     @InjectMocks
     protected FieldFormatValidator formatValidator;
@@ -41,7 +47,7 @@ public abstract class BaseTest {
     }
 
     protected void assertValidationException(ValidationException exception, ErrorCodeScenario scenarioCode,
-                                              String fieldName) {
+                                             String fieldName) {
         Assertions.assertNotNull(exception);
         Assertions.assertNotNull(exception.getMessage());
         Assertions.assertNotNull(exception.getErrorCode());
@@ -67,5 +73,22 @@ public abstract class BaseTest {
     protected void setTimeStamp(CommonData commonData) {
         commonData.getHead().setTs(BusinessUtil.getCurrentTimeStamp());
         commonData.getTxn().setTs(BusinessUtil.getCurrentTimeStamp());
+    }
+
+    protected String alphaNumericString(int length, String prefix) {
+        StringBuilder builder = new StringBuilder();
+        if (BusinessUtil.isNotNullOrEmpty(prefix)) {
+            builder.append(prefix);
+        }
+        int i = 0;
+        while (builder.length() < length) {
+            if (i % 2 == 0) {
+                builder.append(ALPHABETS[random.nextInt(ALPHABETS.length)]);
+            } else {
+                builder.append(INTEGERS[random.nextInt(INTEGERS.length)]);
+            }
+            i++;
+        }
+        return builder.toString();
     }
 }
