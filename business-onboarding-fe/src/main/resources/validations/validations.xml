@@ -26,7 +26,7 @@
         <rule identifier="mccCode" fieldName="institute.mccCode" expression="^[0-9]{4}$" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="lei.documentName" fieldName="institute.lei.documentName" expression="PAN" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="lei.type" fieldName="institute.lei.type" expression="SOLE PROP|COMPANY|HUF|TRUST|GOVERNMENT AGENCY" errorCode="INP0002" errorMessage="Invalid field format"/>
-        <rule identifier="lei.value" fieldName="institute.lei.value" expression="^[A-Z0-9]{10}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="lei.value" fieldName="institute.lei.value" expression="^[A-Z0-9]{10,30}$" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="lei.registeredName" fieldName="institute.lei.registeredName" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
     </validation>
     <validation name="BUSINESS_IDENTIFIER_VALIDATIONS">
