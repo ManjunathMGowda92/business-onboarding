@@ -19,8 +19,6 @@ kafka:
       key-serializer: "org.apache.kafka.common.serialization.StringSerializer"
       value-serializer: "org.apache.kafka.common.serialization.StringSerializer"
       retries: 1
-    consumer:
-      bootstrap-servers: "localhost:9092"
   topic-details:
     REQ_CREATE_BUSINESS:
       topicName: BUSINESS-REQUEST

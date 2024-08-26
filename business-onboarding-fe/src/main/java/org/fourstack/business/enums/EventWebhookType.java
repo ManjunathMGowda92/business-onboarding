@@ -9,7 +9,8 @@ public enum EventWebhookType {
     REQ_CHECK_BUSINESS("/v1/onboarding/business/reqCheckEntity"),
     REQ_SEARCH_BUSINESS("/v1/onboarding/business/reqSearchEntity"),
     REQ_EDIT_B2B("/v1/onboarding/business/reqEditId"),
-    REQ_ACTIVATE_DEACTIVATE_B2B("/v1/onboarding/business/reqChangeIdStatus");
+    REQ_ACTIVATE_DEACTIVATE_B2B("/v1/onboarding/business/reqChangeIdStatus"),
+    REQ_CHECK_B2BID("/v1/onboarding/business/reqCheckId");
 
     private final String endPoint;
 
