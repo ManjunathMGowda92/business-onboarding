@@ -5,7 +5,6 @@ import org.fourstack.business.entity.BusinessEntity;
 import org.fourstack.business.entity.OrgIdEntity;
 import org.fourstack.business.enums.BooleanStatus;
 import org.fourstack.business.enums.OperationStatus;
-import org.fourstack.business.model.Acknowledgement;
 import org.fourstack.business.model.B2BIdRegisterRequest;
 import org.fourstack.business.model.B2BIdRegisterResponse;
 import org.fourstack.business.model.BusinessDetails;
@@ -21,6 +20,8 @@ import org.fourstack.business.model.Head;
 import org.fourstack.business.model.Institute;
 import org.fourstack.business.model.InstituteInfo;
 import org.fourstack.business.model.Response;
+import org.fourstack.business.model.SearchBusinessRequest;
+import org.fourstack.business.model.SearchBusinessResponse;
 import org.fourstack.business.service.DbOperationService;
 import org.fourstack.business.utils.BusinessUtil;
 import org.springframework.context.annotation.Lazy;
@@ -38,16 +39,6 @@ import java.util.Set;
 @RequiredArgsConstructor(onConstructor_ = @Lazy)
 public class ResponseMapper {
     private final DbOperationService dbOperationService;
-
-    public Acknowledgement getSuccessAck(String msgId, String txnId, String apiEndpoint) {
-        Acknowledgement ack = new Acknowledgement();
-        ack.setResult(OperationStatus.SUCCESS);
-        ack.setTimestamp(BusinessUtil.getCurrentTimeStamp());
-        ack.setMsgId(msgId);
-        ack.setTxnId(txnId);
-        ack.setApiEndpoint(apiEndpoint);
-        return ack;
-    }
 
     public BusinessRegisterResponse generateSuccessBusinessResponse(BusinessRegisterRequest request) {
         BusinessRegisterResponse businessResponse = generateBusinessRegisterResponse(request);
@@ -185,6 +176,25 @@ public class ResponseMapper {
         response.setCheckInstitute(request.getCheckInstitute());
         response.setAdditionalInfoList(request.getAdditionalInfoList());
         response.setCommonData(constructCommonDataForResponse(request.getCommonData()));
+        return response;
+    }
+
+    public SearchBusinessResponse generateFailureSearchBusinessResponse(SearchBusinessRequest request, String errorCode,
+                                                                        String errorMsg, String errorField) {
+        SearchBusinessResponse businessResponse = generateSearchBusinessResponse(request);
+        CommonResponseData commonData = businessResponse.getCommonData();
+        Head head = commonData.getHead();
+        Response response = generateFailureResponse(head.getMsgId(), errorCode, errorMsg, errorField);
+        head.setMsgId(BusinessUtil.generateAlphaNumericID(32, "MSG"));
+        commonData.setResponse(response);
+        return businessResponse;
+    }
+
+    private SearchBusinessResponse generateSearchBusinessResponse(SearchBusinessRequest request) {
+        SearchBusinessResponse response = new SearchBusinessResponse();
+        response.setCommonData(constructCommonDataForResponse(request.getCommonData()));
+        response.setSearch(request.getSearch());
+        response.setAdditionalInfoList(request.getAdditionalInfoList());
         return response;
     }
 

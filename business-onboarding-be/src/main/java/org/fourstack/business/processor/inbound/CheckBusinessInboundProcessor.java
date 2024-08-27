@@ -107,7 +107,7 @@ public class CheckBusinessInboundProcessor extends DefaultTransactionInboundProc
 
     @Override
     public void handleTransactionErrors(MessageTransaction transaction, TransactionError txnError) {
-        logger.info(" Handling Transaction Errors : {} - {}", txnError.getErrorCode(), txnError.getErrorMsg());
+        logger.info("Handling Transaction Errors : {} - {}", txnError.getErrorCode(), txnError.getErrorMsg());
         if (transaction.getRequest() instanceof CheckInstituteEvent event) {
             CheckBusinessResponse response = responseMapper.generateFailureCheckBusinessResponse(event.getRequest(),
                     txnError.getErrorCode(), txnError.getErrorMsg(), txnError.getErrorField());
