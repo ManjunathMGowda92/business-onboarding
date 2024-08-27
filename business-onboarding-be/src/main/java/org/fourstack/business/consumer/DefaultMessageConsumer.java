@@ -29,7 +29,8 @@ public class DefaultMessageConsumer {
         this.searchBusinessProcessor = searchBusinessProcessor;
     }
 
-    @KafkaListener(topics = {"BUSINESS-REQUEST", "B2B-CREATE-REQUEST", "CHECK-BUSINESS-REQUEST"})
+    @KafkaListener(topics = {"BUSINESS-REQUEST", "B2B-CREATE-REQUEST", "CHECK-BUSINESS-REQUEST",
+    "SEARCH-BUSINESS-REQUEST"})
     public void consumeMessages(String message) {
         logger.info("{} - Message received from Kafka - {}", this.getClass().getSimpleName(), message);
         Message<?, ?> messageObj = constructMessage(message);
