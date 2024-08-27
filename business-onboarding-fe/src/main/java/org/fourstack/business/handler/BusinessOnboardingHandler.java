@@ -6,6 +6,7 @@ import org.fourstack.business.model.Acknowledgement;
 import org.fourstack.business.model.ActivateB2BRequest;
 import org.fourstack.business.model.B2BIdRegisterRequest;
 import org.fourstack.business.model.BusinessRegisterRequest;
+import org.fourstack.business.model.CheckB2BIdRequest;
 import org.fourstack.business.model.CheckBusinessRequest;
 import org.fourstack.business.model.EditB2BIdRequest;
 import org.fourstack.business.model.SearchBusinessRequest;
@@ -58,5 +59,11 @@ public class BusinessOnboardingHandler {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Acknowledgement> activateDeactivateB2BId(@RequestBody ActivateB2BRequest businessRequest) {
         return businessService.processRequest(businessRequest, EventWebhookType.REQ_ACTIVATE_DEACTIVATE_B2B.getEndPoint());
+    }
+
+    @PostMapping(value = "/reqCheckId", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Acknowledgement> checkB2BAvailability(@RequestBody CheckB2BIdRequest checkB2BIdRequest) {
+        return businessService.processRequest(checkB2BIdRequest, EventWebhookType.REQ_CHECK_B2BID.getEndPoint());
     }
 }

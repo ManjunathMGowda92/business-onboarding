@@ -7,10 +7,10 @@ import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class CheckBusinessRequest implements Serializable {
+public class CheckB2BIdRequest implements Serializable {
     @Serial
-    private static final long serialVersionUID = -8974870624020770782L;
+    private static final long serialVersionUID = 6291758658802648609L;
     private CommonData commonData;
-    private CheckInstitute checkInstitute;
+    private CheckB2BIds checkB2BIds;
     private List<AdditionalInfo> additionalInfoList;
 }
