@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -44,24 +45,24 @@ public class SearchBusinessRetriever {
         List<EntityInfo> entityInfoResults = new ArrayList<>();
         if (BusinessUtil.isCollectionNotNullOrEmpty(criteriaList)) {
             for (SearchCriteria criteria : criteriaList) {
-                entityInfoResults.add(retrieveBySearchCriteria(criteria));
+                entityInfoResults.addAll(retrieveBySearchCriteria(criteria));
             }
         }
         return entityInfoResults;
     }
 
-    private EntityInfo retrieveBySearchCriteria(SearchCriteria searchCriteria) {
+    private List<EntityInfo> retrieveBySearchCriteria(SearchCriteria searchCriteria) {
         String searchParameter = searchCriteria.getSearchParameter();
         switch (searchParameter) {
             case BusinessConstants.PAN -> {
                 return searchByPan(searchCriteria.getValue());
             }
             case BusinessConstants.B2B_ID -> {
-                return searchByB2bId(searchCriteria.getValue());
+                return List.of(searchByB2bId(searchCriteria.getValue()));
             }
             case BusinessConstants.GSTIN, BusinessConstants.TAN, BusinessConstants.FSSAI,
                     BusinessConstants.SHOP_ESTABLISHMENT_NUM, BusinessConstants.UDYAM -> {
-                return searchByIdentifier(searchParameter, searchCriteria.getValue());
+                return List.of(searchByIdentifier(searchParameter, searchCriteria.getValue()));
             }
             default -> throw BusinessUtil.generateValidationException("Unknown Search Parameter : " + searchParameter,
                     ValidationConstants.SEARCH_PARAMETER, ErrorScenarioCode.BU_ONB_0014);
@@ -172,11 +173,12 @@ public class SearchBusinessRetriever {
         Institute institute = businessEntity.getInstitute();
         entityInfo.setBusinessName(institute.getName());
         entityInfo.setMccCode(institute.getMccCode());
+        entityInfo.setObjectId(institute.getObjectId());
 
         List<Address> addresses = institute.getAddresses();
         if (BusinessUtil.isCollectionNotNullOrEmpty(addresses)) {
             Optional<Address> optionalAddress = addresses.stream()
-                    .filter(address -> AddressType.REGISTERED.name().equals(address.getType()))
+                    .filter(address -> AddressType.REGISTERED.getType().equals(address.getType()))
                     .findFirst();
             if (optionalAddress.isPresent()) {
                 entityInfo.setAddress(optionalAddress.get());
@@ -186,13 +188,14 @@ public class SearchBusinessRetriever {
         }
     }
 
-    private EntityInfo searchByPan(String panValue) {
+    private List<EntityInfo> searchByPan(String panValue) {
         logger.info("Retrieving the results with search parameter - PAN : value - {}", panValue);
         Map<String, BusinessEntity> businessEntityMap = dbOperationService.retrieveBusinessEntities(panValue);
         if (businessEntityMap.isEmpty()) {
             throw BusinessUtil.generateValidationException("No Business found for : [ PAN, " + panValue + "]",
                     ValidationConstants.SEARCH_CRITERIA_VALUE, ErrorScenarioCode.BU_ONB_0016);
         }
+        List<EntityInfo> entityInfoList = new ArrayList<>();
         for (Map.Entry<String, BusinessEntity> entry : businessEntityMap.entrySet()) {
             BusinessEntity businessEntity = entry.getValue();
             String objectId = businessEntity.getInstitute().getObjectId();
@@ -204,8 +207,9 @@ public class SearchBusinessRetriever {
                 Set<String> b2bIds = BusinessUtil.extractAllB2BIds(orgIdEntity.get());
                 List<ResponseB2BId> responseB2BIdList = constructResponseB2BInfo(b2bIds);
                 entityInfo.setB2BIdInfoList(responseB2BIdList);
+                entityInfoList.add(entityInfo);
             }
         }
-        return new EntityInfo();
+        return entityInfoList;
     }
 }

@@ -90,16 +90,26 @@ public final class BusinessUtil {
 
     public static Set<String> extractAllB2BIds(OrgIdEntity orgIdEntity) {
         Set<String> b2bIds = new HashSet<>();
-        b2bIds.addAll(orgIdEntity.getPublicB2BIds());
-        b2bIds.addAll(orgIdEntity.getPrivateB2BIds());
-        b2bIds.add(orgIdEntity.getDefaultB2BId());
+        if (isCollectionNotNullOrEmpty(orgIdEntity.getPublicB2BIds())) {
+            b2bIds.addAll(orgIdEntity.getPublicB2BIds());
+        }
+        if (isCollectionNotNullOrEmpty(orgIdEntity.getPrivateB2BIds())) {
+            b2bIds.addAll(orgIdEntity.getPrivateB2BIds());
+        }
+        if (isNotNullOrEmpty(orgIdEntity.getDefaultB2BId())) {
+            b2bIds.add(orgIdEntity.getDefaultB2BId());
+        }
         return b2bIds;
     }
 
     public static Set<String> extractAllIdentifiers(OrgIdEntity orgIdEntity) {
         Set<String> identifiers = new HashSet<>();
-        identifiers.add(orgIdEntity.getPrimaryIdentifier());
-        identifiers.addAll(orgIdEntity.getOtherIdentifiers());
+        if (isNotNullOrEmpty(orgIdEntity.getPrimaryIdentifier())) {
+            identifiers.add(orgIdEntity.getPrimaryIdentifier());
+        }
+        if (isCollectionNotNullOrEmpty(orgIdEntity.getOtherIdentifiers())) {
+            identifiers.addAll(orgIdEntity.getOtherIdentifiers());
+        }
         return identifiers;
     }
 

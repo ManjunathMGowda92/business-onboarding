@@ -13,6 +13,7 @@ public class EntityInfo implements Serializable {
     private static final long serialVersionUID = 4430422631868765294L;
 
     private String businessName;
+    private String objectId;
     private String mccCode;
     private Address address;
     private EntityStatus status;

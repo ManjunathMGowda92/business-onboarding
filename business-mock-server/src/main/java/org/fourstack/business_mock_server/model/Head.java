@@ -15,6 +15,6 @@ public class Head implements Serializable {
     private String msgId;
     private String aiId;
     private String ouId;
-    private String orgId;
+    private String orgSysId;
     private String prodType;
 }

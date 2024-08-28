@@ -7,7 +7,7 @@ import org.fourstack.business.enums.EntityStatus;
 import org.fourstack.business.mapper.EntityMapper;
 import org.fourstack.business.model.B2BId;
 import org.fourstack.business.model.BusinessRegisterRequest;
-import org.fourstack.business.model.RequesterB2BId;
+import org.fourstack.business.model.RequesterB2B;
 import org.fourstack.business.utils.BusinessUtil;
 import org.fourstack.business.utils.KeyGenerationUtil;
 import org.springframework.context.annotation.Lazy;
@@ -30,10 +30,10 @@ public class B2BIdDataService {
     }
 
     public void createB2BIdEntities(String role, String aiId, String ouId, String orgId,
-                                    RequesterB2BId requesterB2BId, List<B2BId> b2BIds) {
+                                    RequesterB2B requesterB2B, List<B2BId> b2BIds) {
         if (BusinessUtil.isCollectionNotNullOrEmpty(b2BIds)) {
             List<B2BIdentifierEntity> identifierEntities = b2BIds.stream()
-                    .map(b2BId -> entityMapper.constructB2BIdEntity(role, aiId, ouId, orgId, requesterB2BId, b2BId))
+                    .map(b2BId -> entityMapper.constructB2BIdEntity(role, aiId, ouId, orgId, requesterB2B, b2BId))
                     .map(entity -> {
                         entity.setStatus(EntityStatus.ACTIVE);
                         entity.setKey(KeyGenerationUtil.generateB2BIdentifierKey(entity.getB2bIdValue()));
