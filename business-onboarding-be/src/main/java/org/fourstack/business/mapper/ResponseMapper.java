@@ -16,12 +16,14 @@ import org.fourstack.business.model.CheckInstitute;
 import org.fourstack.business.model.CheckInstituteResponse;
 import org.fourstack.business.model.CommonRequestData;
 import org.fourstack.business.model.CommonResponseData;
+import org.fourstack.business.model.EntityInfo;
 import org.fourstack.business.model.Head;
 import org.fourstack.business.model.Institute;
 import org.fourstack.business.model.InstituteInfo;
 import org.fourstack.business.model.Response;
 import org.fourstack.business.model.SearchBusinessRequest;
 import org.fourstack.business.model.SearchBusinessResponse;
+import org.fourstack.business.model.SearchResponse;
 import org.fourstack.business.service.DbOperationService;
 import org.fourstack.business.utils.BusinessUtil;
 import org.springframework.context.annotation.Lazy;
@@ -181,7 +183,7 @@ public class ResponseMapper {
 
     public SearchBusinessResponse generateFailureSearchBusinessResponse(SearchBusinessRequest request, String errorCode,
                                                                         String errorMsg, String errorField) {
-        SearchBusinessResponse businessResponse = generateSearchBusinessResponse(request);
+        SearchBusinessResponse businessResponse = generateSearchBusinessResponse(request, Collections.emptyList());
         CommonResponseData commonData = businessResponse.getCommonData();
         Head head = commonData.getHead();
         Response response = generateFailureResponse(head.getMsgId(), errorCode, errorMsg, errorField);
@@ -190,11 +192,25 @@ public class ResponseMapper {
         return businessResponse;
     }
 
-    private SearchBusinessResponse generateSearchBusinessResponse(SearchBusinessRequest request) {
+    public SearchBusinessResponse generateSuccessSearchResponse(SearchBusinessRequest request, List<EntityInfo> entityInfoList) {
+        SearchBusinessResponse businessResponse = generateSearchBusinessResponse(request, entityInfoList);
+        CommonResponseData commonData = businessResponse.getCommonData();
+        Head head = commonData.getHead();
+        Response response = generateSuccessResponse(head.getMsgId());
+        head.setMsgId(BusinessUtil.generateAlphaNumericID(32, "MSG"));
+        commonData.setResponse(response);
+        return businessResponse;
+    }
+
+    private SearchBusinessResponse generateSearchBusinessResponse(SearchBusinessRequest request,
+                                                                  List<EntityInfo> entityInfoList) {
         SearchBusinessResponse response = new SearchBusinessResponse();
         response.setCommonData(constructCommonDataForResponse(request.getCommonData()));
         response.setSearch(request.getSearch());
         response.setAdditionalInfoList(request.getAdditionalInfoList());
+        SearchResponse searchResponse = new SearchResponse();
+        searchResponse.setEntityInfoList(entityInfoList);
+        response.setSearchResult(searchResponse);
         return response;
     }
 

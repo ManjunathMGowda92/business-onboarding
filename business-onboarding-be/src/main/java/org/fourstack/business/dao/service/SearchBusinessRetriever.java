@@ -21,6 +21,8 @@ import org.fourstack.business.model.SearchCriteria;
 import org.fourstack.business.model.SearchRequest;
 import org.fourstack.business.service.DbOperationService;
 import org.fourstack.business.utils.BusinessUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -33,9 +35,11 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Lazy)
 public class SearchBusinessRetriever {
+    private static final Logger logger = LoggerFactory.getLogger(SearchBusinessRetriever.class);
     private final DbOperationService dbOperationService;
 
     public List<EntityInfo> retrieveSearchResults(SearchRequest request) {
+        logger.info("Retrieving the results for Search Request");
         List<SearchCriteria> criteriaList = request.getCriteria();
         List<EntityInfo> entityInfoResults = new ArrayList<>();
         if (BusinessUtil.isCollectionNotNullOrEmpty(criteriaList)) {
@@ -65,6 +69,7 @@ public class SearchBusinessRetriever {
     }
 
     private EntityInfo searchByIdentifier(String identifierType, String identifierValue) {
+        logger.info("Retrieving the search results by Identifiers - Parameter : {} - value : {}", identifierType, identifierValue);
         Optional<BusinessIdentifierEntity> optionalBusinessIdentifierEntity =
                 dbOperationService.retrieveBusinessIdentifierEntity(identifierType, identifierValue);
         if (optionalBusinessIdentifierEntity.isPresent()) {
@@ -91,6 +96,7 @@ public class SearchBusinessRetriever {
 
 
     private EntityInfo searchByB2bId(String b2bId) {
+        logger.info("Retrieving the search results by parameter : B2BID - value :{}", b2bId);
         Optional<B2BIdentifierEntity> optionalIdentifierEntity = dbOperationService.retrieveB2BIdentifierEntity(b2bId);
         if (optionalIdentifierEntity.isPresent()) {
             B2BIdentifierEntity identifierEntity = optionalIdentifierEntity.get();
@@ -181,7 +187,12 @@ public class SearchBusinessRetriever {
     }
 
     private EntityInfo searchByPan(String panValue) {
+        logger.info("Retrieving the results with search parameter - PAN : value - {}", panValue);
         Map<String, BusinessEntity> businessEntityMap = dbOperationService.retrieveBusinessEntities(panValue);
+        if (businessEntityMap.isEmpty()) {
+            throw BusinessUtil.generateValidationException("No Business found for : [ PAN, " + panValue + "]",
+                    ValidationConstants.SEARCH_CRITERIA_VALUE, ErrorScenarioCode.BU_ONB_0016);
+        }
         for (Map.Entry<String, BusinessEntity> entry : businessEntityMap.entrySet()) {
             BusinessEntity businessEntity = entry.getValue();
             String objectId = businessEntity.getInstitute().getObjectId();
