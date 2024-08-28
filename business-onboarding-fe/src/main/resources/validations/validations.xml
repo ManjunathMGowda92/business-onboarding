@@ -11,7 +11,7 @@
         <rule identifier="id" fieldName="commonData.txn.id" expression="^TXN[A-Za-z0-9]{32}$" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="refId" fieldName="commonData.txn.refId" expression="^$|([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format" isOptional="yes"/>
         <rule identifier="refUrl" fieldName="commonData.txn.refUrl" expression="^$|([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format" isOptional="yes"/>
-        <rule identifier="type" fieldName="commonData.txn.type" expression="BUSINESS ENTITY" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="type" fieldName="commonData.txn.type" expression="BUSINESS ENTITY|SEARCH|INQUIRY" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="note" fieldName="commonData.txn.note" expression="^$|([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format" isOptional="yes"/>
     </validation>
     <validation name="DEVICE_VALIDATIONS">
@@ -35,6 +35,7 @@
         <rule identifier="registeredName" fieldName="registeredName" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
     </validation>
     <validation name="ADDRESS_VALIDATIONS">
+        <rule identifier="addressLine1" fieldName="institute.addresses.type" expression="REGISTERED|CORPORATE|HEAD OFFICE|BRANCH OFFICE|RESIDENTIAL|OTHER" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="addressLine1" fieldName="institute.addresses.addressLine1" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="addressLine2" fieldName="institute.addresses.addressLine2" expression="^$|([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format" isOptional="yes"/>
         <rule identifier="city" fieldName="institute.addresses.city" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
@@ -44,7 +45,7 @@
     </validation>
     <validation name="BANK_ACCOUNT_VALIDATIONS">
         <rule identifier="businessVPA" fieldName="institute.bankAccounts.businessVPA" expression="^([^\\&quot;]){1,32}$" errorCode="INP0002" errorMessage="Invalid field format"/>
-        <rule identifier="type" fieldName="institute.bankAccounts.type" expression="SAVINGS|CURRENT" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="type" fieldName="institute.bankAccounts.type" expression="SAVINGS|CURRENT|DEFAULT|CREDIT" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="accountNum" fieldName="institute.bankAccounts.accountNum" expression="^[0-9]{12,14}" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="ifsc" fieldName="institute.bankAccounts.ifsc" expression="^[A-Z0-9]{11}" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="beneficiaryName" fieldName="institute.bankAccounts.beneficiaryName" expression="^([^\\&quot;]){1,50}$" errorCode="INP0002" errorMessage="Invalid field format"/>
@@ -59,7 +60,7 @@
         <rule identifier="value" fieldName="additionalInfoList.value" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
     </validation>
     <validation name="REQUESTER_B2B_VALIDATIONS">
-        <rule identifier="onboardingB2BIds.requesterB2BId" fieldName="onboardingB2BIds.requesterB2BId" expression="^([^\\&quot;]){1,100}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="requesterB2BId" fieldName="onboardingB2BIds.requesterB2BId" expression="^([^\\&quot;]){1,100}$" errorCode="INP0002" errorMessage="Invalid field format"/>
     </validation>
     <validation name="B2B_ID_VALIDATIONS">
         <rule identifier="value" fieldName="regB2BIds.ids.value" expression="^([^\\&quot;]){1,100}$" errorCode="INP0002" errorMessage="Invalid field format"/>

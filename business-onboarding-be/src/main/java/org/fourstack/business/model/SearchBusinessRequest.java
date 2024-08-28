@@ -11,7 +11,7 @@ public class SearchBusinessRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = 5825364528864303365L;
     private CommonRequestData commonData;
-    private RequesterB2BId onboardingB2BIds;
+    private RequesterB2B onboardingB2BIds;
     private SearchRequest search;
     private List<AdditionalInfo> additionalInfoList;
 }

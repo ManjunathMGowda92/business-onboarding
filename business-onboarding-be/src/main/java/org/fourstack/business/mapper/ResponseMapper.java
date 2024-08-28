@@ -206,6 +206,7 @@ public class ResponseMapper {
                                                                   List<EntityInfo> entityInfoList) {
         SearchBusinessResponse response = new SearchBusinessResponse();
         response.setCommonData(constructCommonDataForResponse(request.getCommonData()));
+        response.setOnboardingB2BIds(request.getOnboardingB2BIds());
         response.setSearch(request.getSearch());
         response.setAdditionalInfoList(request.getAdditionalInfoList());
         SearchResponse searchResponse = new SearchResponse();

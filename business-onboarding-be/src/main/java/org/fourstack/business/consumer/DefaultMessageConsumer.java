@@ -30,7 +30,7 @@ public class DefaultMessageConsumer {
     }
 
     @KafkaListener(topics = {"BUSINESS-REQUEST", "B2B-CREATE-REQUEST", "CHECK-BUSINESS-REQUEST",
-    "SEARCH-BUSINESS-REQUEST"})
+            "SEARCH-BUSINESS-REQUEST"})
     public void consumeMessages(String message) {
         logger.info("{} - Message received from Kafka - {}", this.getClass().getSimpleName(), message);
         Message<?, ?> messageObj = constructMessage(message);
@@ -39,13 +39,14 @@ public class DefaultMessageConsumer {
 
     private Message<?, ?> constructMessage(String message) {
         try {
+            logger.info("Constructing the message for incoming request");
             Message<?, ?> messageObj = constructBaseMessage(message);
             updateRequestObject(messageObj);
             updateAckObject(messageObj);
             logger.info("Message converted to Business Object.");
             return messageObj;
         } catch (Exception e) {
-            logger.error("Exception while converting the object : {}", e.getMessage());
+            logger.error("Exception while converting the consumer message to object : {}", e.getMessage());
             return new Message<>();
         }
     }

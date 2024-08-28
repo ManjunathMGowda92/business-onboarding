@@ -65,7 +65,7 @@ public class BusinessValidator {
     public void b2bBusinessRegisterValidations(B2BIdRegisterRequest request) {
         validateAiAndOuEntities(request.getCommonData().getHead());
         B2BIdentifierEntity b2BIdentifierEntity =
-                validateAndRetrieveB2BIdentifierEntity(request.getOnboardingB2BIds().getRequestorB2BId(),
+                validateAndRetrieveB2BIdentifierEntity(request.getOnboardingB2BIds().getRequesterB2BId(),
                         ValidationConstants.REQUESTER_B2B_ID, ErrorScenarioCode.BU_ONB_0006);
         validateEntityStatus(b2BIdentifierEntity, EntityStatus.ACTIVE, ValidationConstants.REQUESTER_B2B_ID,
                 ErrorScenarioCode.BU_ONB_0007);
@@ -99,9 +99,10 @@ public class BusinessValidator {
     }
 
     public void searchBusinessValidations(SearchBusinessRequest request) {
+        logger.info("Search Business Validations : START");
         validateAiAndOuEntities(request.getCommonData().getHead());
         B2BIdentifierEntity b2BIdentifierEntity =
-                validateAndRetrieveB2BIdentifierEntity(request.getOnboardingB2BIds().getRequestorB2BId(),
+                validateAndRetrieveB2BIdentifierEntity(request.getOnboardingB2BIds().getRequesterB2BId(),
                         ValidationConstants.REQUESTER_B2B_ID, ErrorScenarioCode.BU_ONB_0006);
         validateEntityStatus(b2BIdentifierEntity, EntityStatus.ACTIVE, ValidationConstants.REQUESTER_B2B_ID,
                 ErrorScenarioCode.BU_ONB_0007);
@@ -135,7 +136,7 @@ public class BusinessValidator {
     private void validateEntityStatus(Entity entity, EntityStatus expectedStatus, String fieldName,
                                       ErrorScenarioCode scenarioCode) {
         if (expectedStatus != entity.getStatus()) {
-            generateValidationException("OrgId Entity is not in requested status : " + expectedStatus,
+            generateValidationException("Entity is not in requested status : " + expectedStatus,
                     fieldName, scenarioCode);
         }
     }
@@ -223,6 +224,7 @@ public class BusinessValidator {
     }
 
     private void validateAiAndOuEntities(Head head) {
+        logger.info("Validating AI-OU Entities");
         AiEntity aiEntity = validateAiEntity(head.getAiId());
         validateAiEntityStatus(aiEntity);
         if (BusinessUtil.isNotNullOrEmpty(head.getOuId())) {

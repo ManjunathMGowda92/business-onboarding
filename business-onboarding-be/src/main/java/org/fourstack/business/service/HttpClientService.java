@@ -126,8 +126,9 @@ public class HttpClientService {
 
 
     private void sendOutboundRequest(WebhookRequest webhookRequest, MessageTransaction transaction) {
-        logger.info("{} - Sending outbound request to target URL : {}", this.getClass().getSimpleName(), webhookRequest.getUrl());
+        logger.info("Sending outbound request to target URL : {}", webhookRequest.getUrl());
         try {
+            logger.info("Outbound Request : {}", webhookRequest.getRequestBody());
             HttpRequest httpRequest = createRequest(webhookRequest.getUrl(), webhookRequest.getMethodType().name(),
                     webhookRequest.getRequestBody());
             httpClient.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())

@@ -30,7 +30,7 @@ import org.fourstack.business.model.ContactNumber;
 import org.fourstack.business.model.Institute;
 import org.fourstack.business.model.MessageTransaction;
 import org.fourstack.business.model.OuDetails;
-import org.fourstack.business.model.RequesterB2BId;
+import org.fourstack.business.model.RequesterB2B;
 import org.fourstack.business.model.TransactionError;
 import org.fourstack.business.utils.BusinessUtil;
 import org.springframework.stereotype.Service;
@@ -264,9 +264,9 @@ public class EntityMapper {
         entity.setPrimaryAiId(commonData.getHead().getAiId());
         entity.setPrimaryOuId(commonData.getHead().getOuId());
         entity.setBusinessRole(businessRole);
-        RequesterB2BId requesterB2BId = new RequesterB2BId();
-        requesterB2BId.setRequestorB2BId(institute.getDefaultB2bId());
-        entity.setOnboardingB2BId(requesterB2BId);
+        RequesterB2B requesterB2B = new RequesterB2B();
+        requesterB2B.setRequesterB2BId(institute.getDefaultB2bId());
+        entity.setOnboardingB2BId(requesterB2B);
         B2BId b2BId = getB2BId(institute);
         entity.setB2BId(b2BId);
         entity.setCreatedTimeStamp(BusinessUtil.getCurrentTimeStamp());
@@ -284,14 +284,14 @@ public class EntityMapper {
     }
 
     public B2BIdentifierEntity constructB2BIdEntity(String businessRole, String aiId, String ouId, String orgId,
-                                                    RequesterB2BId requesterB2BId, B2BId b2BId) {
+                                                    RequesterB2B requesterB2B, B2BId b2BId) {
         B2BIdentifierEntity entity = new B2BIdentifierEntity();
         entity.setB2bIdValue(b2BId.getValue());
         entity.setPrimaryAiId(aiId);
         entity.setPrimaryOuId(ouId);
         entity.setBusinessRole(businessRole);
         entity.setOrgId(orgId);
-        entity.setOnboardingB2BId(requesterB2BId);
+        entity.setOnboardingB2BId(requesterB2B);
         entity.setB2BId(b2BId);
         entity.setCreatedTimeStamp(BusinessUtil.getCurrentTimeStamp());
         return entity;

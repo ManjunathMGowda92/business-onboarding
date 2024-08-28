@@ -35,7 +35,7 @@ public class B2BMessageProcessor implements MessageProcessor {
     public void executeBusinessTransactions(MessageTransaction transaction) {
         if (transaction.getRequest() instanceof B2BIdRegisterEvent event) {
             B2BIdRegisterRequest request = event.getRequest();
-            String requesterB2BId = request.getOnboardingB2BIds().getRequestorB2BId();
+            String requesterB2BId = request.getOnboardingB2BIds().getRequesterB2BId();
             Optional<B2BIdentifierEntity> b2BIdentifierEntity = b2BIdDataService.retrieveB2BId(requesterB2BId);
             if (b2BIdentifierEntity.isPresent()) {
                 Head head = request.getCommonData().getHead();
