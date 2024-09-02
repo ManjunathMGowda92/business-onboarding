@@ -65,6 +65,11 @@ public class SearchBusinessInboundProcessor extends DefaultTransactionInboundPro
         return transaction;
     }
 
+    /**
+     * Method to validate business for SearchBusiness Request.
+     * @param transaction {@link MessageTransaction} object.
+     * @throws ValidationException throws {@link ValidationException} if any failure.
+     */
     @Override
     public void validate(MessageTransaction transaction) {
         if (transaction.getRequest() instanceof SearchBusinessEvent event) {

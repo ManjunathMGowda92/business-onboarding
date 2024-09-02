@@ -50,6 +50,7 @@
     ],
     "addresses": [
       {
+        "type" : "REGISTERED",
         "addressLine1": "#51, 1st Floor",
         "addressLine2": "Konappana Agrahara, Electronic City Phase1",
         "city": "Bengaluru",

@@ -35,7 +35,7 @@
         <rule identifier="registeredName" fieldName="registeredName" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
     </validation>
     <validation name="ADDRESS_VALIDATIONS">
-        <rule identifier="addressLine1" fieldName="institute.addresses.type" expression="REGISTERED|CORPORATE|HEAD OFFICE|BRANCH OFFICE|RESIDENTIAL|OTHER" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="type" fieldName="institute.addresses.type" expression="REGISTERED|CORPORATE|HEAD OFFICE|BRANCH OFFICE|RESIDENTIAL|OTHER" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="addressLine1" fieldName="institute.addresses.addressLine1" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="addressLine2" fieldName="institute.addresses.addressLine2" expression="^$|([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format" isOptional="yes"/>
         <rule identifier="city" fieldName="institute.addresses.city" expression="^([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format"/>
