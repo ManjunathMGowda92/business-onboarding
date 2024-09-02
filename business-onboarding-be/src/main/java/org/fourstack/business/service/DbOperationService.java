@@ -11,25 +11,16 @@ import org.fourstack.business.entity.AiOuMapEntity;
 import org.fourstack.business.entity.B2BIdentifierEntity;
 import org.fourstack.business.entity.BusinessEntity;
 import org.fourstack.business.entity.BusinessIdentifierEntity;
-import org.fourstack.business.entity.OrgIdEntity;
+import org.fourstack.business.entity.MainOrgIdEntity;
 import org.fourstack.business.entity.OuEntity;
-import org.fourstack.business.enums.BooleanStatus;
-import org.fourstack.business.model.BusinessDetails;
-import org.fourstack.business.model.CheckInstitute;
-import org.fourstack.business.model.CheckInstituteResponse;
-import org.fourstack.business.model.Institute;
-import org.fourstack.business.model.InstituteInfo;
 import org.fourstack.business.utils.BusinessUtil;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,7 +49,7 @@ public class DbOperationService {
         return !businessEntities.isEmpty();
     }
 
-    public Optional<OrgIdEntity> retrieveOrgIdEntity(String orgId) {
+    public Optional<MainOrgIdEntity> retrieveOrgIdEntity(String orgId) {
         return orgEntityDataService.retrieveOrgIdEntity(orgId);
     }
 

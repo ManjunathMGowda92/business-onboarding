@@ -1,7 +1,7 @@
 package org.fourstack.business.utils;
 
 import org.apache.kafka.clients.admin.NewTopic;
-import org.fourstack.business.entity.OrgIdEntity;
+import org.fourstack.business.entity.MainOrgIdEntity;
 import org.fourstack.business.enums.ErrorScenarioCode;
 import org.fourstack.business.exception.InvalidInputException;
 import org.fourstack.business.exception.InvalidTransactionException;
@@ -83,12 +83,16 @@ public final class BusinessUtil {
         return Objects.nonNull(object);
     }
 
+    public static boolean isNull(Object object) {
+        return Objects.isNull(object);
+    }
+
     public static ValidationException generateValidationException(String message, String fieldName,
                                                                   ErrorScenarioCode scenarioCode) {
         return new ValidationException(message, scenarioCode.getErrorCode(), scenarioCode.getErrorMsg(), fieldName);
     }
 
-    public static Set<String> extractAllB2BIds(OrgIdEntity orgIdEntity) {
+    public static Set<String> extractAllB2BIds(MainOrgIdEntity orgIdEntity) {
         Set<String> b2bIds = new HashSet<>();
         if (isCollectionNotNullOrEmpty(orgIdEntity.getPublicB2BIds())) {
             b2bIds.addAll(orgIdEntity.getPublicB2BIds());
@@ -102,7 +106,7 @@ public final class BusinessUtil {
         return b2bIds;
     }
 
-    public static Set<String> extractAllIdentifiers(OrgIdEntity orgIdEntity) {
+    public static Set<String> extractAllIdentifiers(MainOrgIdEntity orgIdEntity) {
         Set<String> identifiers = new HashSet<>();
         if (isNotNullOrEmpty(orgIdEntity.getPrimaryIdentifier())) {
             identifiers.add(orgIdEntity.getPrimaryIdentifier());

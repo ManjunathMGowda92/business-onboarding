@@ -2,16 +2,19 @@ package org.fourstack.business.mapper;
 
 import org.fourstack.business.constants.BusinessConstants;
 import org.fourstack.business.entity.AiEntity;
+import org.fourstack.business.entity.AiOrgMapEntity;
 import org.fourstack.business.entity.AiOuMapEntity;
 import org.fourstack.business.entity.AuditTransactionEntity;
+import org.fourstack.business.entity.B2BIdEntity;
 import org.fourstack.business.entity.B2BIdentifierEntity;
 import org.fourstack.business.entity.BusinessEntity;
 import org.fourstack.business.entity.BusinessIdentifierEntity;
-import org.fourstack.business.entity.OrgIdEntity;
+import org.fourstack.business.entity.MainOrgIdEntity;
 import org.fourstack.business.entity.OrgIdTransactionEntity;
 import org.fourstack.business.entity.OuEntity;
 import org.fourstack.business.entity.TransactionEntity;
 import org.fourstack.business.enums.B2BCreationReason;
+import org.fourstack.business.enums.BankAccountType;
 import org.fourstack.business.enums.BusinessRole;
 import org.fourstack.business.enums.EntityStatus;
 import org.fourstack.business.enums.EventType;
@@ -23,6 +26,7 @@ import org.fourstack.business.enums.TransactionType;
 import org.fourstack.business.model.AiDetails;
 import org.fourstack.business.model.AiOuMappingDetails;
 import org.fourstack.business.model.B2BId;
+import org.fourstack.business.model.BankAccount;
 import org.fourstack.business.model.BusinessIdentifier;
 import org.fourstack.business.model.BusinessRegisterRequest;
 import org.fourstack.business.model.CommonRequestData;
@@ -39,6 +43,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -137,8 +142,8 @@ public class EntityMapper {
         return entity;
     }
 
-    public OrgIdEntity consrtuctOrgIdEntity(BusinessEntity entity, String businessKey) {
-        OrgIdEntity orgIdEntity = new OrgIdEntity();
+    public MainOrgIdEntity consrtuctOrgIdEntity(BusinessEntity entity, String businessKey) {
+        MainOrgIdEntity orgIdEntity = new MainOrgIdEntity();
         orgIdEntity.setBusinessRole(entity.getBusinessRole());
         orgIdEntity.setBusinessKey(businessKey);
 
@@ -152,7 +157,6 @@ public class EntityMapper {
         orgIdEntity.setPrimaryContactNumber(institute.getPrimaryContact().getPhoneNumber());
         orgIdEntity.setPrimaryEmail(institute.getPrimaryEmail());
         orgIdEntity.setAiId(entity.getHead().getAiId());
-        orgIdEntity.setOuId(entity.getHead().getOuId());
         orgIdEntity.setProductType(entity.getHead().getProdType());
 
         addPublicB2bIds(orgIdEntity, institute);
@@ -163,7 +167,7 @@ public class EntityMapper {
         return orgIdEntity;
     }
 
-    private void addContactNumbers(OrgIdEntity orgIdEntity, Institute institute) {
+    private void addContactNumbers(MainOrgIdEntity orgIdEntity, Institute institute) {
         if (BusinessUtil.isCollectionNullOrEmpty(orgIdEntity.getContactNumbers())) {
             orgIdEntity.setContactNumbers(new HashSet<>());
         }
@@ -175,7 +179,7 @@ public class EntityMapper {
         }
     }
 
-    private void addEmails(OrgIdEntity orgIdEntity, Institute institute) {
+    private void addEmails(MainOrgIdEntity orgIdEntity, Institute institute) {
         if (BusinessUtil.isCollectionNullOrEmpty(orgIdEntity.getEmails())) {
             orgIdEntity.setEmails(new HashSet<>());
         }
@@ -184,7 +188,7 @@ public class EntityMapper {
         }
     }
 
-    private void addIdentifiers(OrgIdEntity orgIdEntity, Institute institute) {
+    private void addIdentifiers(MainOrgIdEntity orgIdEntity, Institute institute) {
         orgIdEntity.setPrimaryIdentifier(getIdentifier(institute.getPrimaryIdentifier()));
         if (BusinessUtil.isCollectionNullOrEmpty(orgIdEntity.getOtherIdentifiers())) {
             orgIdEntity.setOtherIdentifiers(new HashSet<>());
@@ -197,7 +201,7 @@ public class EntityMapper {
         }
     }
 
-    private void addPublicB2bIds(OrgIdEntity orgIdEntity, Institute institute) {
+    private void addPublicB2bIds(MainOrgIdEntity orgIdEntity, Institute institute) {
         if (BusinessUtil.isCollectionNullOrEmpty(orgIdEntity.getPublicB2BIds())) {
             orgIdEntity.setPublicB2BIds(new HashSet<>());
         }
@@ -267,14 +271,25 @@ public class EntityMapper {
         RequesterB2B requesterB2B = new RequesterB2B();
         requesterB2B.setRequesterB2BId(institute.getDefaultB2bId());
         entity.setOnboardingB2BId(requesterB2B);
-        B2BId b2BId = getB2BId(institute);
-        entity.setB2BId(b2BId);
+        entity.setB2BId(getB2BId(institute));
+        entity.setBankAccount(retrieveBankAccount(request.getInstitute().getBankAccounts()));
+        addAiIdToStatusMap(commonData.getHead().getAiId(), entity, EntityStatus.INACTIVE);
         entity.setCreatedTimeStamp(BusinessUtil.getCurrentTimeStamp());
         return entity;
     }
 
-    private B2BId getB2BId(Institute institute) {
-        B2BId b2BId = new B2BId();
+    private BankAccount retrieveBankAccount(List<BankAccount> bankAccounts) {
+        if (bankAccounts.size() == 1) {
+            return bankAccounts.getFirst();
+        }
+        Optional<BankAccount> optionalBankAccount = bankAccounts.stream()
+                .filter(bankAccount -> BankAccountType.DEFAULT.name().equals(bankAccount.getType()))
+                .findFirst();
+        return optionalBankAccount.orElse(null);
+    }
+
+    private B2BIdEntity getB2BId(Institute institute) {
+        B2BIdEntity b2BId = new B2BIdEntity();
         b2BId.setValue(institute.getDefaultB2bId());
         b2BId.setReason(B2BCreationReason.OTHER.name());
         b2BId.setDescription("Default B2B Id");
@@ -292,16 +307,70 @@ public class EntityMapper {
         entity.setBusinessRole(businessRole);
         entity.setOrgId(orgId);
         entity.setOnboardingB2BId(requesterB2B);
-        entity.setB2BId(b2BId);
+        entity.setB2BId(getB2bEntity(b2BId));
+        entity.setBankAccount(b2BId.getBankAccount());
+        addAiIdToStatusMap(aiId, entity, EntityStatus.ACTIVE);
         entity.setCreatedTimeStamp(BusinessUtil.getCurrentTimeStamp());
         return entity;
     }
 
-    public OrgIdTransactionEntity constructOrgTransactionEntity(OrgIdEntity orgIdEntity, EntityStatus status) {
+    private void addAiIdToStatusMap(String aiId, B2BIdentifierEntity entity, EntityStatus entityStatus) {
+        Map<String, EntityStatus> aiStatusMap = entity.getAiStatusMap();
+        if (BusinessUtil.isNull(aiStatusMap)) {
+            aiStatusMap = new HashMap<>();
+        }
+        aiStatusMap.put(aiId, entityStatus);
+    }
+
+    private B2BIdEntity getB2bEntity(B2BId b2BId) {
+        B2BIdEntity b2BIdEntity = new B2BIdEntity();
+        b2BIdEntity.setValue(b2BId.getValue());
+        b2BIdEntity.setReason(b2BId.getReason());
+        b2BIdEntity.setDescription(b2BId.getDescription());
+        b2BIdEntity.setPrivacyType(b2BId.getPrivacyType());
+        b2BIdEntity.setBusinessIdentifier(b2BId.getBusinessIdentifier());
+        return b2BIdEntity;
+    }
+
+    public OrgIdTransactionEntity constructOrgTransactionEntity(MainOrgIdEntity orgIdEntity, EntityStatus status) {
         OrgIdTransactionEntity entity = new OrgIdTransactionEntity();
         entity.setStatus(status);
         entity.setCreatedTimeStamp(BusinessUtil.getCurrentTimeStamp());
         entity.setOrgIdEntity(orgIdEntity);
         return entity;
+    }
+
+    public void constructAiOrgMapEntity(MainOrgIdEntity orgIdEntity, String aiId, EntityStatus entityStatus) {
+        AiOrgMapEntity aiOrgMapEntity = new AiOrgMapEntity();
+        aiOrgMapEntity.setBusinessKey(orgIdEntity.getBusinessKey());
+        aiOrgMapEntity.setOrgId(orgIdEntity.getOrgId());
+        aiOrgMapEntity.setBusinessName(orgIdEntity.getBusinessName());
+        aiOrgMapEntity.setLeiValue(orgIdEntity.getLeiValue());
+        aiOrgMapEntity.setLeiDocName(orgIdEntity.getLeiDocName());
+        aiOrgMapEntity.setBusinessType(orgIdEntity.getBusinessType());
+        aiOrgMapEntity.setBusinessRole(orgIdEntity.getBusinessRole());
+        aiOrgMapEntity.setCurrentVersion(orgIdEntity.getCurrentVersion());
+        aiOrgMapEntity.setActiveVersion(orgIdEntity.getActiveVersion());
+        aiOrgMapEntity.setDefaultB2BId(orgIdEntity.getDefaultB2BId());
+        aiOrgMapEntity.setAiId(orgIdEntity.getAiId());
+        aiOrgMapEntity.setProductType(orgIdEntity.getProductType());
+        aiOrgMapEntity.setPrimaryIdentifier(orgIdEntity.getPrimaryIdentifier());
+        aiOrgMapEntity.setPreviousVersions(orgIdEntity.getPreviousVersions());
+        aiOrgMapEntity.setPublicB2BIds(orgIdEntity.getPublicB2BIds());
+        aiOrgMapEntity.setPrivateB2BIds(orgIdEntity.getPrivateB2BIds());
+        aiOrgMapEntity.setOtherIdentifiers(orgIdEntity.getOtherIdentifiers());
+        aiOrgMapEntity.setPrimaryContactNumber(orgIdEntity.getPrimaryContactNumber());
+        aiOrgMapEntity.setContactNumbers(orgIdEntity.getContactNumbers());
+        aiOrgMapEntity.setPrimaryEmail(orgIdEntity.getPrimaryEmail());
+        aiOrgMapEntity.setEmails(orgIdEntity.getEmails());
+        addAiIdToStatusMap(aiId, aiOrgMapEntity, EntityStatus.INACTIVE);
+    }
+
+    private void addAiIdToStatusMap(String aiId, AiOrgMapEntity entity, EntityStatus entityStatus) {
+        Map<String, EntityStatus> aiStatusMap = entity.getAiStatusMap();
+        if (BusinessUtil.isNull(aiStatusMap)) {
+            aiStatusMap = new HashMap<>();
+        }
+        aiStatusMap.put(aiId, entityStatus);
     }
 }

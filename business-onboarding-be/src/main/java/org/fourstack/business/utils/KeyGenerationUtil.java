@@ -65,6 +65,12 @@ public final class KeyGenerationUtil {
         return orgIdEntityKey.replaceAll(DatabaseKeyConstants.KEY_BUSINESS_UNIT, orgId);
     }
 
+    public static String generateAiOrgEntityKey(String aiId, String orgId) {
+        String aiOrgIdEntityKey = DatabaseKeyConstants.AI_ORG_ID_ENTITY_KEY;
+        return aiOrgIdEntityKey.replaceAll(DatabaseKeyConstants.KEY_AI_ID, aiId)
+                .replaceAll(DatabaseKeyConstants.KEY_BUSINESS_UNIT, orgId);
+    }
+
     public static String generateBusinessTransactionKey(String leiValue, String orgId, String txnId) {
         String businessTxnEntityKey = DatabaseKeyConstants.BUSINESS_TXN_ENTITY_KEY;
         return businessTxnEntityKey.replaceAll(DatabaseKeyConstants.KEY_TXN_ID, txnId)

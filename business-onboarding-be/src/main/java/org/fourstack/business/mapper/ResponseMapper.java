@@ -2,7 +2,7 @@ package org.fourstack.business.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.fourstack.business.entity.BusinessEntity;
-import org.fourstack.business.entity.OrgIdEntity;
+import org.fourstack.business.entity.MainOrgIdEntity;
 import org.fourstack.business.enums.BooleanStatus;
 import org.fourstack.business.enums.OperationStatus;
 import org.fourstack.business.model.B2BIdRegisterRequest;
@@ -216,7 +216,7 @@ public class ResponseMapper {
     }
 
     private BusinessDetails extractBusinessDetails(Institute institute) {
-        Optional<OrgIdEntity> orgIdEntity = dbOperationService.retrieveOrgIdEntity(institute.getObjectId());
+        Optional<MainOrgIdEntity> orgIdEntity = dbOperationService.retrieveOrgIdEntity(institute.getObjectId());
         if (orgIdEntity.isPresent()) {
             Set<String> b2BIds = BusinessUtil.extractAllB2BIds(orgIdEntity.get());
             return getBusinessDetails(orgIdEntity.get().getBusinessName(), b2BIds);
