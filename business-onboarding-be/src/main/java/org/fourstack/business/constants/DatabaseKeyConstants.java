@@ -16,6 +16,7 @@ public final class DatabaseKeyConstants {
     public static final String BUSINESS_TXN_ENTITY_KEY = "BUSINESS,V1,TXN,<TXN_ID>,LEI,<LEI>,BU_ID,<BU_ID>";
     public static final String ORG_ID_ENTITY_KEY = "BUSINESS,V1,BU_ID,<BU_ID>";
     public static final String ORG_ID_TXN_ENTITY_KEY = "BUSINESS,V1,TXN,<TXN_ID>,BU_ID,<BU_ID>";
+    public static final String AI_ORG_ID_ENTITY_KEY = "BUSINESS,V1,AI_ID,<AI_ID>BU_ID,<BU_ID>";
     public static final String BUSINESS_IDENTIFIER_KEY = "BUSINESS,V1,IDENTIFIER_TYPE,<IDENTIFIER_TYPE>,IDENTIFIER_VALUE,<IDENTIFIER_VALUE>";
     public static final String B2B_IDENTIFIER_KEY = "BUSINESS,V1,BUSINESS_ID,<B2B_ID>";
     public static final String KYC_TRANSACTION_KEY = "BUSINESS,V1,KYC,TXN,<TXN_ID>,BU_ID,<BU_ID>";

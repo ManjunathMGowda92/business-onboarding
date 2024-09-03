@@ -8,7 +8,7 @@ import org.fourstack.business.entity.AiOuMapEntity;
 import org.fourstack.business.entity.B2BIdentifierEntity;
 import org.fourstack.business.entity.BusinessIdentifierEntity;
 import org.fourstack.business.entity.Entity;
-import org.fourstack.business.entity.OrgIdEntity;
+import org.fourstack.business.entity.MainOrgIdEntity;
 import org.fourstack.business.entity.OuEntity;
 import org.fourstack.business.enums.EntityStatus;
 import org.fourstack.business.enums.ErrorScenarioCode;
@@ -71,7 +71,7 @@ public class BusinessValidator {
                 ErrorScenarioCode.BU_ONB_0007);
         checkIsB2bIdAssociatedToAiId(b2BIdentifierEntity, request.getCommonData().getHead().getAiId(),
                 ValidationConstants.REQUESTER_B2B_ID, ErrorScenarioCode.BU_ONB_0011);
-        OrgIdEntity orgIdEntity = validateAndRetrieveOrgIdEntity(b2BIdentifierEntity.getOrgId(),
+        MainOrgIdEntity orgIdEntity = validateAndRetrieveOrgIdEntity(b2BIdentifierEntity.getOrgId(),
                 ValidationConstants.REQUESTER_B2B_ID, ErrorScenarioCode.BU_ONB_0012);
         validateEntityStatus(orgIdEntity, EntityStatus.ACTIVE, ValidationConstants.REQUESTER_B2B_ID,
                 ErrorScenarioCode.BU_ONB_0013);
@@ -110,7 +110,7 @@ public class BusinessValidator {
                 ValidationConstants.REQUESTER_B2B_ID, ErrorScenarioCode.BU_ONB_0011);
     }
 
-    private void validateIsIdentifierAssociatedToOrgEntity(BusinessIdentifierEntity identifierEntity, OrgIdEntity orgIdEntity,
+    private void validateIsIdentifierAssociatedToOrgEntity(BusinessIdentifierEntity identifierEntity, MainOrgIdEntity orgIdEntity,
                                                            String fieldName, ErrorScenarioCode errorScenarioCode) {
         Set<String> orgIdentifiers = BusinessUtil.extractAllIdentifiers(orgIdEntity);
         BusinessIdentifier identifier = identifierEntity.getIdentifier();
@@ -124,9 +124,9 @@ public class BusinessValidator {
         }
     }
 
-    private OrgIdEntity validateAndRetrieveOrgIdEntity(String orgId, String fieldName,
-                                                       ErrorScenarioCode errorScenarioCode) {
-        Optional<OrgIdEntity> orgIdEntity = dbOperationService.retrieveOrgIdEntity(orgId);
+    private MainOrgIdEntity validateAndRetrieveOrgIdEntity(String orgId, String fieldName,
+                                                           ErrorScenarioCode errorScenarioCode) {
+        Optional<MainOrgIdEntity> orgIdEntity = dbOperationService.retrieveOrgIdEntity(orgId);
         if (orgIdEntity.isEmpty()) {
             generateValidationException("OrgIdEntity not exist for objectId : " + orgId, fieldName, errorScenarioCode);
         }
@@ -197,7 +197,7 @@ public class BusinessValidator {
     }
 
     private void checkOrgIdEntityExistence(String orgId, String fieldName, ErrorScenarioCode errorScenarioCode) {
-        Optional<OrgIdEntity> orgIdEntity = dbOperationService.retrieveOrgIdEntity(orgId);
+        Optional<MainOrgIdEntity> orgIdEntity = dbOperationService.retrieveOrgIdEntity(orgId);
         if (orgIdEntity.isPresent()) {
             generateValidationException("OrgIdEntity already exist for the orgId : " + orgId, fieldName, errorScenarioCode);
         }

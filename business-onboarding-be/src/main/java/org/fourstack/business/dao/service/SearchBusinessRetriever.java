@@ -3,16 +3,16 @@ package org.fourstack.business.dao.service;
 import lombok.RequiredArgsConstructor;
 import org.fourstack.business.constants.BusinessConstants;
 import org.fourstack.business.constants.ValidationConstants;
+import org.fourstack.business.entity.B2BIdEntity;
 import org.fourstack.business.entity.B2BIdentifierEntity;
 import org.fourstack.business.entity.BusinessEntity;
 import org.fourstack.business.entity.BusinessIdentifierEntity;
-import org.fourstack.business.entity.OrgIdEntity;
+import org.fourstack.business.entity.MainOrgIdEntity;
 import org.fourstack.business.enums.AddressType;
 import org.fourstack.business.enums.EntityStatus;
 import org.fourstack.business.enums.ErrorScenarioCode;
 import org.fourstack.business.enums.PrivacyType;
 import org.fourstack.business.model.Address;
-import org.fourstack.business.model.B2BId;
 import org.fourstack.business.model.BusinessIdentifier;
 import org.fourstack.business.model.EntityInfo;
 import org.fourstack.business.model.Institute;
@@ -27,7 +27,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -75,9 +74,9 @@ public class SearchBusinessRetriever {
                 dbOperationService.retrieveBusinessIdentifierEntity(identifierType, identifierValue);
         if (optionalBusinessIdentifierEntity.isPresent()) {
             BusinessIdentifierEntity identifierEntity = optionalBusinessIdentifierEntity.get();
-            Optional<OrgIdEntity> optionalOrgIdEntity = dbOperationService.retrieveOrgIdEntity(identifierEntity.getOrgId());
+            Optional<MainOrgIdEntity> optionalOrgIdEntity = dbOperationService.retrieveOrgIdEntity(identifierEntity.getOrgId());
             if (optionalOrgIdEntity.isPresent()) {
-                OrgIdEntity orgIdEntity = optionalOrgIdEntity.get();
+                MainOrgIdEntity orgIdEntity = optionalOrgIdEntity.get();
                 Optional<BusinessEntity> businessEntity =
                         dbOperationService.retrieveBusinessEntity(orgIdEntity.getBusinessKey());
                 if (businessEntity.isPresent()) {
@@ -106,7 +105,7 @@ public class SearchBusinessRetriever {
                 throw BusinessUtil.generateValidationException("Search B2B ID value : " + b2bId + " is private",
                         ValidationConstants.SEARCH_CRITERIA_VALUE, ErrorScenarioCode.BU_ONB_0015);
             }
-            Optional<OrgIdEntity> optionalOrgIdEntity = dbOperationService.retrieveOrgIdEntity(identifierEntity.getOrgId());
+            Optional<MainOrgIdEntity> optionalOrgIdEntity = dbOperationService.retrieveOrgIdEntity(identifierEntity.getOrgId());
             if (optionalOrgIdEntity.isPresent()) {
                 Optional<BusinessEntity> businessEntity =
                         dbOperationService.retrieveBusinessEntity(optionalOrgIdEntity.get().getBusinessKey());
@@ -131,7 +130,7 @@ public class SearchBusinessRetriever {
     private ResponseB2BId constructResponseB2BInfo(B2BIdentifierEntity identifierEntity) {
         ResponseB2BId responseB2BId = new ResponseB2BId();
         responseB2BId.setB2bId(identifierEntity.getB2bIdValue());
-        B2BId b2BId = identifierEntity.getB2BId();
+        B2BIdEntity b2BId = identifierEntity.getB2BId();
         if (BusinessUtil.isNotNull(b2BId)) {
             responseB2BId.setDescription(b2BId.getDescription());
             responseB2BId.setBusinessIdentifier(b2BId.getBusinessIdentifier());
@@ -199,7 +198,7 @@ public class SearchBusinessRetriever {
         for (Map.Entry<String, BusinessEntity> entry : businessEntityMap.entrySet()) {
             BusinessEntity businessEntity = entry.getValue();
             String objectId = businessEntity.getInstitute().getObjectId();
-            Optional<OrgIdEntity> orgIdEntity = dbOperationService.retrieveOrgIdEntity(objectId);
+            Optional<MainOrgIdEntity> orgIdEntity = dbOperationService.retrieveOrgIdEntity(objectId);
             if (orgIdEntity.isPresent()) {
                 EntityInfo entityInfo = new EntityInfo();
                 addBusinessValuesToEntityInfo(entityInfo, businessEntity);

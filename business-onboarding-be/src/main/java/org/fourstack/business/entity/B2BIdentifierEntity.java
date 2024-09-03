@@ -2,12 +2,15 @@ package org.fourstack.business.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.fourstack.business.enums.EntityStatus;
 import org.fourstack.business.model.B2BId;
+import org.fourstack.business.model.BankAccount;
 import org.fourstack.business.model.RequesterB2B;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Map;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -25,5 +28,7 @@ public class B2BIdentifierEntity extends Entity implements Serializable {
     private Set<String> secondaryAiIds;
     private Set<String> secondaryOuIds;
     private RequesterB2B onboardingB2BId;
-    private B2BId b2BId;
+    private B2BIdEntity b2BId;
+    private BankAccount bankAccount;
+    private Map<String, EntityStatus> aiStatusMap;
 }

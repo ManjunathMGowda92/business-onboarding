@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.fourstack.business.dao.repository.OrgEntityTransactionRepository;
 import org.fourstack.business.dao.repository.OrgIdEntityRepository;
 import org.fourstack.business.entity.BusinessEntity;
-import org.fourstack.business.entity.OrgIdEntity;
+import org.fourstack.business.entity.MainOrgIdEntity;
 import org.fourstack.business.entity.OrgIdTransactionEntity;
 import org.fourstack.business.enums.EntityStatus;
 import org.fourstack.business.mapper.EntityMapper;
@@ -26,7 +26,7 @@ public class OrgEntityDataService {
         Institute institute = businessEntity.getInstitute();
         String businessEntityKey = KeyGenerationUtil.generateBusinessEntityKey(institute.getLei().getValue(),
                 institute.getObjectId());
-        OrgIdEntity orgIdEntity = entityMapper.consrtuctOrgIdEntity(businessEntity, businessEntityKey);
+        MainOrgIdEntity orgIdEntity = entityMapper.consrtuctOrgIdEntity(businessEntity, businessEntityKey);
         orgIdEntity.setStatus(EntityStatus.INACTIVE);
         String entityKey = KeyGenerationUtil.generateOrgIdEntityKey(orgIdEntity.getOrgId());
         orgIdEntity.setKey(entityKey);
@@ -35,12 +35,12 @@ public class OrgEntityDataService {
         createOrgTransactionData(businessEntity.getTxn().getId(), orgIdEntity, EntityStatus.INACTIVE);
     }
 
-    public Optional<OrgIdEntity> retrieveOrgIdEntity(String orgId) {
+    public Optional<MainOrgIdEntity> retrieveOrgIdEntity(String orgId) {
         String entityKey = KeyGenerationUtil.generateOrgIdEntityKey(orgId);
         return orgEntityRepository.findById(entityKey);
     }
 
-    public void createOrgTransactionData(String txnId, OrgIdEntity orgIdEntity, EntityStatus status) {
+    public void createOrgTransactionData(String txnId, MainOrgIdEntity orgIdEntity, EntityStatus status) {
         String entityKey = KeyGenerationUtil.generateOrgIdTransactionKey(orgIdEntity.getOrgId(), txnId);
         OrgIdTransactionEntity entity = entityMapper.constructOrgTransactionEntity(orgIdEntity, status);
         entity.setKey(entityKey);
