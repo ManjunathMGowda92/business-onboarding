@@ -2,12 +2,14 @@ package org.fourstack.business.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.fourstack.business.enums.EntityStatus;
 import org.fourstack.business.model.EntityVersion;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -16,10 +18,12 @@ import java.util.Set;
 public class MainOrgIdEntity extends OrgIdData implements Serializable {
     @Serial
     private static final long serialVersionUID = 7362338788448255286L;
+    private String defaultB2BId;
     private List<EntityVersion> previousVersions;
     private Set<String> publicB2BIds;
     private Set<String> privateB2BIds;
     private Set<String> otherIdentifiers;
     private Set<String> contactNumbers;
     private Set<String> emails;
+    private Map<String, EntityStatus> aiStatusMap;
 }

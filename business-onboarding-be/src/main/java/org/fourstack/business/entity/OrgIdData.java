@@ -20,7 +20,6 @@ public class OrgIdData extends Entity implements Serializable {
     protected String businessRole;
     protected int currentVersion;
     protected int activeVersion;
-    protected String defaultB2BId;
     protected String aiId;
     protected String productType;
     protected String primaryIdentifier;
