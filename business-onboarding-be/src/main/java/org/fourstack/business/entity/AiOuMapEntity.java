@@ -15,5 +15,5 @@ public class AiOuMapEntity extends Entity implements Serializable {
     private static final long serialVersionUID = -1106020156574680848L;
     private String aiId;
     private String ouId;
-    private String webhookUrl;
+    private String name;
 }

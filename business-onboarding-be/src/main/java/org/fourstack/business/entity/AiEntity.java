@@ -16,4 +16,5 @@ public class AiEntity extends Entity implements Serializable {
     private String id;
     private String name;
     private String subscriberId;
+    private String webhookUrl;
 }

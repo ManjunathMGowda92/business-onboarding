@@ -81,7 +81,7 @@ public class HttpClientService {
         SearchBusinessResponse response = searchEvent.getResponse();
         Head head = response.getCommonData().getHead();
         WebhookRequest webhookRequest = constructWebhookRequest(response, HttpMethod.POST,
-                EventWebhookType.RESP_SEARCH_ENTITY, head.getAiId(), head.getOuId());
+                EventWebhookType.RESP_SEARCH_ENTITY, head.getAiId());
         sendOutboundRequest(webhookRequest, transaction);
     }
 
@@ -89,7 +89,7 @@ public class HttpClientService {
         CheckBusinessResponse response = checkEvent.getResponse();
         Head head = response.getCommonData().getHead();
         WebhookRequest webhookRequest = constructWebhookRequest(response, HttpMethod.POST,
-                EventWebhookType.RESP_CHECK_ENTITY, head.getAiId(), head.getOuId());
+                EventWebhookType.RESP_CHECK_ENTITY, head.getAiId());
         sendOutboundRequest(webhookRequest, transaction);
     }
 
@@ -97,7 +97,7 @@ public class HttpClientService {
         B2BIdRegisterResponse response = b2bIdEvent.getResponse();
         Head head = response.getCommonData().getHead();
         WebhookRequest webhookRequest = constructWebhookRequest(response, HttpMethod.POST, EventWebhookType.RESP_ADD_B2B,
-                head.getAiId(), head.getOuId());
+                head.getAiId());
         sendOutboundRequest(webhookRequest, transaction);
     }
 
@@ -105,15 +105,15 @@ public class HttpClientService {
         BusinessRegisterResponse response = businessEvent.getResponse();
         Head head = response.getCommonData().getHead();
         WebhookRequest webhookRequest = constructWebhookRequest(response, HttpMethod.POST,
-                EventWebhookType.RESP_CREATE_BUSINESS, head.getAiId(), head.getOuId());
+                EventWebhookType.RESP_CREATE_BUSINESS, head.getAiId());
         sendOutboundRequest(webhookRequest, transaction);
     }
 
     private WebhookRequest constructWebhookRequest(Object response, HttpMethod methodType,
-                                                   EventWebhookType eventType, String aiId, String ouId) {
+                                                   EventWebhookType eventType, String aiId) {
         WebhookRequest webhookRequest = new WebhookRequest();
         webhookRequest.setMethodType(methodType);
-        Optional<String> webhookUrl = masterDataService.getWebhookUrl(aiId, ouId);
+        Optional<String> webhookUrl = masterDataService.getWebhookUrl(aiId);
         webhookUrl.ifPresentOrElse(url -> webhookRequest.setUrl(url.concat(eventType.getEndPoint())),
                 () -> webhookRequest.setUrl(eventType.getEndPoint()));
         try {
