@@ -4,10 +4,10 @@ import lombok.Data;
 
 @Data
 public class OuRequest {
-    private String ouId;
-    private String name;
-    private String description;
-    private String ifscCode;
-    private String businessVPA;
-    private String branchLocation;
+    protected String ouId;
+    protected String name;
+    protected String description;
+    protected String ifscCode;
+    protected String businessVPA;
+    protected String branchLocation;
 }
