@@ -111,7 +111,6 @@ public class EntityMapper {
         entity.setAiId(aiOuDetails.getAiId());
         entity.setOuId(aiOuDetails.getOuId());
         entity.setStatus(getEntityStatus(aiOuDetails.getStatus()));
-        entity.setWebhookUrl(aiOuDetails.getWebhookUrl());
     }
 
     public AiOuMapEntity updateAiOuEntity(AiOuMappingDetails aiOuDetails, AiOuMapEntity entity) {

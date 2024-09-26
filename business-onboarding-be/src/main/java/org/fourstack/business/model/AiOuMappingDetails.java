@@ -13,5 +13,4 @@ public class AiOuMappingDetails implements Serializable {
     private String aiId;
     private String ouId;
     private String status;
-    private String webhookUrl;
 }
