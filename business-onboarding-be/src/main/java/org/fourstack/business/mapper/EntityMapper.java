@@ -31,6 +31,7 @@ import org.fourstack.business.model.BusinessIdentifier;
 import org.fourstack.business.model.BusinessRegisterRequest;
 import org.fourstack.business.model.CommonRequestData;
 import org.fourstack.business.model.ContactNumber;
+import org.fourstack.business.model.EntityVersion;
 import org.fourstack.business.model.Institute;
 import org.fourstack.business.model.MessageTransaction;
 import org.fourstack.business.model.OuDetails;
@@ -39,6 +40,7 @@ import org.fourstack.business.model.TransactionError;
 import org.fourstack.business.utils.BusinessUtil;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -109,7 +111,6 @@ public class EntityMapper {
         entity.setAiId(aiOuDetails.getAiId());
         entity.setOuId(aiOuDetails.getOuId());
         entity.setStatus(getEntityStatus(aiOuDetails.getStatus()));
-        entity.setWebhookUrl(aiOuDetails.getWebhookUrl());
     }
 
     public AiOuMapEntity updateAiOuEntity(AiOuMappingDetails aiOuDetails, AiOuMapEntity entity) {
@@ -340,7 +341,7 @@ public class EntityMapper {
         return entity;
     }
 
-    public void constructAiOrgMapEntity(MainOrgIdEntity orgIdEntity, String aiId, EntityStatus entityStatus) {
+    public AiOrgMapEntity constructAiOrgMapEntity(MainOrgIdEntity orgIdEntity, String aiId, EntityStatus entityStatus) {
         AiOrgMapEntity aiOrgMapEntity = new AiOrgMapEntity();
         aiOrgMapEntity.setBusinessKey(orgIdEntity.getBusinessKey());
         aiOrgMapEntity.setOrgId(orgIdEntity.getOrgId());
@@ -351,11 +352,10 @@ public class EntityMapper {
         aiOrgMapEntity.setBusinessRole(orgIdEntity.getBusinessRole());
         aiOrgMapEntity.setCurrentVersion(orgIdEntity.getCurrentVersion());
         aiOrgMapEntity.setActiveVersion(orgIdEntity.getActiveVersion());
-        aiOrgMapEntity.setDefaultB2BId(orgIdEntity.getDefaultB2BId());
         aiOrgMapEntity.setAiId(orgIdEntity.getAiId());
         aiOrgMapEntity.setProductType(orgIdEntity.getProductType());
         aiOrgMapEntity.setPrimaryIdentifier(orgIdEntity.getPrimaryIdentifier());
-        aiOrgMapEntity.setPreviousVersions(orgIdEntity.getPreviousVersions());
+        addPreviousVersions(aiOrgMapEntity, orgIdEntity);
         aiOrgMapEntity.setPublicB2BIds(orgIdEntity.getPublicB2BIds());
         aiOrgMapEntity.setPrivateB2BIds(orgIdEntity.getPrivateB2BIds());
         aiOrgMapEntity.setOtherIdentifiers(orgIdEntity.getOtherIdentifiers());
@@ -363,10 +363,28 @@ public class EntityMapper {
         aiOrgMapEntity.setContactNumbers(orgIdEntity.getContactNumbers());
         aiOrgMapEntity.setPrimaryEmail(orgIdEntity.getPrimaryEmail());
         aiOrgMapEntity.setEmails(orgIdEntity.getEmails());
-        addAiIdToStatusMap(aiId, aiOrgMapEntity, EntityStatus.INACTIVE);
+        aiOrgMapEntity.setStatus(entityStatus);
+        addAiIdToStatusMap(aiId, orgIdEntity, entityStatus);
+        return aiOrgMapEntity;
     }
 
-    private void addAiIdToStatusMap(String aiId, AiOrgMapEntity entity, EntityStatus entityStatus) {
+    private void addPreviousVersions(AiOrgMapEntity aiOrgMapEntity, MainOrgIdEntity orgIdEntity) {
+        List<EntityVersion> previousVersions = orgIdEntity.getPreviousVersions();
+        List<EntityVersion> newVersions = new ArrayList<>();
+        if (BusinessUtil.isCollectionNotNullOrEmpty(newVersions)) {
+            for (EntityVersion previousVersion : previousVersions) {
+                if (previousVersion.getVersion() == orgIdEntity.getCurrentVersion()) {
+                    EntityVersion version = new EntityVersion();
+                    version.setVersion(previousVersion.getVersion());
+                    version.setTxnId(previousVersion.getTxnId());
+                    version.setStatus(EntityStatus.INACTIVE);
+                }
+            }
+        }
+        aiOrgMapEntity.setPreviousVersions(newVersions);
+    }
+
+    private void addAiIdToStatusMap(String aiId, MainOrgIdEntity entity, EntityStatus entityStatus) {
         Map<String, EntityStatus> aiStatusMap = entity.getAiStatusMap();
         if (BusinessUtil.isNull(aiStatusMap)) {
             aiStatusMap = new HashMap<>();
