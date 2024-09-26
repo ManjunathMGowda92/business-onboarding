@@ -1,0 +1,54 @@
+spring:
+  application:
+  name: business-onboarding-be
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: business-onboarding
+
+server:
+  port: 8085
+  request:
+    timeout: 180
+
+kafka:
+  configurations:
+    producer:
+      bootstrap-servers: "localhost:9092, localhost:9093"
+      key-serializer: "org.apache.kafka.common.serialization.StringSerializer"
+      value-serializer: "org.apache.kafka.common.serialization.StringSerializer"
+      retries: 1
+  topic-details:
+    REQ_CREATE_BUSINESS:
+      topicName: BUSINESS-REQUEST
+      partitionCount: 4
+      replicaCount: 1
+      reAssignmentRequired: false
+    REQ_ADD_B2B:
+      topicName: B2B-CREATE-REQUEST
+      partitionCount: 4
+      replicaCount: 1
+      reAssignmentRequired: false
+    REQ_CHECK_BUSINESS:
+      topicName: CHECK-BUSINESS-REQUEST
+      partitionCount: 4
+      replicaCount: 1
+      reAssignmentRequired: false
+    REQ_SEARCH_BUSINESS:
+      topicName: SEARCH-BUSINESS-REQUEST
+      partitionCount: 4
+      replicaCount: 1
+      reAssignmentRequired: false
+    REQ_EDIT_B2B:
+      topicName: B2B-EDIT-REQUEST
+      partitionCount: 4
+      replicaCount: 1
+      reAssignmentRequired: false
+    REQ_ACTIVATE_B2B:
+      topicName: ACTIVATE-DEACTIVATE-B2B
+      partitionCount: 4
+      replicaCount: 1
+      reAssignmentRequired: false
+
+

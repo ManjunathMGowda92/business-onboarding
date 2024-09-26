@@ -1,0 +1,94 @@
+{
+  "commonData": {
+    "head": {
+      "ver": "123.1",
+      "ts": "2024-07-31T22:47:37+05:30",
+      "msgId": "MSGGMTS64C8B9H1H820240731T224737243",
+      "aiId": "AI01",
+      "ouId": "OU01",
+      "orgSysId": "ORG08",
+      "prodType": "BUSINESS"
+    },
+    "txn": {
+      "id": "TXNGMTX64C8B9H1H820240731T224737243",
+      "ts": "2024-07-31T22:47:37+05:30",
+      "refId": "reference Id",
+      "refUrl": "http://localhost:9876",
+      "type": "BUSINESS ENTITY",
+      "note": "Creating Entity"
+    },
+    "device": {
+      "tag": {
+        "name": "GEOCODE",
+        "value": "986578"
+      }
+    }
+  },
+  "institute": {
+    "objectId": "ORGGMTX64C8B9H1H820240731T224737243",
+    "name": "My Company",
+    "alias": "My Company alias",
+    "defaultB2bId": "My Company Org",
+    "mccCode": "1237",
+    "lei": {
+      "documentName": "PAN",
+      "type": "SOLE PROP",
+      "value": "COHPM6543R",
+      "registeredName": "My Registered PAN"
+    },
+    "primaryIdentifier": {
+      "documentName": "GSTIN",
+      "value": "Z089TYU453H",
+      "registeredName": "GSTIN Registration"
+    },
+    "otherIdentifiers": [
+      {
+        "documentName": "FSSAI",
+        "value": "F5464TYUji78",
+        "registeredName": "FSSAI Registered"
+      }
+    ],
+    "addresses": [
+      {
+        "type" : "REGISTERED",
+        "addressLine1": "#51, 1st Floor",
+        "addressLine2": "Konappana Agrahara, Electronic City Phase1",
+        "city": "Bengaluru",
+        "state": "KARNATAKA",
+        "country": "INDIA",
+        "pincode": "560100"
+      }
+    ],
+    "bankAccounts": [
+      {
+        "businessVPA": "YTR8786HUUIjk",
+        "type": "SAVINGS",
+        "accountNum": "89767584737376",
+        "ifsc": "HDFC9876645",
+        "beneficiaryName": "Manjunath HM"
+      }
+    ],
+    "contactNumbers": [
+      {
+        "type": "MOBILE",
+        "countryCode": "+91",
+        "phoneNumber": "9087654321"
+      }
+    ],
+    "primaryContact": {
+      "type": "MOBILE",
+      "countryCode": "+91",
+      "phoneNumber": "8907654321"
+    },
+    "emails": [
+      "m.21234@gmail.com"
+    ],
+    "primaryEmail": "prim.6547@gmail.com"
+  },
+  "additionalInfoList": [
+    {
+      "name": "MOCK_ACK",
+      "value": "Yes"
+    }
+  ]
+}

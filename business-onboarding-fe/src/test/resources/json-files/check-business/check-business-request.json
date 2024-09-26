@@ -1,0 +1,39 @@
+{
+  "commonData": {
+    "head": {
+      "ver": "123.1",
+      "ts": "2024-08-05T10:00:21+05:30",
+      "msgId": "MSGGMTS6BJJEE274C20240805T100021398",
+      "aiId": "AI01",
+      "ouId": "OU010",
+      "orgSysId": "ORG08",
+      "prodType": "BUSINESS"
+    },
+    "txn": {
+      "id": "TXNGMTX6BJJEE274C20240805T100021398",
+      "ts": "2024-08-05T10:00:21+05:30",
+      "refId": "jhsdvdf98fhwet7832rbdfywe",
+      "refUrl": "http://localhost:9876",
+      "type": "BUSINESS ENTITY",
+      "note": "Creating Entity"
+    },
+    "device": {
+      "tag": {
+        "name": "GEOCODE",
+        "value": "986578"
+      }
+    }
+  },
+  "checkInstitute": {
+    "documentName": "PAN",
+    "type": "SOLE PROP",
+    "value": "COHPM6543R",
+    "registeredName": "Fourstack Organizations"
+  },
+  "additionalInfoList": [
+    {
+      "name": "MOCK_ACK",
+      "value": "Yes"
+    }
+  ]
+}

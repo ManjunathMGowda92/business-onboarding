@@ -1,0 +1,62 @@
+{
+  "commonData": {
+    "head": {
+      "ver": "123.1",
+      "ts": "2024-08-05T10:00:21+05:30",
+      "msgId": "MSGGMTS6BJJEE274C20240805T100021398",
+      "aiId": "AI01",
+      "ouId": "OU010",
+      "orgSysId": "ORG08",
+      "prodType": "BUSINESS"
+    },
+    "txn": {
+      "id": "TXNGMTX6BJJEE274C20240805T100021398",
+      "ts": "2024-08-05T10:00:21+05:30",
+      "refId": "",
+      "refUrl": "http://localhost:9876",
+      "type": "BUSINESS ENTITY",
+      "note": "Creating Entity"
+    },
+    "device": {
+      "tag": {
+        "name": "GEOCODE",
+        "value": "986578"
+      }
+    }
+  },
+  "onboardingB2BIds": {
+    "requestorB2BId": "My Company Org"
+  },
+  "regB2BIds": {
+    "ids": [
+      {
+        "value": "four stack developers",
+        "privacyType": "PUBLIC",
+        "reason": "New Business Creation",
+        "description": "Creating a new PUBLIC B2B Id for Business",
+        "businessIdentifier": {
+          "documentName": "GSTIN",
+          "value": "12COHPY5643U87j",
+          "registeredName": "GSTIN Registered"
+        }
+      },
+      {
+        "value": "private four stack developers b2b",
+        "privacyType": "PRIVATE",
+        "reason": "New Branch Creation",
+        "description": "Creating a new PRIVATE B2B Id for Business",
+        "businessIdentifier": {
+          "documentName": "UDYAM",
+          "value": "12UDMCOHPY5643U87j",
+          "registeredName": "UDYAM Registered"
+        }
+      }
+    ]
+  },
+  "additionalInfoList": [
+    {
+      "name": "MOCK_ACK",
+      "value": "Yes"
+    }
+  ]
+}

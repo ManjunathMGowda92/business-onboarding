@@ -1,0 +1,53 @@
+spring:
+  application:
+  name: business-onboarding-be
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: business-onboarding
+
+server:
+  port: 8086
+
+application:
+  config:
+    transaction-time-out: 180
+
+kafka:
+  topic-names:
+    - BUSINESS-REQUEST
+    - B2B-CREATE-REQUEST
+    - CHECK-BUSINESS-REQUEST
+    - SEARCH-BUSINESS-REQUEST
+  configurations:
+    producer:
+      bootstrap-servers: "localhost:9092, localhost:9093"
+      key-serializer: "org.apache.kafka.common.serialization.StringSerializer"
+      value-serializer: "org.apache.kafka.common.serialization.StringSerializer"
+      retries: 1
+    consumer:
+      bootstrap-servers: "localhost:9092"
+      key-serializer: "org.apache.kafka.common.serialization.StringDeserializer"
+      value-serializer: "org.apache.kafka.common.serialization.StringDeserializer"
+  topic-details:
+    REQ_KYC_PUBLISH:
+      topicName: KYC-REQUEST
+      partitionCount: 4
+      replicaCount: 1
+      reAssignmentRequired: false
+    REQ_BROADCAST_MSG:
+      topicName: BROADCAST-REQUEST
+      partitionCount: 8
+      replicaCount: 1
+      reAssignmentRequired: false
+
+lei:
+  multipleBusinessConfig:
+    SOLE_PROP: Yes
+    COMPANY: No
+    HUF: No
+    PRIVATE_LIMITED: No
+    PUBLIC_LIMITED: No
+
+

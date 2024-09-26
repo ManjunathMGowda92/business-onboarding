@@ -1,0 +1,49 @@
+BusinessEntity
+	- BUSINESS,V1,LEI,<LEI>,BU_ID,<BU_ID>
+
+BusinessTransactionEntity
+	-BUSINESS,V1,TXN,<TXN_ID>,LEI,<LEI>,BU_ID,<BU_ID>
+
+OrgIdEntity
+	- BUSINESS,V1,BU_ID,<BU_ID>
+
+OrgIdTransactionEntity
+	- BUSINESS,V1,TXN,<TXN_ID>,BU_ID,<BU_ID>
+
+BusinessIdentifierEntity
+	- BUSINESS,V1,IDENTIFIER_TYPE,<IDENTIFIER_TYPE>,IDENTIFIER_VALUE,<IDENTIFIER_VALUE>
+
+B2BIdentifierEntity
+	- BUSINESS,V1,BUSINESS_ID,<B2B_ID>
+
+KycTransactionEntity
+	- BUSINESS,V1,KYC,TXN,<TXN_ID>,BU_ID,<BU_ID>
+
+AiOrgKycMapEntity
+	- BUSINESS,V1,KYC,AI,<AI_ID>,BU_ID,<BU_ID>
+
+------------------------------------------------------------------------
+
+AiEntity
+	- BUSINESS,MASTER,V1,AI_ID,<AI_ID>
+
+AiAuditEntity
+    - BUSINESS,MASTER,V1,AUDIT,AI_ID,<AI_ID>,<TIME>,<TIMESTAMP>
+
+OuEntity
+	- BUSINESS,MASTER,V1,OU_ID,<OU_ID>
+
+OuAuditEntity
+	-BUSINESS,MASTER,V1,AUDIT,OU_ID,<OU_ID>,<TIME>,<TIMESTAMP>
+
+AiOuMapEntity
+	- BUSINESS,MASTER,V1,AI_ID,<AI_ID>,OU,<OU_ID>
+
+AuditAiOuMapEntity
+	- BUSINESS,MASTER,V1,AI_ID,<AI_ID>,OU,<OU_ID>,<TIME>,<TIMESTAMP>
+
+TransactionEntity
+	- BUSINESS,MASTER,V1,TXN,<TXN_ID>
+
+AuditTransactionEntity
+	- BUSINESS,MASTER,V1,AUDIT,TXN,<TXN_ID>

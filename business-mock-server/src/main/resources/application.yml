@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: business-mock-server
+
+server:
+  port: 8087
