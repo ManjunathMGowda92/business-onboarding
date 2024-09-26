@@ -1,4 +1,4 @@
-package org.fourstack.back_office;
+package org.fourstack.backoffice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
