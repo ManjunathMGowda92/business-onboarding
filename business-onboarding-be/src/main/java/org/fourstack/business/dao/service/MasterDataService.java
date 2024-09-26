@@ -128,9 +128,9 @@ public class MasterDataService {
         return aiOuMappingRepository.findById(entityKey);
     }
 
-    public Optional<String> getWebhookUrl(String aiId, String ouId) {
-        Optional<AiOuMapEntity> optionalAiEntity = retrieveAiOuMapEntity(aiId, ouId);
-        return optionalAiEntity.map(AiOuMapEntity::getWebhookUrl);
+    public Optional<String> getWebhookUrl(String aiId) {
+        Optional<AiEntity> optionalAiEntity = retrieveAiEntity(aiId);
+        return optionalAiEntity.map(AiEntity::getWebhookUrl);
     }
 
 }

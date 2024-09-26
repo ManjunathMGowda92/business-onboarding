@@ -1,5 +1,5 @@
 package org.fourstack.business.enums;
 
 public enum EntityStatus {
-    ACTIVE, INACTIVE, SUSPENDED
+    ACTIVE, INACTIVE, SUSPENDED, BLACKLISTED
 }

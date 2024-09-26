@@ -18,7 +18,6 @@ import java.util.Set;
 public class AiOrgMapEntity extends OrgIdData implements Serializable {
     @Serial
     private static final long serialVersionUID = 9055190319357104868L;
-    private Map<String, EntityStatus> aiStatusMap;
     private List<EntityVersion> previousVersions;
     private Set<String> publicB2BIds;
     private Set<String> privateB2BIds;
