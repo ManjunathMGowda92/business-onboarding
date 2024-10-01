@@ -21,6 +21,7 @@ import org.fourstack.business.utils.KeyGenerationUtil;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -124,13 +125,24 @@ public class MasterDataService {
         return aiOuMappingRepository.findById(entityKey);
     }
 
+    public List<AiOuMapEntity> retrieveAiOuMapEntities(String aiId) {
+        return aiOuMappingRepository.findAllByAiId(aiId);
+    }
+
     private Optional<AiOuMapEntity> retrieveAiOuMapEntityByEntityKey(String entityKey) {
         return aiOuMappingRepository.findById(entityKey);
     }
 
     public Optional<String> getWebhookUrl(String aiId) {
-        Optional<AiEntity> optionalAiEntity = retrieveAiEntity(aiId);
-        return optionalAiEntity.map(AiEntity::getWebhookUrl);
+        List<AiOuMapEntity> aiOuMapEntities = retrieveAiOuMapEntities(aiId);
+        Optional<AiOuMapEntity> optionalEntity = aiOuMapEntities.stream()
+                .findAny();
+        return optionalEntity.map(AiOuMapEntity::getWebhookUrl);
+    }
+
+    public Optional<String> getWebhookUrl(String aiId, String ouId) {
+        Optional<AiOuMapEntity> optionalEntity = retrieveAiOuMapEntity(aiId, ouId);
+        return optionalEntity.map(AiOuMapEntity::getWebhookUrl);
     }
 
 }
