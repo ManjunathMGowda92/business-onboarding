@@ -13,4 +13,5 @@ public class AiOuMappingEntity extends Entity{
     private String ouId;
     private String ouName;
     private String description;
+    private String webhookUrl;
 }

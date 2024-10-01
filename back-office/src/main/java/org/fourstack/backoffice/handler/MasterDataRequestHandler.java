@@ -2,67 +2,83 @@ package org.fourstack.backoffice.handler;
 
 import lombok.RequiredArgsConstructor;
 import org.fourstack.backoffice.model.AiOuMappingRequest;
+import org.fourstack.backoffice.model.AiOuMappingResponse;
 import org.fourstack.backoffice.model.AiRequest;
+import org.fourstack.backoffice.model.AiResponse;
+import org.fourstack.backoffice.model.EncryptionDetails;
 import org.fourstack.backoffice.model.OuRequest;
+import org.fourstack.backoffice.model.OuResponse;
+import org.fourstack.backoffice.service.MasterDataService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Collections;
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/masterData")
 @RequiredArgsConstructor(onConstructor_ = @Lazy)
 public class MasterDataRequestHandler {
+    private final MasterDataService masterDataService;
 
     @GetMapping("/aiEntity/{id}")
-    public void retrieveAiEntity(@PathVariable String id) {
-
+    public AiResponse retrieveAiEntity(@PathVariable String id) {
+        return new AiResponse();
     }
 
     @GetMapping("/aiEntity")
-    public void retrieveAiEntities() {
-
+    public List<AiResponse> retrieveAiEntities() {
+        return masterDataService.retrieveAiEntities();
     }
 
     @PostMapping("/aiEntity")
-    public void saveAiEntity(@RequestBody AiRequest request) {
+    public AiResponse saveAiEntity(@RequestBody AiRequest request) {
+        return new AiResponse();
+    }
 
+    @PutMapping("/aiEntity/{id}/encryptionDetails")
+    public AiResponse updateEncryptionDetails(@PathVariable String id, @RequestBody EncryptionDetails encryptionDetails) {
+        return new AiResponse();
     }
 
     @GetMapping("/ouEntity/{id}")
-    public void retrieveOuEntity(@PathVariable String id) {
-
+    public OuResponse retrieveOuEntity(@PathVariable String id) {
+        return new OuResponse();
     }
-    @GetMapping("/ouEntity")
-    public void retrieveOuEntities() {
 
+    @GetMapping("/ouEntity")
+    public List<OuResponse> retrieveOuEntities() {
+        return Collections.emptyList();
     }
 
     @PostMapping("/ouEntity")
-    public void saveOuEntity(@RequestBody OuRequest request) {
-
+    public OuResponse saveOuEntity(@RequestBody OuRequest request) {
+        return new OuResponse();
     }
 
     @GetMapping("/aiOuEntity")
-    public void retrieveAiOuEntities() {
-
+    public List<AiOuMappingResponse> retrieveAiOuEntities() {
+        return Collections.emptyList();
     }
 
     @GetMapping("/aiOuEntity/{aiId}/ou/{ouId}")
-    public void retrieveAiOuEntity(@PathVariable String aiId, @PathVariable String ouId) {
-
+    public AiOuMappingResponse retrieveAiOuEntity(@PathVariable String aiId, @PathVariable String ouId) {
+        return new AiOuMappingResponse();
     }
 
     @GetMapping("/aiOuEntity/{aiId}")
-    public void retrieveAiOuEntities(@PathVariable String aiId) {
-
+    public List<AiOuMappingResponse> retrieveAiOuEntities(@PathVariable String aiId) {
+        return Collections.emptyList();
     }
 
     @PostMapping("/aiOuEntity")
-    public void saveAiOuMapEntity(@RequestBody AiOuMappingRequest request) {
-
+    public AiOuMappingResponse saveAiOuMapEntity(@RequestBody AiOuMappingRequest request) {
+        return new AiOuMappingResponse();
     }
 }
