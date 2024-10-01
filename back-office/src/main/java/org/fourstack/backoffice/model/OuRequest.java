@@ -5,9 +5,11 @@ import lombok.Data;
 @Data
 public class OuRequest {
     protected String ouId;
-    protected String name;
+    protected String operationUnitName;
+    protected String operationUnitAliasName;
     protected String description;
-    protected String ifscCode;
-    protected String businessVPA;
-    protected String branchLocation;
+    protected String mailId;
+    protected Address registeredAddress;
+    protected Address communicationAddress;
+    protected BankDetails bankDetails;
 }

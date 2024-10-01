@@ -1,8 +1,8 @@
 package org.fourstack.backoffice.mapper;
 
-import org.fourstack.backoffice.entity.AiEntity;
+import org.fourstack.backoffice.entity.AgentInstitutionEntity;
 import org.fourstack.backoffice.entity.AiOuMappingEntity;
-import org.fourstack.backoffice.entity.OuEntity;
+import org.fourstack.backoffice.entity.OperationUnitEntity;
 import org.fourstack.backoffice.model.AiOuMappingRequest;
 import org.fourstack.backoffice.model.AiRequest;
 import org.fourstack.backoffice.model.OuRequest;
@@ -10,26 +10,29 @@ import org.fourstack.backoffice.util.BackOfficeUtil;
 
 public class EntityMapper {
 
-    public AiEntity convertToAiEntity(AiRequest request) {
-        AiEntity entity = new AiEntity();
-        entity.setId(request.getAiId());
-        entity.setName(request.getName());
+    public AgentInstitutionEntity convertToAiEntity(AiRequest request) {
+        AgentInstitutionEntity entity = new AgentInstitutionEntity();
+        entity.setId(request.getAgentInstitutionId());
+        entity.setName(request.getAgentInstitutionName());
+        entity.setAlias(request.getAgentInstitutionAliasName());
         entity.setDescription(request.getDescription());
         entity.setSubscriberId(request.getSubscriberId());
-        entity.setWebhookUrl(request.getAiWebhookUrl());
-        entity.setHeadQuarter(request.getHeadquarter());
+        entity.setRegisteredAddress(request.getRegisteredAddress());
+        entity.setCommunicationAddress(request.getCommunicationAddress());
         entity.setCreatedTimeStamp(BackOfficeUtil.getCurrentTimeStamp());
         return entity;
     }
 
-    public OuEntity convertToOuEntity(OuRequest request) {
-        OuEntity entity = new OuEntity();
+    public OperationUnitEntity convertToOuEntity(OuRequest request) {
+        OperationUnitEntity entity = new OperationUnitEntity();
         entity.setId(request.getOuId());
-        entity.setName(request.getName());
+        entity.setName(request.getOperationUnitName());
+        entity.setAlias(request.getOperationUnitAliasName());
         entity.setDescription(request.getDescription());
-        entity.setIfscCode(request.getIfscCode());
-        entity.setBusinessVPA(request.getBusinessVPA());
-        entity.setBranchLocation(request.getBranchLocation());
+        entity.setMailId(request.getMailId());
+        entity.setRegisteredAddress(request.getRegisteredAddress());
+        entity.setCommunicationAddress(request.getCommunicationAddress());
+        entity.setBankDetails(request.getBankDetails());
         entity.setCreatedTimeStamp(BackOfficeUtil.getCurrentTimeStamp());
         return entity;
     }

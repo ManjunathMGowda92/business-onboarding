@@ -14,5 +14,5 @@ public class OuAuditEntity implements Serializable {
     private static final long serialVersionUID = 1439798599331434884L;
     @Id
     private String key;
-    private OuEntity entity;
+    private OperationUnitEntity entity;
 }
