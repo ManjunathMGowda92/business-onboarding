@@ -1,6 +1,6 @@
 package org.fourstack.backoffice.mapper;
 
-import org.fourstack.backoffice.entity.AiEntity;
+import org.fourstack.backoffice.entity.AgentInstitutionEntity;
 import org.fourstack.backoffice.entity.AiOuMappingEntity;
 import org.fourstack.backoffice.entity.OperationUnitEntity;
 import org.fourstack.backoffice.enums.EntityStatus;
