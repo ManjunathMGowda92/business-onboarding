@@ -3,11 +3,14 @@ package org.fourstack.backoffice.mapper;
 import org.fourstack.backoffice.entity.AgentInstitutionEntity;
 import org.fourstack.backoffice.entity.AiOuMappingEntity;
 import org.fourstack.backoffice.entity.OperationUnitEntity;
+import org.fourstack.backoffice.enums.EntityStatus;
 import org.fourstack.backoffice.model.AiOuMappingRequest;
 import org.fourstack.backoffice.model.AiRequest;
 import org.fourstack.backoffice.model.OuRequest;
 import org.fourstack.backoffice.util.BackOfficeUtil;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EntityMapper {
 
     public AgentInstitutionEntity convertToAiEntity(AiRequest request) {
@@ -19,6 +22,7 @@ public class EntityMapper {
         entity.setSubscriberId(request.getSubscriberId());
         entity.setRegisteredAddress(request.getRegisteredAddress());
         entity.setCommunicationAddress(request.getCommunicationAddress());
+        entity.setStatus(EntityStatus.ACTIVE);
         entity.setCreatedTimeStamp(BackOfficeUtil.getCurrentTimeStamp());
         return entity;
     }
