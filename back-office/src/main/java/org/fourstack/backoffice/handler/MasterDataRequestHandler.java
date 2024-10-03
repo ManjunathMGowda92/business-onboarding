@@ -5,6 +5,8 @@ import org.fourstack.backoffice.model.AiOuMappingRequest;
 import org.fourstack.backoffice.model.AiOuMappingResponse;
 import org.fourstack.backoffice.model.AiRequest;
 import org.fourstack.backoffice.model.AiResponse;
+import org.fourstack.backoffice.model.BackOfficeListResponse;
+import org.fourstack.backoffice.model.BackOfficeResponse;
 import org.fourstack.backoffice.model.EncryptionDetails;
 import org.fourstack.backoffice.model.OuRequest;
 import org.fourstack.backoffice.model.OuResponse;
@@ -28,18 +30,18 @@ public class MasterDataRequestHandler {
     private final MasterDataService masterDataService;
 
     @GetMapping("/aiEntity/{id}")
-    public AiResponse retrieveAiEntity(@PathVariable String id) {
-        return new AiResponse();
+    public BackOfficeResponse retrieveAiEntity(@PathVariable String id) {
+        return masterDataService.retrieveAiEntity(id);
     }
 
     @GetMapping("/aiEntity")
-    public List<AiResponse> retrieveAiEntities() {
+    public BackOfficeListResponse retrieveAiEntities() {
         return masterDataService.retrieveAiEntities();
     }
 
     @PostMapping("/aiEntity")
     public AiResponse saveAiEntity(@RequestBody AiRequest request) {
-        return new AiResponse();
+        return masterDataService.createAiEntity(request);
     }
 
     @PutMapping("/aiEntity/{id}/encryptionDetails")

@@ -1,1 +1,11 @@
-spring.application.name=back-office
+spring:
+  application:
+  name: back-office
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: back-office-data
+
+server:
+  port: 8089
