@@ -6,7 +6,9 @@ import org.fourstack.backoffice.entity.OperationUnitEntity;
 import org.fourstack.backoffice.enums.EntityStatus;
 import org.fourstack.backoffice.model.AiOuMappingRequest;
 import org.fourstack.backoffice.model.AiRequest;
+import org.fourstack.backoffice.model.EncryptionDetails;
 import org.fourstack.backoffice.model.OuRequest;
+import org.fourstack.backoffice.model.UpdateAiRequest;
 import org.fourstack.backoffice.util.BackOfficeUtil;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +27,32 @@ public class EntityMapper {
         entity.setStatus(EntityStatus.ACTIVE);
         entity.setCreatedTimeStamp(BackOfficeUtil.getCurrentTimeStamp());
         return entity;
+    }
+
+    public void updateAiEntity(AgentInstitutionEntity agentInstitutionEntity, EncryptionDetails encryptionDetails) {
+        agentInstitutionEntity.setEncryptionDetails(encryptionDetails);
+        agentInstitutionEntity.setLastModifiedTimeStamp(BackOfficeUtil.getCurrentTimeStamp());
+    }
+
+    public void updateAiEntity(AgentInstitutionEntity entity, UpdateAiRequest request) {
+        if (BackOfficeUtil.isNotNull(request)) {
+            entity.setLastModifiedTimeStamp(BackOfficeUtil.getCurrentTimeStamp());
+            entity.setName(request.getAgentInstitutionName());
+            if (BackOfficeUtil.isNotNullOrEmpty(request.getAgentInstitutionAliasName())) {
+                entity.setAlias(request.getAgentInstitutionAliasName());
+            }
+            if (BackOfficeUtil.isNotNullOrEmpty(request.getDescription())) {
+                entity.setDescription(request.getDescription());
+            }
+            entity.setSubscriberId(request.getSubscriberId());
+            entity.setRegisteredAddress(request.getRegisteredAddress());
+            if (BackOfficeUtil.isNotNull(request.getCommunicationAddress())) {
+                entity.setCommunicationAddress(request.getCommunicationAddress());
+            }
+            if (BackOfficeUtil.isNotNull(request.getEncryptionDetails())) {
+                entity.setEncryptionDetails(request.getEncryptionDetails());
+            }
+        }
     }
 
     public OperationUnitEntity convertToOuEntity(OuRequest request) {
@@ -51,4 +79,6 @@ public class EntityMapper {
         entity.setCreatedTimeStamp(BackOfficeUtil.getCurrentTimeStamp());
         return entity;
     }
+
+
 }

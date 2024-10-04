@@ -4,14 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.fourstack.backoffice.model.AiOuMappingRequest;
 import org.fourstack.backoffice.model.AiOuMappingResponse;
 import org.fourstack.backoffice.model.AiRequest;
-import org.fourstack.backoffice.model.AiResponse;
 import org.fourstack.backoffice.model.BackOfficeListResponse;
 import org.fourstack.backoffice.model.BackOfficeResponse;
 import org.fourstack.backoffice.model.EncryptionDetails;
 import org.fourstack.backoffice.model.OuRequest;
 import org.fourstack.backoffice.model.OuResponse;
+import org.fourstack.backoffice.model.UpdateAiRequest;
 import org.fourstack.backoffice.service.MasterDataService;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,23 +31,28 @@ public class MasterDataRequestHandler {
     private final MasterDataService masterDataService;
 
     @GetMapping("/aiEntity/{id}")
-    public BackOfficeResponse retrieveAiEntity(@PathVariable String id) {
+    public ResponseEntity<BackOfficeResponse> retrieveAiEntity(@PathVariable String id) {
         return masterDataService.retrieveAiEntity(id);
     }
 
     @GetMapping("/aiEntity")
-    public BackOfficeListResponse retrieveAiEntities() {
+    public ResponseEntity<BackOfficeListResponse> retrieveAiEntities() {
         return masterDataService.retrieveAiEntities();
     }
 
     @PostMapping("/aiEntity")
-    public AiResponse saveAiEntity(@RequestBody AiRequest request) {
+    public ResponseEntity<BackOfficeResponse> saveAiEntity(@RequestBody AiRequest request) {
         return masterDataService.createAiEntity(request);
     }
 
+    @PutMapping("/aiEntity/{aiId}")
+    public ResponseEntity<BackOfficeResponse> updateAiEntity(@PathVariable String aiId, @RequestBody UpdateAiRequest request) {
+        return masterDataService.updateAiEntity(aiId, request);
+    }
+
     @PutMapping("/aiEntity/{id}/encryptionDetails")
-    public AiResponse updateEncryptionDetails(@PathVariable String id, @RequestBody EncryptionDetails encryptionDetails) {
-        return new AiResponse();
+    public BackOfficeResponse updateEncryptionDetails(@PathVariable String id, @RequestBody EncryptionDetails encryptionDetails) {
+        return masterDataService.updateEncryptionDetails(id, encryptionDetails);
     }
 
     @GetMapping("/ouEntity/{id}")
@@ -55,8 +61,8 @@ public class MasterDataRequestHandler {
     }
 
     @GetMapping("/ouEntity")
-    public List<OuResponse> retrieveOuEntities() {
-        return Collections.emptyList();
+    public BackOfficeListResponse retrieveOuEntities() {
+        return masterDataService.retrieveOuEntities();
     }
 
     @PostMapping("/ouEntity")
