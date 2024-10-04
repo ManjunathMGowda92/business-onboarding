@@ -6,8 +6,7 @@ import org.fourstack.backoffice.enums.EntityStatus;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class OuResponse extends OuRequest{
+public class UpdateAiRequest extends AiRequest{
     private EntityStatus status;
-    private String createdTimeStamp;
-    private String lastModifiedTimeStamp;
+    private EncryptionDetails encryptionDetails;
 }
