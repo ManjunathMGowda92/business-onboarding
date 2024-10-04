@@ -76,28 +76,30 @@ public class MasterDataService {
         }
     }
 
-    public BackOfficeResponse updateEncryptionDetails(String aiId, EncryptionDetails encryptionDetails) {
+    public ResponseEntity<BackOfficeResponse> updateEncryptionDetails(String aiId, EncryptionDetails encryptionDetails) {
         String entityKey = KeyGenerationUtil.generateAiEntityKey(aiId);
         Optional<AgentInstitutionEntity> aiEntity = aiRepository.findById(entityKey);
         if (aiEntity.isPresent()) {
             AgentInstitutionEntity entity = aiEntity.get();
             entityMapper.updateAiEntity(entity, encryptionDetails);
             aiRepository.save(entity);
-            return responseMapper.constructResponse(entity);
+            return generateResponse(responseMapper.constructResponse(entity), HttpStatus.OK);
         } else {
-            return responseMapper.constructFailureResponse(ErrorScenarioCode.BO_AI_0002, "aiId");
+            return generateResponse(responseMapper.constructFailureResponse(ErrorScenarioCode.BO_AI_0002,
+                    "aiId"), HttpStatus.BAD_REQUEST);
         }
     }
 
-    public BackOfficeListResponse retrieveOuEntities() {
+    public ResponseEntity<BackOfficeListResponse> retrieveOuEntities() {
         List<OperationUnitEntity> entities = ouRepository.findAll();
         if (BackOfficeUtil.isCollectionNotNullOrEmpty(entities)) {
             List<OuResponse> ouResponseList = entities.stream()
                     .map(responseMapper::mapOuEntityToResponse)
                     .toList();
-            return responseMapper.constructListResponse(ouResponseList);
+            return generateResponse(responseMapper.constructListResponse(ouResponseList), HttpStatus.OK);
         } else {
-            return responseMapper.constructFailureListResponse(ErrorScenarioCode.BO_OU_0001, null);
+            return generateResponse(responseMapper.constructFailureListResponse(ErrorScenarioCode.BO_OU_0001,
+                    null), HttpStatus.NOT_FOUND);
         }
     }
 
