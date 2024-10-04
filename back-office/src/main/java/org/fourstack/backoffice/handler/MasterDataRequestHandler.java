@@ -46,12 +46,14 @@ public class MasterDataRequestHandler {
     }
 
     @PutMapping("/aiEntity/{aiId}")
-    public ResponseEntity<BackOfficeResponse> updateAiEntity(@PathVariable String aiId, @RequestBody UpdateAiRequest request) {
+    public ResponseEntity<BackOfficeResponse> updateAiEntity(@PathVariable String aiId,
+                                                             @RequestBody UpdateAiRequest request) {
         return masterDataService.updateAiEntity(aiId, request);
     }
 
     @PutMapping("/aiEntity/{id}/encryptionDetails")
-    public BackOfficeResponse updateEncryptionDetails(@PathVariable String id, @RequestBody EncryptionDetails encryptionDetails) {
+    public ResponseEntity<BackOfficeResponse> updateEncryptionDetails(@PathVariable String id,
+                                                                      @RequestBody EncryptionDetails encryptionDetails) {
         return masterDataService.updateEncryptionDetails(id, encryptionDetails);
     }
 
@@ -61,7 +63,7 @@ public class MasterDataRequestHandler {
     }
 
     @GetMapping("/ouEntity")
-    public BackOfficeListResponse retrieveOuEntities() {
+    public ResponseEntity<BackOfficeListResponse> retrieveOuEntities() {
         return masterDataService.retrieveOuEntities();
     }
 
