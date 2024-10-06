@@ -12,4 +12,7 @@ public final class KeyGenerationUtil {
     }
 
 
+    public static String generateOuEntityKey(String ouId) {
+        return KeyConstants.OU_ENTITY_KEY.replaceAll(KeyConstants.KEY_OU_ID, ouId);
+    }
 }

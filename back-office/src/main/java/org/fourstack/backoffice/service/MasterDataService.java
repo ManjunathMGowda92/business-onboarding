@@ -103,6 +103,19 @@ public class MasterDataService {
         }
     }
 
+    public ResponseEntity<BackOfficeResponse> retrieveOuEntity(String ouId) {
+        String entityKey = KeyGenerationUtil.generateOuEntityKey(ouId);
+        Optional<OperationUnitEntity> optionalEntity = ouRepository.findById(entityKey);
+        if (optionalEntity.isPresent()) {
+            OuResponse response = responseMapper.mapOuEntityToResponse(optionalEntity.get());
+            return generateResponse(responseMapper.constructResponse(response), HttpStatus.OK);
+        } else {
+            return generateResponse(responseMapper.constructFailureResponse(ErrorScenarioCode.BO_OU_0002,
+                    "ouId"), HttpStatus.NOT_FOUND);
+        }
+
+    }
+
     private ResponseEntity<BackOfficeResponse> generateResponse(BackOfficeResponse response, HttpStatus status) {
         return ResponseEntity.status(status).body(response);
     }
