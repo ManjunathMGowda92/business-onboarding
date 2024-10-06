@@ -58,8 +58,8 @@ public class MasterDataRequestHandler {
     }
 
     @GetMapping("/ouEntity/{id}")
-    public OuResponse retrieveOuEntity(@PathVariable String id) {
-        return new OuResponse();
+    public ResponseEntity<BackOfficeResponse> retrieveOuEntity(@PathVariable String id) {
+        return masterDataService.retrieveOuEntity(id);
     }
 
     @GetMapping("/ouEntity")
