@@ -11,6 +11,7 @@ import org.fourstack.backoffice.model.AiResponse;
 import org.fourstack.backoffice.model.BackOfficeListResponse;
 import org.fourstack.backoffice.model.BackOfficeResponse;
 import org.fourstack.backoffice.model.EncryptionDetails;
+import org.fourstack.backoffice.model.OuRequest;
 import org.fourstack.backoffice.model.OuResponse;
 import org.fourstack.backoffice.model.UpdateAiRequest;
 import org.fourstack.backoffice.repository.AiEntityRepository;
@@ -114,6 +115,15 @@ public class MasterDataService {
                     "ouId"), HttpStatus.NOT_FOUND);
         }
 
+    }
+
+    public ResponseEntity<BackOfficeResponse> createOuEntity(OuRequest request) {
+        OperationUnitEntity entity = entityMapper.convertToOuEntity(request);
+        String entityKey = KeyGenerationUtil.generateOuEntityKey(entity.getId());
+        entity.setKey(entityKey);
+        OperationUnitEntity savedEntity = ouRepository.save(entity);
+        OuResponse response = responseMapper.mapOuEntityToResponse(savedEntity);
+        return generateResponse(responseMapper.constructResponse(response), HttpStatus.CREATED);
     }
 
     private ResponseEntity<BackOfficeResponse> generateResponse(BackOfficeResponse response, HttpStatus status) {
