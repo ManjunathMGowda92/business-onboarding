@@ -2,6 +2,7 @@ package org.fourstack.backoffice.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.fourstack.backoffice.model.EncryptionDetails;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @EqualsAndHashCode(callSuper = true)
@@ -14,4 +15,5 @@ public class AiOuMappingEntity extends Entity{
     private String ouName;
     private String description;
     private String webhookUrl;
+    private EncryptionDetails encryptionDetails;
 }

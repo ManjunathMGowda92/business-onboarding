@@ -9,6 +9,7 @@ public class AiRequest {
     protected String agentInstitutionAliasName;
     protected String description;
     protected String subscriberId;
+    protected String type;
     protected Address registeredAddress;
     protected Address communicationAddress;
 }

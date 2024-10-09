@@ -72,8 +72,8 @@ public class MasterDataRequestHandler {
     }
 
     @GetMapping("/aiOuEntity")
-    public List<AiOuMappingResponse> retrieveAiOuEntities() {
-        return Collections.emptyList();
+    public ResponseEntity<BackOfficeListResponse> retrieveAiOuEntities() {
+        return masterDataService.retrieveAiOuEntities();
     }
 
     @GetMapping("/aiOuEntity/{aiId}/ou/{ouId}")

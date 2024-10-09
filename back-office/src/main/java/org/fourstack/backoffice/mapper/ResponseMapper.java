@@ -1,9 +1,11 @@
 package org.fourstack.backoffice.mapper;
 
 import org.fourstack.backoffice.entity.AgentInstitutionEntity;
+import org.fourstack.backoffice.entity.AiOuMappingEntity;
 import org.fourstack.backoffice.entity.OperationUnitEntity;
 import org.fourstack.backoffice.enums.ErrorScenarioCode;
 import org.fourstack.backoffice.enums.OperationStatus;
+import org.fourstack.backoffice.model.AiOuMappingResponse;
 import org.fourstack.backoffice.model.AiResponse;
 import org.fourstack.backoffice.model.BackOfficeAck;
 import org.fourstack.backoffice.model.BackOfficeListResponse;
@@ -23,12 +25,12 @@ public class ResponseMapper {
         response.setAgentInstitutionAliasName(aiEntity.getAlias());
         response.setDescription(aiEntity.getDescription());
         response.setSubscriberId(aiEntity.getSubscriberId());
+        response.setType(aiEntity.getType().getType());
         response.setRegisteredAddress(aiEntity.getRegisteredAddress());
         response.setCommunicationAddress(aiEntity.getCommunicationAddress());
         response.setStatus(aiEntity.getStatus());
         response.setCreatedTimeStamp(aiEntity.getCreatedTimeStamp());
         response.setLastModifiedTimeStamp(aiEntity.getLastModifiedTimeStamp());
-        response.setEncryptionDetails(aiEntity.getEncryptionDetails());
         response.setLinkedOus(aiEntity.getLinkedOus());
         return response;
     }
@@ -93,6 +95,21 @@ public class ResponseMapper {
         response.setStatus(ouEntity.getStatus());
         response.setCreatedTimeStamp(ouEntity.getCreatedTimeStamp());
         response.setLastModifiedTimeStamp(ouEntity.getLastModifiedTimeStamp());
+        return response;
+    }
+
+    public AiOuMappingResponse mapToAiOuResponse(AiOuMappingEntity entity) {
+        AiOuMappingResponse response = new AiOuMappingResponse();
+        response.setAiId(entity.getAiId());
+        response.setAiName(entity.getAiName());
+        response.setOuId(entity.getOuId());
+        response.setOuName(entity.getOuName());
+        response.setDescription(entity.getDescription());
+        response.setWebhookUrl(entity.getWebhookUrl());
+        response.setEncryptionDetails(entity.getEncryptionDetails());
+        response.setStatus(entity.getStatus());
+        response.setCreatedTimeStamp(entity.getCreatedTimeStamp());
+        response.setLastModifiedTimeStamp(entity.getLastModifiedTimeStamp());
         return response;
     }
 }
