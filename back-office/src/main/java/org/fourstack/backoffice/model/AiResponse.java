@@ -12,6 +12,5 @@ public class AiResponse extends AiRequest{
     private EntityStatus status;
     private String createdTimeStamp;
     private String lastModifiedTimeStamp;
-    private EncryptionDetails encryptionDetails;
     private List<LinkedOu> linkedOus;
 }

@@ -10,5 +10,4 @@ public class AiOuMappingResponse extends AiOuMappingRequest{
     private EntityStatus status;
     private String createdTimeStamp;
     private String lastModifiedTimeStamp;
-    private BackOfficeAck ack;
 }

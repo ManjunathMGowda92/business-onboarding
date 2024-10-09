@@ -2,10 +2,12 @@ package org.fourstack.backoffice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.fourstack.backoffice.entity.AgentInstitutionEntity;
+import org.fourstack.backoffice.entity.AiOuMappingEntity;
 import org.fourstack.backoffice.entity.OperationUnitEntity;
 import org.fourstack.backoffice.enums.ErrorScenarioCode;
 import org.fourstack.backoffice.mapper.EntityMapper;
 import org.fourstack.backoffice.mapper.ResponseMapper;
+import org.fourstack.backoffice.model.AiOuMappingResponse;
 import org.fourstack.backoffice.model.AiRequest;
 import org.fourstack.backoffice.model.AiResponse;
 import org.fourstack.backoffice.model.BackOfficeListResponse;
@@ -15,6 +17,7 @@ import org.fourstack.backoffice.model.OuRequest;
 import org.fourstack.backoffice.model.OuResponse;
 import org.fourstack.backoffice.model.UpdateAiRequest;
 import org.fourstack.backoffice.repository.AiEntityRepository;
+import org.fourstack.backoffice.repository.AiOuMappingRepository;
 import org.fourstack.backoffice.repository.OuEntityRepository;
 import org.fourstack.backoffice.util.BackOfficeUtil;
 import org.fourstack.backoffice.util.KeyGenerationUtil;
@@ -31,6 +34,7 @@ import java.util.Optional;
 public class MasterDataService {
     private final AiEntityRepository aiRepository;
     private final OuEntityRepository ouRepository;
+    private final AiOuMappingRepository aiOuRepository;
     private final ResponseMapper responseMapper;
     private final EntityMapper entityMapper;
 
@@ -124,6 +128,20 @@ public class MasterDataService {
         OperationUnitEntity savedEntity = ouRepository.save(entity);
         OuResponse response = responseMapper.mapOuEntityToResponse(savedEntity);
         return generateResponse(responseMapper.constructResponse(response), HttpStatus.CREATED);
+    }
+
+    public ResponseEntity<BackOfficeListResponse> retrieveAiOuEntities() {
+        List<AiOuMappingEntity> entities = aiOuRepository.findAll();
+        if (BackOfficeUtil.isCollectionNotNullOrEmpty(entities)) {
+            List<AiOuMappingResponse> responses = entities.stream()
+                    .map(responseMapper::mapToAiOuResponse)
+                    .toList();
+            return generateResponse(responseMapper.constructListResponse(responses), HttpStatus.OK);
+        } else {
+            return generateResponse(responseMapper.constructFailureListResponse(ErrorScenarioCode.BO_AI_OU_001,
+                    null), HttpStatus.NOT_FOUND);
+        }
+
     }
 
     private ResponseEntity<BackOfficeResponse> generateResponse(BackOfficeResponse response, HttpStatus status) {

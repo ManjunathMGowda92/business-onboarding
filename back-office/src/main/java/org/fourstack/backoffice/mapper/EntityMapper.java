@@ -3,6 +3,7 @@ package org.fourstack.backoffice.mapper;
 import org.fourstack.backoffice.entity.AgentInstitutionEntity;
 import org.fourstack.backoffice.entity.AiOuMappingEntity;
 import org.fourstack.backoffice.entity.OperationUnitEntity;
+import org.fourstack.backoffice.enums.AiType;
 import org.fourstack.backoffice.enums.EntityStatus;
 import org.fourstack.backoffice.model.AiOuMappingRequest;
 import org.fourstack.backoffice.model.AiRequest;
@@ -11,6 +12,9 @@ import org.fourstack.backoffice.model.OuRequest;
 import org.fourstack.backoffice.model.UpdateAiRequest;
 import org.fourstack.backoffice.util.BackOfficeUtil;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 @Component
 public class EntityMapper {
@@ -22,6 +26,7 @@ public class EntityMapper {
         entity.setAlias(request.getAgentInstitutionAliasName());
         entity.setDescription(request.getDescription());
         entity.setSubscriberId(request.getSubscriberId());
+        entity.setType(getAiType(request.getType()));
         entity.setRegisteredAddress(request.getRegisteredAddress());
         entity.setCommunicationAddress(request.getCommunicationAddress());
         entity.setStatus(EntityStatus.ACTIVE);
@@ -29,8 +34,14 @@ public class EntityMapper {
         return entity;
     }
 
+    private AiType getAiType(String type) {
+        Optional<AiType> optionalAiType = Arrays.stream(AiType.values())
+                .filter(aiType -> aiType.getType().equals(type))
+                .findFirst();
+        return optionalAiType.orElse(AiType.NON_PARTICIPATING);
+    }
+
     public void updateAiEntity(AgentInstitutionEntity agentInstitutionEntity, EncryptionDetails encryptionDetails) {
-        agentInstitutionEntity.setEncryptionDetails(encryptionDetails);
         agentInstitutionEntity.setLastModifiedTimeStamp(BackOfficeUtil.getCurrentTimeStamp());
     }
 
@@ -44,13 +55,11 @@ public class EntityMapper {
             if (BackOfficeUtil.isNotNullOrEmpty(request.getDescription())) {
                 entity.setDescription(request.getDescription());
             }
+            entity.setType(getAiType(request.getType()));
             entity.setSubscriberId(request.getSubscriberId());
             entity.setRegisteredAddress(request.getRegisteredAddress());
             if (BackOfficeUtil.isNotNull(request.getCommunicationAddress())) {
                 entity.setCommunicationAddress(request.getCommunicationAddress());
-            }
-            if (BackOfficeUtil.isNotNull(request.getEncryptionDetails())) {
-                entity.setEncryptionDetails(request.getEncryptionDetails());
             }
         }
     }

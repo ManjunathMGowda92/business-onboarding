@@ -9,4 +9,6 @@ public class AiOuMappingRequest {
     protected String ouId;
     protected String ouName;
     protected String description;
+    protected String webhookUrl;
+    protected EncryptionDetails encryptionDetails;
 }
