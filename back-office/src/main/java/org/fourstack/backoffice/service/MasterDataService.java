@@ -7,6 +7,8 @@ import org.fourstack.backoffice.entity.OperationUnitEntity;
 import org.fourstack.backoffice.enums.ErrorScenarioCode;
 import org.fourstack.backoffice.mapper.EntityMapper;
 import org.fourstack.backoffice.mapper.ResponseMapper;
+import org.fourstack.backoffice.model.AiOuEncryptionDetailsRequest;
+import org.fourstack.backoffice.model.AiOuMappingRequest;
 import org.fourstack.backoffice.model.AiOuMappingResponse;
 import org.fourstack.backoffice.model.AiRequest;
 import org.fourstack.backoffice.model.AiResponse;
@@ -81,13 +83,13 @@ public class MasterDataService {
         }
     }
 
-    public ResponseEntity<BackOfficeResponse> updateEncryptionDetails(String aiId, EncryptionDetails encryptionDetails) {
-        String entityKey = KeyGenerationUtil.generateAiEntityKey(aiId);
-        Optional<AgentInstitutionEntity> aiEntity = aiRepository.findById(entityKey);
-        if (aiEntity.isPresent()) {
-            AgentInstitutionEntity entity = aiEntity.get();
-            entityMapper.updateAiEntity(entity, encryptionDetails);
-            aiRepository.save(entity);
+    public ResponseEntity<BackOfficeResponse> updateEncryptionDetails(AiOuEncryptionDetailsRequest encryptionDetails) {
+        String entityKey = KeyGenerationUtil.generateAiOuEntityKey(encryptionDetails.getAiId(), encryptionDetails.getOuId());
+        Optional<AiOuMappingEntity> optionalEntity = aiOuRepository.findById(entityKey);
+        if (optionalEntity.isPresent()) {
+            AiOuMappingEntity entity = optionalEntity.get();
+            entityMapper.updateAiOuEntity(entity, encryptionDetails);
+            aiOuRepository.save(entity);
             return generateResponse(responseMapper.constructResponse(entity), HttpStatus.OK);
         } else {
             return generateResponse(responseMapper.constructFailureResponse(ErrorScenarioCode.BO_AI_0002,
@@ -132,16 +134,38 @@ public class MasterDataService {
 
     public ResponseEntity<BackOfficeListResponse> retrieveAiOuEntities() {
         List<AiOuMappingEntity> entities = aiOuRepository.findAll();
+        return generateAiOuEntityResponse(entities, ErrorScenarioCode.BO_AI_OU_001, null);
+    }
+
+    public ResponseEntity<BackOfficeListResponse> retrieveAiOuEntities(String aiId) {
+        List<AiOuMappingEntity> entities = aiOuRepository.findAllByAiId(aiId);
+        return generateAiOuEntityResponse(entities, ErrorScenarioCode.BO_AI_OU_003, "aiId");
+    }
+
+    private ResponseEntity<BackOfficeListResponse> generateAiOuEntityResponse(List<AiOuMappingEntity> entities,
+                                                                              ErrorScenarioCode scenarioCode,
+                                                                              String fieldName) {
         if (BackOfficeUtil.isCollectionNotNullOrEmpty(entities)) {
             List<AiOuMappingResponse> responses = entities.stream()
                     .map(responseMapper::mapToAiOuResponse)
                     .toList();
             return generateResponse(responseMapper.constructListResponse(responses), HttpStatus.OK);
         } else {
-            return generateResponse(responseMapper.constructFailureListResponse(ErrorScenarioCode.BO_AI_OU_001,
+            return generateResponse(responseMapper.constructFailureListResponse(scenarioCode,
+                    fieldName), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseEntity<BackOfficeResponse> retrieveAiOuEntity(String aiId, String ouId) {
+        String entityKey = KeyGenerationUtil.generateAiOuEntityKey(aiId, ouId);
+        Optional<AiOuMappingEntity> optionalEntity = aiOuRepository.findById(entityKey);
+        if (optionalEntity.isPresent()) {
+            AiOuMappingResponse response = responseMapper.mapToAiOuResponse(optionalEntity.get());
+            return generateResponse(responseMapper.constructResponse(response), HttpStatus.OK);
+        } else {
+            return generateResponse(responseMapper.constructFailureResponse(ErrorScenarioCode.BO_AI_OU_002,
                     null), HttpStatus.NOT_FOUND);
         }
-
     }
 
     private ResponseEntity<BackOfficeResponse> generateResponse(BackOfficeResponse response, HttpStatus status) {
@@ -150,5 +174,14 @@ public class MasterDataService {
 
     private ResponseEntity<BackOfficeListResponse> generateResponse(BackOfficeListResponse response, HttpStatus status) {
         return ResponseEntity.status(status).body(response);
+    }
+
+    public ResponseEntity<BackOfficeResponse> createAiOuEntity(AiOuMappingRequest request) {
+        AiOuMappingEntity entity = entityMapper.convertToAiOuMapEntity(request);
+        String entityKey = KeyGenerationUtil.generateAiOuEntityKey(request.getAiId(), request.getOuId());
+        entity.setKey(entityKey);
+        AiOuMappingEntity savedObj = aiOuRepository.save(entity);
+        AiOuMappingResponse response = responseMapper.mapToAiOuResponse(savedObj);
+        return generateResponse(responseMapper.constructResponse(response), HttpStatus.CREATED);
     }
 }

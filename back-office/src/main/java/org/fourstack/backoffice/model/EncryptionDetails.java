@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class EncryptionDetails implements Serializable {
     @Serial
     private static final long serialVersionUID = -4157085900247658699L;
-    private String key;
-    private String effectiveFrom;
-    private String effectiveTill;
+    protected String key;
+    protected String effectiveFrom;
+    protected String effectiveTill;
 }

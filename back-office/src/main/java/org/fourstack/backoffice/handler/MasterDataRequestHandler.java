@@ -1,8 +1,8 @@
 package org.fourstack.backoffice.handler;
 
 import lombok.RequiredArgsConstructor;
+import org.fourstack.backoffice.model.AiOuEncryptionDetailsRequest;
 import org.fourstack.backoffice.model.AiOuMappingRequest;
-import org.fourstack.backoffice.model.AiOuMappingResponse;
 import org.fourstack.backoffice.model.AiRequest;
 import org.fourstack.backoffice.model.BackOfficeListResponse;
 import org.fourstack.backoffice.model.BackOfficeResponse;
@@ -19,9 +19,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Collections;
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/masterData")
@@ -50,12 +47,6 @@ public class MasterDataRequestHandler {
         return masterDataService.updateAiEntity(aiId, request);
     }
 
-    @PutMapping("/aiEntity/{id}/encryptionDetails")
-    public ResponseEntity<BackOfficeResponse> updateEncryptionDetails(@PathVariable String id,
-                                                                      @RequestBody EncryptionDetails encryptionDetails) {
-        return masterDataService.updateEncryptionDetails(id, encryptionDetails);
-    }
-
     @GetMapping("/ouEntity/{id}")
     public ResponseEntity<BackOfficeResponse> retrieveOuEntity(@PathVariable String id) {
         return masterDataService.retrieveOuEntity(id);
@@ -77,17 +68,22 @@ public class MasterDataRequestHandler {
     }
 
     @GetMapping("/aiOuEntity/{aiId}/ou/{ouId}")
-    public AiOuMappingResponse retrieveAiOuEntity(@PathVariable String aiId, @PathVariable String ouId) {
-        return new AiOuMappingResponse();
+    public ResponseEntity<BackOfficeResponse> retrieveAiOuEntity(@PathVariable String aiId, @PathVariable String ouId) {
+        return masterDataService.retrieveAiOuEntity(aiId, ouId);
     }
 
     @GetMapping("/aiOuEntity/{aiId}")
-    public List<AiOuMappingResponse> retrieveAiOuEntities(@PathVariable String aiId) {
-        return Collections.emptyList();
+    public ResponseEntity<BackOfficeListResponse> retrieveAiOuEntities(@PathVariable String aiId) {
+        return masterDataService.retrieveAiOuEntities(aiId);
     }
 
     @PostMapping("/aiOuEntity")
-    public AiOuMappingResponse saveAiOuMapEntity(@RequestBody AiOuMappingRequest request) {
-        return new AiOuMappingResponse();
+    public ResponseEntity<BackOfficeResponse> saveAiOuMapEntity(@RequestBody AiOuMappingRequest request) {
+        return masterDataService.createAiOuEntity(request);
+    }
+
+    @PutMapping("/aiOuEntity/encryptionDetails")
+    public ResponseEntity<BackOfficeResponse> updateEncryptionDetails(@RequestBody AiOuEncryptionDetailsRequest encryptionDetails) {
+        return masterDataService.updateEncryptionDetails(encryptionDetails);
     }
 }

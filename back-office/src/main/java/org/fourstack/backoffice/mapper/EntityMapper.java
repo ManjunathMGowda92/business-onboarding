@@ -41,8 +41,9 @@ public class EntityMapper {
         return optionalAiType.orElse(AiType.NON_PARTICIPATING);
     }
 
-    public void updateAiEntity(AgentInstitutionEntity agentInstitutionEntity, EncryptionDetails encryptionDetails) {
-        agentInstitutionEntity.setLastModifiedTimeStamp(BackOfficeUtil.getCurrentTimeStamp());
+    public void updateAiOuEntity(AiOuMappingEntity entity, EncryptionDetails encryptionDetails) {
+        entity.setEncryptionDetails(encryptionDetails);
+        entity.setLastModifiedTimeStamp(BackOfficeUtil.getCurrentTimeStamp());
     }
 
     public void updateAiEntity(AgentInstitutionEntity entity, UpdateAiRequest request) {
