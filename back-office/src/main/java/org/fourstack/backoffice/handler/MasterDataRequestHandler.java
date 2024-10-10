@@ -6,7 +6,6 @@ import org.fourstack.backoffice.model.AiOuMappingRequest;
 import org.fourstack.backoffice.model.AiRequest;
 import org.fourstack.backoffice.model.BackOfficeListResponse;
 import org.fourstack.backoffice.model.BackOfficeResponse;
-import org.fourstack.backoffice.model.EncryptionDetails;
 import org.fourstack.backoffice.model.OuRequest;
 import org.fourstack.backoffice.model.UpdateAiRequest;
 import org.fourstack.backoffice.service.MasterDataService;

@@ -13,7 +13,7 @@ import org.fourstack.business.entity.OuEntity;
 import org.fourstack.business.enums.EntityStatus;
 import org.fourstack.business.enums.ErrorScenarioCode;
 import org.fourstack.business.mapper.ResponseMapper;
-import org.fourstack.business.model.AiOuMappingDetails;
+import org.fourstack.business.model.backoffice.AiOuMappingDetails;
 import org.fourstack.business.model.B2BId;
 import org.fourstack.business.model.B2BIdRegisterRequest;
 import org.fourstack.business.model.BusinessIdentifier;

@@ -1,8 +1,11 @@
 package org.fourstack.business.mapper;
 
 import lombok.RequiredArgsConstructor;
+import org.fourstack.business.entity.AiEntity;
+import org.fourstack.business.entity.AiOuMapEntity;
 import org.fourstack.business.entity.BusinessEntity;
 import org.fourstack.business.entity.MainOrgIdEntity;
+import org.fourstack.business.entity.OuEntity;
 import org.fourstack.business.enums.BooleanStatus;
 import org.fourstack.business.enums.OperationStatus;
 import org.fourstack.business.model.B2BIdRegisterRequest;
@@ -24,6 +27,12 @@ import org.fourstack.business.model.Response;
 import org.fourstack.business.model.SearchBusinessRequest;
 import org.fourstack.business.model.SearchBusinessResponse;
 import org.fourstack.business.model.SearchResponse;
+import org.fourstack.business.model.backoffice.AiBackOfficeResponse;
+import org.fourstack.business.model.backoffice.AiDetails;
+import org.fourstack.business.model.backoffice.AiOuBackOfficeResponse;
+import org.fourstack.business.model.backoffice.AiOuMappingDetails;
+import org.fourstack.business.model.backoffice.OuBackOfficeResponse;
+import org.fourstack.business.model.backoffice.OuDetails;
 import org.fourstack.business.service.DbOperationService;
 import org.fourstack.business.utils.BusinessUtil;
 import org.springframework.context.annotation.Lazy;
@@ -230,5 +239,73 @@ public class ResponseMapper {
         details.setBusinessName(businessName);
         details.setB2bIds(b2bIds);
         return details;
+    }
+
+    public AiBackOfficeResponse constructSuccessAiResponse(AiEntity entity) {
+        AiBackOfficeResponse response = new AiBackOfficeResponse();
+        response.setAiId(entity.getId());
+        response.setName(entity.getName());
+        response.setSubscriberId(entity.getSubscriberId());
+        response.setStatus(entity.getStatus().name());
+        response.setCreatedTimeStamp(entity.getCreatedTimeStamp());
+        response.setLastModifiedTimeStamp(entity.getLastModifiedTimeStamp());
+        response.setResponse(generateSuccessResponse(null));
+        return response;
+    }
+
+    public AiBackOfficeResponse constructFailureAiResponse(AiDetails aiDetails, String errorCode,
+                                                           String errorMsg, String fieldName) {
+        AiBackOfficeResponse response = new AiBackOfficeResponse();
+        response.setAiId(aiDetails.getAiId());
+        response.setName(aiDetails.getName());
+        response.setSubscriberId(aiDetails.getSubscriberId());
+        response.setStatus(aiDetails.getStatus());
+        response.setResponse(generateFailureResponse(null, errorCode, errorMsg, fieldName));
+        return response;
+    }
+
+    public OuBackOfficeResponse constructSuccessOuResponse(OuEntity entity) {
+        OuBackOfficeResponse response = new OuBackOfficeResponse();
+        response.setOuId(entity.getId());
+        response.setName(entity.getName());
+        response.setStatus(entity.getStatus().name());
+        response.setCreatedTimeStamp(entity.getCreatedTimeStamp());
+        response.setLastModifiedTimeStamp(entity.getLastModifiedTimeStamp());
+        response.setResponse(generateSuccessResponse(null));
+        return response;
+    }
+
+    public OuBackOfficeResponse constructFailureOuResponse(OuDetails ouDetails, String errorCode,
+                                                           String errorMsg, String fieldName) {
+        OuBackOfficeResponse response = new OuBackOfficeResponse();
+        response.setOuId(ouDetails.getOuId());
+        response.setName(ouDetails.getName());
+        response.setStatus(ouDetails.getStatus());
+        response.setResponse(generateFailureResponse(null, errorCode, errorMsg, fieldName));
+        return response;
+    }
+
+    public AiOuBackOfficeResponse constructSuccessAiOuResponse(AiOuMapEntity entity) {
+        AiOuBackOfficeResponse response = new AiOuBackOfficeResponse();
+        response.setAiId(entity.getAiId());
+        response.setOuId(entity.getOuId());
+        response.setWebhookUrl(entity.getWebhookUrl());
+        response.setEncryptionDetails(entity.getEncryptionDetails());
+        response.setStatus(entity.getStatus().name());
+        response.setCreatedTimeStamp(entity.getCreatedTimeStamp());
+        response.setLastModifiedTimeStamp(entity.getLastModifiedTimeStamp());
+        return response;
+    }
+
+    public AiOuBackOfficeResponse constructFailureAiOuResponse(AiOuMappingDetails details, String errorCode,
+                                                               String errorMsg, String fieldName) {
+        AiOuBackOfficeResponse response = new AiOuBackOfficeResponse();
+        response.setAiId(details.getAiId());
+        response.setOuId(details.getOuId());
+        response.setWebhookUrl(details.getWebhookUrl());
+        response.setEncryptionDetails(details.getEncryptionDetails());
+        response.setStatus(details.getStatus());
+        response.setResponse(generateFailureResponse(null, errorCode, errorMsg, fieldName));
+        return response;
     }
 }
