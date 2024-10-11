@@ -2,6 +2,7 @@ package org.fourstack.business.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.fourstack.business.enums.AiType;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serial;
@@ -16,4 +17,5 @@ public class AiEntity extends Entity implements Serializable {
     private String id;
     private String name;
     private String subscriberId;
+    private AiType aiType;
 }

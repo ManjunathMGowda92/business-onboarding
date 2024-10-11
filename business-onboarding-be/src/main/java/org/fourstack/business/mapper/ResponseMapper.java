@@ -247,6 +247,7 @@ public class ResponseMapper {
         response.setName(entity.getName());
         response.setSubscriberId(entity.getSubscriberId());
         response.setStatus(entity.getStatus().name());
+        response.setType(entity.getAiType().name());
         response.setCreatedTimeStamp(entity.getCreatedTimeStamp());
         response.setLastModifiedTimeStamp(entity.getLastModifiedTimeStamp());
         response.setResponse(generateSuccessResponse(null));
@@ -260,6 +261,7 @@ public class ResponseMapper {
         response.setName(aiDetails.getName());
         response.setSubscriberId(aiDetails.getSubscriberId());
         response.setStatus(aiDetails.getStatus());
+        response.setType(aiDetails.getType());
         response.setResponse(generateFailureResponse(null, errorCode, errorMsg, fieldName));
         return response;
     }
