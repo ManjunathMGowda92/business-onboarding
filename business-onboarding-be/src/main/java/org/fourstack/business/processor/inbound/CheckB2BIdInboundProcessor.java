@@ -3,8 +3,8 @@ package org.fourstack.business.processor.inbound;
 import org.fourstack.business.config.ApplicationConfig;
 import org.fourstack.business.constants.BusinessConstants;
 import org.fourstack.business.dao.service.TransactionDataService;
+import org.fourstack.business.entity.event.CheckB2BIdEvent;
 import org.fourstack.business.entity.event.Message;
-import org.fourstack.business.entity.event.SearchBusinessEvent;
 import org.fourstack.business.enums.ErrorScenarioCode;
 import org.fourstack.business.enums.EventType;
 import org.fourstack.business.enums.TransactionType;
@@ -13,10 +13,10 @@ import org.fourstack.business.exception.ValidationException;
 import org.fourstack.business.mapper.EntityMapper;
 import org.fourstack.business.mapper.ResponseMapper;
 import org.fourstack.business.model.Acknowledgement;
+import org.fourstack.business.model.CheckB2BIdRequest;
+import org.fourstack.business.model.CheckB2BIdResponse;
 import org.fourstack.business.model.CommonRequestData;
 import org.fourstack.business.model.MessageTransaction;
-import org.fourstack.business.model.SearchBusinessRequest;
-import org.fourstack.business.model.SearchBusinessResponse;
 import org.fourstack.business.model.Transaction;
 import org.fourstack.business.model.TransactionError;
 import org.fourstack.business.validator.BusinessValidator;
@@ -26,25 +26,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SearchBusinessInboundProcessor extends DefaultTransactionInboundProcessor {
-    private static final Logger logger = LoggerFactory.getLogger(SearchBusinessInboundProcessor.class);
+public class CheckB2BIdInboundProcessor extends DefaultTransactionInboundProcessor {
+    private static final Logger logger = LoggerFactory.getLogger(CheckB2BIdInboundProcessor.class);
     private final EntityMapper entityMapper;
-    private final ResponseMapper responseMapper;
     private final BusinessValidator businessValidator;
+    private final ResponseMapper responseMapper;
 
-    protected SearchBusinessInboundProcessor(TransactionDataService transactionDataService,
-                                             ApplicationConfig applicationConfig, EntityMapper entityMapper,
-                                             ResponseMapper responseMapper, BusinessValidator businessValidator) {
+    protected CheckB2BIdInboundProcessor(TransactionDataService transactionDataService,
+                                         ApplicationConfig applicationConfig, EntityMapper entityMapper,
+                                         BusinessValidator businessValidator, ResponseMapper responseMapper) {
         super(transactionDataService, applicationConfig);
         this.entityMapper = entityMapper;
-        this.responseMapper = responseMapper;
         this.businessValidator = businessValidator;
+        this.responseMapper = responseMapper;
     }
 
     @Override
     public MessageTransaction transform(Message<?, ?> message) {
-        if (message.getRequest() instanceof SearchBusinessRequest request) {
-            logger.info("Transforming the Search Business Request message");
+        if (message.getRequest() instanceof CheckB2BIdRequest request) {
+            logger.info("Transforming the Check B2B Id Request message");
             return constructTransaction(message, request);
         }
         logger.error("Invalid request received for processing");
@@ -52,13 +52,13 @@ public class SearchBusinessInboundProcessor extends DefaultTransactionInboundPro
                 ErrorScenarioCode.GEN_0007.getErrorMsg());
     }
 
-    private MessageTransaction constructTransaction(Message<?, ?> message, SearchBusinessRequest request) {
-        SearchBusinessEvent event = new SearchBusinessEvent();
+    private MessageTransaction constructTransaction(Message<?, ?> message, CheckB2BIdRequest request) {
+        CheckB2BIdEvent event = new CheckB2BIdEvent();
         event.setRequest(request);
         CommonRequestData commonData = request.getCommonData();
         Transaction txn = commonData.getTxn();
         MessageTransaction transaction = entityMapper.constructTransaction(txn.getId(), commonData.getHead().getMsgId(),
-                getEventType(), TransactionType.SEARCH, txn.getTs(), event);
+                getEventType(), TransactionType.INQUIRY, txn.getTs(), event);
         if (message.getAck() instanceof Acknowledgement acknowledgement) {
             transaction.setAcknowledgement(acknowledgement);
         }
@@ -66,16 +66,17 @@ public class SearchBusinessInboundProcessor extends DefaultTransactionInboundPro
     }
 
     /**
-     * Method to validate business for SearchBusiness Request.
+     * Method to validate business for CheckB2BId Request.
+     *
      * @param transaction {@link MessageTransaction} object.
      * @throws ValidationException throws {@link ValidationException} if any failure.
      */
     @Override
     public void validate(MessageTransaction transaction) {
-        if (transaction.getRequest() instanceof SearchBusinessEvent event) {
-            logger.info("Validating the Search Business Request");
+        if (transaction.getRequest() instanceof CheckB2BIdEvent event) {
+            logger.info("Validating the CheckB2BId Business Request");
             try {
-                businessValidator.searchBusinessValidations(event.getRequest());
+                businessValidator.checkB2BIdValidations(event.getRequest());
             } catch (ValidationException exception) {
                 generateFailureResponse(transaction, event, exception.getErrorCode(), exception.getErrorMsg(),
                         exception.getErrorField(), exception.getMessage());
@@ -91,11 +92,11 @@ public class SearchBusinessInboundProcessor extends DefaultTransactionInboundPro
         }
     }
 
-    private void generateFailureResponse(MessageTransaction transaction, SearchBusinessEvent event, String errorCode,
+    private void generateFailureResponse(MessageTransaction transaction, CheckB2BIdEvent event, String errorCode,
                                          String errorMsg, String errorField, String message) {
-        logger.error("Validation exception occurred for Search Business : {} - {} - {}", errorCode,
+        logger.error("Generating the Failure response for Check B2B ID Request : {} - {} - {}", errorCode,
                 errorMsg, message);
-        SearchBusinessResponse response = responseMapper.generateFailureSearchBusinessResponse(event.getRequest(),
+        CheckB2BIdResponse response = responseMapper.generateFailureCheckB2BResponse(event.getRequest(),
                 errorCode, errorMsg, errorField);
         event.setResponse(response);
         transaction.setResponseMessage(errorMsg);
@@ -103,13 +104,13 @@ public class SearchBusinessInboundProcessor extends DefaultTransactionInboundPro
 
     @Override
     public EventType getEventType() {
-        return EventType.REQ_SEARCH_BUSINESS;
+        return EventType.REQ_CHECK_BUSINESS;
     }
 
     @Override
     public void handleTransactionErrors(MessageTransaction transaction, TransactionError txnError) {
         logger.info("Handling Transaction Errors : {} - {}", txnError.getErrorCode(), txnError.getErrorMsg());
-        if (transaction.getRequest() instanceof SearchBusinessEvent event) {
+        if (transaction.getRequest() instanceof CheckB2BIdEvent event) {
             generateFailureResponse(transaction, event, txnError.getErrorCode(), txnError.getErrorMsg(),
                     txnError.getErrorField(), "Transaction Error occurred");
             transaction.setResponseStatus(HttpStatus.BAD_REQUEST);

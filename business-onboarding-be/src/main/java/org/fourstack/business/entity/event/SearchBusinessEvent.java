@@ -11,7 +11,6 @@ import java.io.Serializable;
 public class SearchBusinessEvent implements Serializable {
     @Serial
     private static final long serialVersionUID = 7314761980308894885L;
-    private String identifier;
     private SearchBusinessRequest request;
     private SearchBusinessResponse response;
 }
