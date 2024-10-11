@@ -17,6 +17,7 @@ import org.fourstack.business.mapper.EntityMapper;
 import org.fourstack.business.model.backoffice.AiDetails;
 import org.fourstack.business.model.backoffice.AiOuMappingDetails;
 import org.fourstack.business.model.backoffice.OuDetails;
+import org.fourstack.business.utils.BusinessUtil;
 import org.fourstack.business.utils.KeyGenerationUtil;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -141,8 +142,12 @@ public class MasterDataService {
     }
 
     public Optional<String> getWebhookUrl(String aiId, String ouId) {
-        Optional<AiOuMapEntity> optionalEntity = retrieveAiOuMapEntity(aiId, ouId);
-        return optionalEntity.map(AiOuMapEntity::getWebhookUrl);
+        if (BusinessUtil.isNotNullOrEmpty(ouId)) {
+            Optional<AiOuMapEntity> optionalEntity = retrieveAiOuMapEntity(aiId, ouId);
+            return optionalEntity.map(AiOuMapEntity::getWebhookUrl);
+        } else {
+            return getWebhookUrl(aiId);
+        }
     }
 
 }

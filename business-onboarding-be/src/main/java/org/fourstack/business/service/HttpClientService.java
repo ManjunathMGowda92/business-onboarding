@@ -5,6 +5,7 @@ import org.fourstack.business.dao.service.MasterDataService;
 import org.fourstack.business.dao.service.TransactionDataService;
 import org.fourstack.business.entity.event.B2BIdRegisterEvent;
 import org.fourstack.business.entity.event.BusinessEvent;
+import org.fourstack.business.entity.event.CheckB2BIdEvent;
 import org.fourstack.business.entity.event.CheckInstituteEvent;
 import org.fourstack.business.entity.event.SearchBusinessEvent;
 import org.fourstack.business.enums.ErrorScenarioCode;
@@ -14,6 +15,7 @@ import org.fourstack.business.enums.TransactionSubStatus;
 import org.fourstack.business.exception.HttpFailureException;
 import org.fourstack.business.model.B2BIdRegisterResponse;
 import org.fourstack.business.model.BusinessRegisterResponse;
+import org.fourstack.business.model.CheckB2BIdResponse;
 import org.fourstack.business.model.CheckBusinessResponse;
 import org.fourstack.business.model.Head;
 import org.fourstack.business.model.MessageTransaction;
@@ -60,6 +62,7 @@ public class HttpClientService {
                 case B2BIdRegisterEvent b2bIdEvent -> constructAndSendB2BResponse(b2bIdEvent, transaction);
                 case CheckInstituteEvent checkEvent -> constructAndSendResponse(checkEvent, transaction);
                 case SearchBusinessEvent searchEvent -> constructAndSendResponse(searchEvent, transaction);
+                case CheckB2BIdEvent checkB2BIdEvent -> constructAndSendResponse(checkB2BIdEvent, transaction);
                 default ->
                         logger.error("{} - Invalid Object type for outbound request : {}", this.getClass().getSimpleName(), request);
             }
@@ -77,11 +80,19 @@ public class HttpClientService {
         }
     }
 
+    private void constructAndSendResponse(CheckB2BIdEvent checkB2BIdEvent, MessageTransaction transaction) {
+        CheckB2BIdResponse response = checkB2BIdEvent.getResponse();
+        Head head = response.getCommonData().getHead();
+        WebhookRequest webhookRequest = constructWebhookRequest(response, HttpMethod.POST,
+                EventWebhookType.RESP_CHECK_B2B, head.getAiId(), head.getOuId());
+        sendOutboundRequest(webhookRequest, transaction);
+    }
+
     private void constructAndSendResponse(SearchBusinessEvent searchEvent, MessageTransaction transaction) {
         SearchBusinessResponse response = searchEvent.getResponse();
         Head head = response.getCommonData().getHead();
         WebhookRequest webhookRequest = constructWebhookRequest(response, HttpMethod.POST,
-                EventWebhookType.RESP_SEARCH_ENTITY, head.getAiId());
+                EventWebhookType.RESP_SEARCH_ENTITY, head.getAiId(), head.getOuId());
         sendOutboundRequest(webhookRequest, transaction);
     }
 
@@ -89,7 +100,7 @@ public class HttpClientService {
         CheckBusinessResponse response = checkEvent.getResponse();
         Head head = response.getCommonData().getHead();
         WebhookRequest webhookRequest = constructWebhookRequest(response, HttpMethod.POST,
-                EventWebhookType.RESP_CHECK_ENTITY, head.getAiId());
+                EventWebhookType.RESP_CHECK_ENTITY, head.getAiId(), head.getOuId());
         sendOutboundRequest(webhookRequest, transaction);
     }
 
@@ -97,7 +108,7 @@ public class HttpClientService {
         B2BIdRegisterResponse response = b2bIdEvent.getResponse();
         Head head = response.getCommonData().getHead();
         WebhookRequest webhookRequest = constructWebhookRequest(response, HttpMethod.POST, EventWebhookType.RESP_ADD_B2B,
-                head.getAiId());
+                head.getAiId(), head.getOuId());
         sendOutboundRequest(webhookRequest, transaction);
     }
 
@@ -105,15 +116,15 @@ public class HttpClientService {
         BusinessRegisterResponse response = businessEvent.getResponse();
         Head head = response.getCommonData().getHead();
         WebhookRequest webhookRequest = constructWebhookRequest(response, HttpMethod.POST,
-                EventWebhookType.RESP_CREATE_BUSINESS, head.getAiId());
+                EventWebhookType.RESP_CREATE_BUSINESS, head.getAiId(), head.getOuId());
         sendOutboundRequest(webhookRequest, transaction);
     }
 
-    private WebhookRequest constructWebhookRequest(Object response, HttpMethod methodType,
-                                                   EventWebhookType eventType, String aiId) {
+    private WebhookRequest constructWebhookRequest(Object response, HttpMethod methodType, EventWebhookType eventType,
+                                                   String aiId, String ouId) {
         WebhookRequest webhookRequest = new WebhookRequest();
         webhookRequest.setMethodType(methodType);
-        Optional<String> webhookUrl = masterDataService.getWebhookUrl(aiId);
+        Optional<String> webhookUrl = masterDataService.getWebhookUrl(aiId, ouId);
         webhookUrl.ifPresentOrElse(url -> webhookRequest.setUrl(url.concat(eventType.getEndPoint())),
                 () -> webhookRequest.setUrl(eventType.getEndPoint()));
         try {
