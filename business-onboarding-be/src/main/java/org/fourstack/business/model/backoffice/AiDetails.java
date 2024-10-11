@@ -13,4 +13,5 @@ public class AiDetails implements Serializable {
     private String name;
     private String subscriberId;
     private String status;
+    private String type;
 }
