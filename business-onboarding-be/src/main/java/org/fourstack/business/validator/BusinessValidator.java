@@ -13,6 +13,7 @@ import org.fourstack.business.entity.OuEntity;
 import org.fourstack.business.enums.EntityStatus;
 import org.fourstack.business.enums.ErrorScenarioCode;
 import org.fourstack.business.mapper.ResponseMapper;
+import org.fourstack.business.model.CheckB2BIdRequest;
 import org.fourstack.business.model.backoffice.AiOuMappingDetails;
 import org.fourstack.business.model.B2BId;
 import org.fourstack.business.model.B2BIdRegisterRequest;
@@ -286,5 +287,10 @@ public class BusinessValidator {
 
     private void generateValidationException(String msg, String fieldName, ErrorScenarioCode scenarioCode) {
         throw BusinessUtil.generateValidationException(msg, fieldName, scenarioCode);
+    }
+
+    public void checkB2BIdValidations(CheckB2BIdRequest request) {
+        logger.info("Business Validations for CheckB2BID Request");
+        validateAiAndOuEntities(request.getCommonData().getHead());
     }
 }

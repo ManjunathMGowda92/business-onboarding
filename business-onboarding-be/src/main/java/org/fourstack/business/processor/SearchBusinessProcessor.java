@@ -2,7 +2,7 @@ package org.fourstack.business.processor;
 
 import lombok.RequiredArgsConstructor;
 import org.fourstack.business.constants.BusinessConstants;
-import org.fourstack.business.dao.service.SearchBusinessRetriever;
+import org.fourstack.business.dao.service.DataRetriever;
 import org.fourstack.business.entity.event.Message;
 import org.fourstack.business.entity.event.SearchBusinessEvent;
 import org.fourstack.business.exception.ValidationException;
@@ -25,7 +25,7 @@ import java.util.List;
 public class SearchBusinessProcessor implements MessageProcessor {
     private static final Logger logger = LoggerFactory.getLogger(SearchBusinessProcessor.class);
     private final SearchBusinessInboundProcessor inboundProcessor;
-    private final SearchBusinessRetriever searchRetriever;
+    private final DataRetriever searchRetriever;
     private final HttpClientService httpClientService;
     private final ResponseMapper responseMapper;
 

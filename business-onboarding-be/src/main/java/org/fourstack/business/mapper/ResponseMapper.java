@@ -8,11 +8,14 @@ import org.fourstack.business.entity.MainOrgIdEntity;
 import org.fourstack.business.entity.OuEntity;
 import org.fourstack.business.enums.BooleanStatus;
 import org.fourstack.business.enums.OperationStatus;
+import org.fourstack.business.model.B2BAvailabilityResponse;
 import org.fourstack.business.model.B2BIdRegisterRequest;
 import org.fourstack.business.model.B2BIdRegisterResponse;
 import org.fourstack.business.model.BusinessDetails;
 import org.fourstack.business.model.BusinessRegisterRequest;
 import org.fourstack.business.model.BusinessRegisterResponse;
+import org.fourstack.business.model.CheckB2BIdRequest;
+import org.fourstack.business.model.CheckB2BIdResponse;
 import org.fourstack.business.model.CheckBusinessRequest;
 import org.fourstack.business.model.CheckBusinessResponse;
 import org.fourstack.business.model.CheckInstitute;
@@ -224,6 +227,37 @@ public class ResponseMapper {
         return response;
     }
 
+    public CheckB2BIdResponse generateFailureCheckB2BResponse(CheckB2BIdRequest request,
+                                                              String errorCode, String errorMsg, String errorField) {
+        CheckB2BIdResponse businessResponse = getCheckB2BIdResponse(request);
+        CommonResponseData commonData = businessResponse.getCommonData();
+        Head head = commonData.getHead();
+        Response response = generateFailureResponse(head.getMsgId(), errorCode, errorMsg, errorField);
+        head.setMsgId(BusinessUtil.generateAlphaNumericID(32, "MSG"));
+        commonData.setResponse(response);
+        return businessResponse;
+    }
+
+    public CheckB2BIdResponse generateSuccessCheckB2BResponse(CheckB2BIdRequest request,
+                                                              List<B2BAvailabilityResponse> b2bIdStatuses) {
+        CheckB2BIdResponse businessResponse = getCheckB2BIdResponse(request);
+        businessResponse.setB2bIdStatuses(b2bIdStatuses);
+        CommonResponseData commonData = businessResponse.getCommonData();
+        Head head = commonData.getHead();
+        Response response = generateSuccessResponse(head.getMsgId());
+        head.setMsgId(BusinessUtil.generateAlphaNumericID(32, "MSG"));
+        commonData.setResponse(response);
+        return businessResponse;
+    }
+
+    private CheckB2BIdResponse getCheckB2BIdResponse(CheckB2BIdRequest request) {
+        CheckB2BIdResponse businessResponse = new CheckB2BIdResponse();
+        businessResponse.setCommonData(constructCommonDataForResponse(request.getCommonData()));
+        businessResponse.setCheckB2BIds(request.getCheckB2BIds());
+        businessResponse.setAdditionalInfoList(request.getAdditionalInfoList());
+        return businessResponse;
+    }
+
     private BusinessDetails extractBusinessDetails(Institute institute) {
         Optional<MainOrgIdEntity> orgIdEntity = dbOperationService.retrieveOrgIdEntity(institute.getObjectId());
         if (orgIdEntity.isPresent()) {
@@ -310,4 +344,5 @@ public class ResponseMapper {
         response.setResponse(generateFailureResponse(null, errorCode, errorMsg, fieldName));
         return response;
     }
+
 }

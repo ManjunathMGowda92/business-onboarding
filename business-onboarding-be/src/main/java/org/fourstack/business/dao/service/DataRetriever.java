@@ -34,8 +34,8 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Lazy)
-public class SearchBusinessRetriever {
-    private static final Logger logger = LoggerFactory.getLogger(SearchBusinessRetriever.class);
+public class DataRetriever {
+    private static final Logger logger = LoggerFactory.getLogger(DataRetriever.class);
     private final DbOperationService dbOperationService;
 
     public List<EntityInfo> retrieveSearchResults(SearchRequest request) {
