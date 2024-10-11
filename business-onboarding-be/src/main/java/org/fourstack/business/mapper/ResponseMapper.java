@@ -1,6 +1,8 @@
 package org.fourstack.business.mapper;
 
 import lombok.RequiredArgsConstructor;
+import org.fourstack.business.dao.service.BusinessEntityDataService;
+import org.fourstack.business.dao.service.OrgEntityDataService;
 import org.fourstack.business.entity.AiEntity;
 import org.fourstack.business.entity.AiOuMapEntity;
 import org.fourstack.business.entity.BusinessEntity;
@@ -36,7 +38,6 @@ import org.fourstack.business.model.backoffice.AiOuBackOfficeResponse;
 import org.fourstack.business.model.backoffice.AiOuMappingDetails;
 import org.fourstack.business.model.backoffice.OuBackOfficeResponse;
 import org.fourstack.business.model.backoffice.OuDetails;
-import org.fourstack.business.service.DbOperationService;
 import org.fourstack.business.utils.BusinessUtil;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -52,7 +53,8 @@ import java.util.Set;
 @Component
 @RequiredArgsConstructor(onConstructor_ = @Lazy)
 public class ResponseMapper {
-    private final DbOperationService dbOperationService;
+    private final OrgEntityDataService orgEntityDataService;
+    private final BusinessEntityDataService businessDataService;
 
     public BusinessRegisterResponse generateSuccessBusinessResponse(BusinessRegisterRequest request) {
         BusinessRegisterResponse businessResponse = generateBusinessRegisterResponse(request);
@@ -147,7 +149,7 @@ public class ResponseMapper {
         instituteInfo.setIsMultipleOrgAllowed(isMultipleBusinessAllowed ? BooleanStatus.YES : BooleanStatus.NO);
         if (isBusinessExist) {
             instituteInfo.setIsBusinessExist(BooleanStatus.YES);
-            Map<String, BusinessEntity> businessEntityMap = dbOperationService.retrieveBusinessEntities(checkInstitute.getValue());
+            Map<String, BusinessEntity> businessEntityMap = businessDataService.retrieveBusinessEntityMap(checkInstitute.getValue());
             List<BusinessDetails> businessDetails = businessEntityMap.values()
                     .stream().map(BusinessEntity::getInstitute)
                     .filter(Objects::nonNull)
@@ -259,7 +261,7 @@ public class ResponseMapper {
     }
 
     private BusinessDetails extractBusinessDetails(Institute institute) {
-        Optional<MainOrgIdEntity> orgIdEntity = dbOperationService.retrieveOrgIdEntity(institute.getObjectId());
+        Optional<MainOrgIdEntity> orgIdEntity = orgEntityDataService.retrieveOrgIdEntity(institute.getObjectId());
         if (orgIdEntity.isPresent()) {
             Set<String> b2BIds = BusinessUtil.extractAllB2BIds(orgIdEntity.get());
             return getBusinessDetails(orgIdEntity.get().getBusinessName(), b2BIds);
