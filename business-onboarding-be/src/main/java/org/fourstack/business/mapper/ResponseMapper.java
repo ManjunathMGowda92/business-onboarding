@@ -27,7 +27,6 @@ import org.fourstack.business.model.CommonResponseData;
 import org.fourstack.business.model.EntityInfo;
 import org.fourstack.business.model.Head;
 import org.fourstack.business.model.Institute;
-import org.fourstack.business.model.InstituteInfo;
 import org.fourstack.business.model.Response;
 import org.fourstack.business.model.SearchBusinessRequest;
 import org.fourstack.business.model.SearchBusinessResponse;
@@ -145,21 +144,19 @@ public class ResponseMapper {
     public CheckInstituteResponse generateCheckInstituteResponse(CheckInstitute checkInstitute, boolean isBusinessExist,
                                                                  boolean isMultipleBusinessAllowed) {
         CheckInstituteResponse instituteResponse = new CheckInstituteResponse();
-        InstituteInfo instituteInfo = new InstituteInfo();
-        instituteInfo.setIsMultipleOrgAllowed(isMultipleBusinessAllowed ? BooleanStatus.YES : BooleanStatus.NO);
+        instituteResponse.setIsMultipleOrgAllowed(isMultipleBusinessAllowed ? BooleanStatus.YES : BooleanStatus.NO);
         if (isBusinessExist) {
-            instituteInfo.setIsBusinessExist(BooleanStatus.YES);
+            instituteResponse.setIsBusinessExist(BooleanStatus.YES);
             Map<String, BusinessEntity> businessEntityMap = businessDataService.retrieveBusinessEntityMap(checkInstitute.getValue());
             List<BusinessDetails> businessDetails = businessEntityMap.values()
                     .stream().map(BusinessEntity::getInstitute)
                     .filter(Objects::nonNull)
                     .map(this::extractBusinessDetails)
                     .toList();
-            instituteInfo.setBusinessDetails(businessDetails);
+            instituteResponse.setInstituteDetails(businessDetails);
         } else {
-            instituteInfo.setIsBusinessExist(BooleanStatus.NO);
-            BusinessDetails businessDetails = getBusinessDetails(checkInstitute.getRegisteredName(), Collections.emptyList());
-            instituteInfo.setBusinessDetails(List.of(businessDetails));
+            instituteResponse.setIsBusinessExist(BooleanStatus.NO);
+            instituteResponse.setInstituteDetails(Collections.emptyList());
         }
         return instituteResponse;
     }
