@@ -1,4 +1,4 @@
-package org.fourstack.business.model;
+package org.fourstack.business.model.backoffice;
 
 import lombok.Data;
 

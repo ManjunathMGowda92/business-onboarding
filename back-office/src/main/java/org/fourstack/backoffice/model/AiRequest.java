@@ -4,10 +4,12 @@ import lombok.Data;
 
 @Data
 public class AiRequest {
-    private String aiId;
-    private String name;
-    private String description;
-    private String subscriberId;
-    private String aiWebhookUrl;
-    private String headquarter;
+    protected String agentInstitutionId;
+    protected String agentInstitutionName;
+    protected String agentInstitutionAliasName;
+    protected String description;
+    protected String subscriberId;
+    protected String type;
+    protected Address registeredAddress;
+    protected Address communicationAddress;
 }

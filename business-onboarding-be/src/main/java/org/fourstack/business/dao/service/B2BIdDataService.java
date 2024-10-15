@@ -48,4 +48,8 @@ public class B2BIdDataService {
         String b2BIdentifierKey = KeyGenerationUtil.generateB2BIdentifierKey(b2bId);
         return b2bIdRepository.findById(b2BIdentifierKey);
     }
+
+    public List<B2BIdentifierEntity> retrieveB2BIds(List<String> b2bIds) {
+        return b2bIdRepository.findAllByB2bIdValue(b2bIds);
+    }
 }

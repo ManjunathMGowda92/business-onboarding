@@ -14,5 +14,5 @@ public class AiAuditEntity implements Serializable {
     private static final long serialVersionUID = 5928246374905171886L;
     @Id
     private String key;
-    private AiEntity entity;
+    private AgentInstitutionEntity entity;
 }

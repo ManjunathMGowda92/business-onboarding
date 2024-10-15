@@ -4,9 +4,11 @@ import lombok.Data;
 
 @Data
 public class AiOuMappingRequest {
-    private String aiId;
-    private String aiName;
-    private String ouId;
-    private String ouName;
-    private String description;
+    protected String aiId;
+    protected String aiName;
+    protected String ouId;
+    protected String ouName;
+    protected String description;
+    protected String webhookUrl;
+    protected EncryptionDetails encryptionDetails;
 }

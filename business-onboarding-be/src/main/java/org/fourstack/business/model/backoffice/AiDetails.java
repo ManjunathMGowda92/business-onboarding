@@ -1,4 +1,4 @@
-package org.fourstack.business.model;
+package org.fourstack.business.model.backoffice;
 
 import lombok.Data;
 
@@ -13,4 +13,5 @@ public class AiDetails implements Serializable {
     private String name;
     private String subscriberId;
     private String status;
+    private String type;
 }

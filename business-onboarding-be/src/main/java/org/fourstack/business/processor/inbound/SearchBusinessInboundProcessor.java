@@ -110,11 +110,9 @@ public class SearchBusinessInboundProcessor extends DefaultTransactionInboundPro
     public void handleTransactionErrors(MessageTransaction transaction, TransactionError txnError) {
         logger.info("Handling Transaction Errors : {} - {}", txnError.getErrorCode(), txnError.getErrorMsg());
         if (transaction.getRequest() instanceof SearchBusinessEvent event) {
-            SearchBusinessResponse response = responseMapper.generateFailureSearchBusinessResponse(event.getRequest(),
-                    txnError.getErrorCode(), txnError.getErrorMsg(), txnError.getErrorField());
-            event.setResponse(response);
+            generateFailureResponse(transaction, event, txnError.getErrorCode(), txnError.getErrorMsg(),
+                    txnError.getErrorField(), "Transaction Error occurred");
             transaction.setResponseStatus(HttpStatus.BAD_REQUEST);
-            transaction.setResponseMessage("Transaction Error occurred");
         }
     }
 }

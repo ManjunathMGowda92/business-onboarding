@@ -13,6 +13,7 @@ import org.fourstack.business.entity.MainOrgIdEntity;
 import org.fourstack.business.entity.OrgIdTransactionEntity;
 import org.fourstack.business.entity.OuEntity;
 import org.fourstack.business.entity.TransactionEntity;
+import org.fourstack.business.enums.AiType;
 import org.fourstack.business.enums.B2BCreationReason;
 import org.fourstack.business.enums.BankAccountType;
 import org.fourstack.business.enums.BusinessRole;
@@ -23,8 +24,8 @@ import org.fourstack.business.enums.TransactionFlow;
 import org.fourstack.business.enums.TransactionStatus;
 import org.fourstack.business.enums.TransactionSubStatus;
 import org.fourstack.business.enums.TransactionType;
-import org.fourstack.business.model.AiDetails;
-import org.fourstack.business.model.AiOuMappingDetails;
+import org.fourstack.business.model.backoffice.AiDetails;
+import org.fourstack.business.model.backoffice.AiOuMappingDetails;
 import org.fourstack.business.model.B2BId;
 import org.fourstack.business.model.BankAccount;
 import org.fourstack.business.model.BusinessIdentifier;
@@ -34,7 +35,7 @@ import org.fourstack.business.model.ContactNumber;
 import org.fourstack.business.model.EntityVersion;
 import org.fourstack.business.model.Institute;
 import org.fourstack.business.model.MessageTransaction;
-import org.fourstack.business.model.OuDetails;
+import org.fourstack.business.model.backoffice.OuDetails;
 import org.fourstack.business.model.RequesterB2B;
 import org.fourstack.business.model.TransactionError;
 import org.fourstack.business.utils.BusinessUtil;
@@ -70,6 +71,16 @@ public class EntityMapper {
         dbEntity.setName(aiDetails.getName());
         dbEntity.setSubscriberId(aiDetails.getSubscriberId());
         dbEntity.setStatus(getEntityStatus(aiDetails.getStatus()));
+        dbEntity.setAiType(getAiType(aiDetails.getType()));
+    }
+
+    private AiType getAiType(String type) {
+        for (AiType value : AiType.values()) {
+            if (value.name().equals(type)) {
+                return value;
+            }
+        }
+        return AiType.PARTICIPATING;
     }
 
     private EntityStatus getEntityStatus(String status) {
@@ -111,6 +122,8 @@ public class EntityMapper {
         entity.setAiId(aiOuDetails.getAiId());
         entity.setOuId(aiOuDetails.getOuId());
         entity.setStatus(getEntityStatus(aiOuDetails.getStatus()));
+        entity.setWebhookUrl(aiOuDetails.getWebhookUrl());
+        entity.setEncryptionDetails(aiOuDetails.getEncryptionDetails());
     }
 
     public AiOuMapEntity updateAiOuEntity(AiOuMappingDetails aiOuDetails, AiOuMapEntity entity) {
