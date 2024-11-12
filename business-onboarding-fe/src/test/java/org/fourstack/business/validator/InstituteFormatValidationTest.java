@@ -1,6 +1,7 @@
 package org.fourstack.business.validator;
 
 import org.fourstack.business.BaseTest;
+import org.fourstack.business.enums.BusinessType;
 import org.fourstack.business.enums.ErrorCodeScenario;
 import org.fourstack.business.enums.LeiType;
 import org.fourstack.business.exceptions.ValidationException;
@@ -351,4 +352,49 @@ class InstituteFormatValidationTest extends BaseTest {
         }
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"small", "micro", "medium", "large", "SMAll", "LARGe"})
+    @DisplayName("InstituteFormatValidationTest: Format validations for institute.businessType")
+    void testInstituteBusinessType(String businessType) {
+        BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
+        businessRequest.getInstitute().setBusinessType(businessType);
+        ValidationException exception = Assertions.assertThrows(ValidationException.class,
+                () -> formatValidator.validateBusiness(businessRequest));
+        assertValidationException(exception, ErrorCodeScenario.INPUT_0002, "institute.businessType");
+    }
+
+    @ParameterizedTest
+    @EnumSource(BusinessType.class)
+    @DisplayName("InstituteFormatValidationTest: Success validations for institute.businessType")
+    void testInstituteBusinessTypeSuccess(BusinessType businessType) {
+        BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
+        businessRequest.getInstitute().setBusinessType(businessType.name());
+        ValidationResult result = formatValidator.validateBusiness(businessRequest);
+        assertSuccessValidation(result);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"small", "micro", "medium", "large", "SMAll", "LARGe", "2", "0", "-1", "-3", "-5", "6", "9", "13"})
+    @DisplayName("InstituteFormatValidationTest: Format validations for institute.verificationLevel")
+    void testInstituteVerificationLevel(String verificationLevel) {
+        BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
+        businessRequest.getInstitute().setVerificationLevel(verificationLevel);
+        ValidationException exception = Assertions.assertThrows(ValidationException.class,
+                () -> formatValidator.validateBusiness(businessRequest));
+        assertValidationException(exception, ErrorCodeScenario.INPUT_0002, "institute.verificationLevel");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"1", "3", "5"})
+    @DisplayName("InstituteFormatValidationTest: Success validations for institute.verificationLevel")
+    void testInstituteVerificationLevelSuccess(String verificationLevel) {
+        BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
+        businessRequest.getInstitute().setVerificationLevel(verificationLevel);
+        ValidationResult result = formatValidator.validateBusiness(businessRequest);
+        assertSuccessValidation(result);
+    }
 }

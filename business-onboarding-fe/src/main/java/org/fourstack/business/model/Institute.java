@@ -15,6 +15,8 @@ public class Institute implements Serializable {
     private String alias;
     private String defaultB2bId;
     private String mccCode;
+    private String businessType;
+    private String verificationLevel;
     private Lei lei;
     private BusinessIdentifier primaryIdentifier;
     private List<BusinessIdentifier> otherIdentifiers;

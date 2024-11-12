@@ -24,6 +24,8 @@
         <rule identifier="alias" fieldName="institute.alias" expression="^$|([^\\&quot;]){1,256}$" errorCode="INP0002" errorMessage="Invalid field format" isOptional="yes"/>
         <rule identifier="defaultB2bId" fieldName="institute.defaultB2bId" expression="^([^\\&quot;]){1,100}$" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="mccCode" fieldName="institute.mccCode" expression="^[0-9]{4}$" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="businessType" fieldName="institute.businessType" expression="SMALL|MEDIUM|MICRO|LARGE" errorCode="INP0002" errorMessage="Invalid field format"/>
+        <rule identifier="verificationLevel" fieldName="institute.verificationLevel" expression="1|3|5" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="lei.documentName" fieldName="institute.lei.documentName" expression="PAN" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="lei.type" fieldName="institute.lei.type" expression="SOLE PROP|COMPANY|HUF|TRUST|GOVERNMENT AGENCY" errorCode="INP0002" errorMessage="Invalid field format"/>
         <rule identifier="lei.value" fieldName="institute.lei.value" expression="^[A-Z0-9]{10,30}$" errorCode="INP0002" errorMessage="Invalid field format"/>

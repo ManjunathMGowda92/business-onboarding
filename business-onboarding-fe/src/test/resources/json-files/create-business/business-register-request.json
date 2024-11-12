@@ -30,6 +30,8 @@
     "alias": "My Company alias",
     "defaultB2bId": "My Company Org",
     "mccCode": "1237",
+    "businessType": "SMALL",
+    "verificationLevel": "1",
     "lei": {
       "documentName": "PAN",
       "type": "SOLE PROP",
