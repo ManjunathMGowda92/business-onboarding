@@ -1,6 +1,8 @@
 package org.fourstack.business.processor;
 
 import lombok.RequiredArgsConstructor;
+import org.fourstack.business.dao.service.AiOrgMapEntityService;
+import org.fourstack.business.dao.service.SearchIdentifierService;
 import org.fourstack.business.processor.inbound.BusinessTransactionInboundProcessor;
 import org.fourstack.business.dao.service.B2BIdDataService;
 import org.fourstack.business.dao.service.BusinessEntityDataService;
@@ -27,9 +29,11 @@ public class BusinessMessageProcessor implements MessageProcessor {
     private static final Logger logger = LoggerFactory.getLogger(BusinessMessageProcessor.class);
     private final BusinessTransactionInboundProcessor businessInboundProcessor;
     private final BusinessEntityDataService businessEntityDataService;
+    private final AiOrgMapEntityService aiOrgMapEntityService;
     private final OrgEntityDataService orgEntityDataService;
     private final BusinessIdentifierDataService identifierDataService;
     private final B2BIdDataService b2BIdDataService;
+    private final SearchIdentifierService searchIdentifierService;
     private final HttpClientService httpClientService;
     private final ResponseMapper responseMapper;
 
@@ -43,14 +47,16 @@ public class BusinessMessageProcessor implements MessageProcessor {
         if (transaction.getRequest() instanceof BusinessEvent event) {
             logger.info("Executing the Business Transactions on BusinessRegisterRequest");
             BusinessEntity businessEntity = businessEntityDataService.createBusinessEntity(event.getRequest());
-            orgEntityDataService.createOrgIdEntity(businessEntity);
-            Institute institute = businessEntity.getInstitute();
             Head head = businessEntity.getHead();
+            aiOrgMapEntityService.createAiOrgMapEntity(businessEntity, head.getAiId());
+            orgEntityDataService.createOrgIdEntity(businessEntity, head.getAiId(), businessEntity.getTxn().getId());
+            Institute institute = businessEntity.getInstitute();
             identifierDataService.createBusinessIdentifier(businessEntity.getBusinessRole(), head.getAiId(),
                     institute.getObjectId(), institute.getPrimaryIdentifier());
             identifierDataService.createBusinessIdentifiers(businessEntity.getBusinessRole(), head.getAiId(),
                     institute.getObjectId(), institute.getOtherIdentifiers());
             b2BIdDataService.createB2BIdEntity(event.getRequest(), businessEntity.getBusinessRole());
+            searchIdentifierService.createSearchIdentifiers(businessEntity.getInstitute());
 
             generateSuccessResponse(transaction, event);
         }

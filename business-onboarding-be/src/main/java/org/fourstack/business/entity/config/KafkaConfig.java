@@ -8,4 +8,6 @@ public class KafkaConfig {
     private String keySerializer;
     private String valueSerializer;
     private int retries;
+    private int deliveryTimeOut;
+    private int requestTimeOut;
 }

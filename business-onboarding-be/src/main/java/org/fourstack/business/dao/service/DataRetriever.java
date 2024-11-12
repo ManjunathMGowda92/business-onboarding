@@ -6,7 +6,7 @@ import org.fourstack.business.constants.ValidationConstants;
 import org.fourstack.business.entity.B2BIdEntity;
 import org.fourstack.business.entity.B2BIdentifierEntity;
 import org.fourstack.business.entity.BusinessEntity;
-import org.fourstack.business.entity.BusinessIdentifierEntity;
+import org.fourstack.business.entity.OrgIdentifierEntity;
 import org.fourstack.business.entity.MainOrgIdEntity;
 import org.fourstack.business.enums.AddressType;
 import org.fourstack.business.enums.BooleanStatus;
@@ -76,10 +76,10 @@ public class DataRetriever {
 
     private EntityInfo searchByIdentifier(String identifierType, String identifierValue) {
         logger.info("Retrieving the search results by Identifiers - Parameter : {} - value : {}", identifierType, identifierValue);
-        Optional<BusinessIdentifierEntity> optionalBusinessIdentifierEntity =
+        Optional<OrgIdentifierEntity> optionalBusinessIdentifierEntity =
                 identifierDataService.retrieveIdentifierEntity(identifierType, identifierValue);
         if (optionalBusinessIdentifierEntity.isPresent()) {
-            BusinessIdentifierEntity identifierEntity = optionalBusinessIdentifierEntity.get();
+            OrgIdentifierEntity identifierEntity = optionalBusinessIdentifierEntity.get();
             Optional<MainOrgIdEntity> optionalOrgIdEntity = orgEntityDataService.retrieveOrgIdEntity(identifierEntity.getOrgId());
             if (optionalOrgIdEntity.isPresent()) {
                 MainOrgIdEntity orgIdEntity = optionalOrgIdEntity.get();

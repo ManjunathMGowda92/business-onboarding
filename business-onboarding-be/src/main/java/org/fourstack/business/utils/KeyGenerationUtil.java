@@ -110,4 +110,10 @@ public final class KeyGenerationUtil {
     private static String getAuditTimeStamp() {
         return BusinessUtil.getFormattedTimeStamp(BusinessConstants.FORMAT_YYYY_MM_DD_HH_MM_SS_SSS);
     }
+
+    public static String generateSearchIdentifierKey(String identifierType, String identifierValue) {
+        String identifierKey = DatabaseKeyConstants.SEARCH_IDENTIFIER_KEY;
+        return identifierKey.replaceAll(DatabaseKeyConstants.KEY_SEARCH_TYPE, identifierType)
+                .replaceAll(DatabaseKeyConstants.KEY_SEARCH_VALUE, identifierValue);
+    }
 }

@@ -1,11 +1,13 @@
 package org.fourstack.business.utils;
 
 import org.apache.kafka.clients.admin.NewTopic;
+import org.fourstack.business.entity.AiOrgMapEntity;
 import org.fourstack.business.entity.MainOrgIdEntity;
 import org.fourstack.business.enums.ErrorScenarioCode;
 import org.fourstack.business.exception.InvalidInputException;
 import org.fourstack.business.exception.InvalidTransactionException;
 import org.fourstack.business.exception.ValidationException;
+import org.fourstack.business.model.BusinessIdentifier;
 import org.fourstack.business.model.TransactionError;
 import org.springframework.kafka.config.TopicBuilder;
 
@@ -14,12 +16,15 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class BusinessUtil {
     private BusinessUtil() {
@@ -106,17 +111,6 @@ public final class BusinessUtil {
         return b2bIds;
     }
 
-    public static Set<String> extractAllIdentifiers(MainOrgIdEntity orgIdEntity) {
-        Set<String> identifiers = new HashSet<>();
-        if (isNotNullOrEmpty(orgIdEntity.getPrimaryIdentifier())) {
-            identifiers.add(orgIdEntity.getPrimaryIdentifier());
-        }
-        if (isCollectionNotNullOrEmpty(orgIdEntity.getOtherIdentifiers())) {
-            identifiers.addAll(orgIdEntity.getOtherIdentifiers());
-        }
-        return identifiers;
-    }
-
     public static String getFormattedTimeStamp(String format) {
         try {
             return LocalDateTime.now().format(DateTimeFormatter.ofPattern(format));
@@ -152,5 +146,23 @@ public final class BusinessUtil {
         txnError.setMessage(msg);
         txnError.setTimeStamp(getCurrentTimeStamp());
         return txnError;
+    }
+
+    public static int convertToInt(String verificationLevel, int defaultValue) {
+        try {
+            return Integer.parseInt(verificationLevel);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    public static Set<String> extractAllIdentifiers(AiOrgMapEntity orgIdEntity) {
+        List< BusinessIdentifier> identifiers = new ArrayList<>();
+        identifiers.add(orgIdEntity.getPrimaryIdentifier());
+        identifiers.addAll(orgIdEntity.getOtherIdentifiers());
+
+        return identifiers.stream()
+                .map(identifier -> identifier.getDocumentName() + ":"+identifier.getValue())
+                .collect(Collectors.toSet());
     }
 }

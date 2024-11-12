@@ -22,12 +22,12 @@ public class OrgEntityDataService {
     private final OrgIdEntityRepository orgEntityRepository;
     private final OrgEntityTransactionRepository orgTransactionRepository;
 
-    public void createOrgIdEntity(BusinessEntity businessEntity) {
+    public void createOrgIdEntity(BusinessEntity businessEntity, String aiId, String txnId) {
         Institute institute = businessEntity.getInstitute();
         String businessEntityKey = KeyGenerationUtil.generateBusinessEntityKey(institute.getLei().getValue(),
                 institute.getObjectId());
-        MainOrgIdEntity orgIdEntity = entityMapper.consrtuctOrgIdEntity(businessEntity, businessEntityKey);
-        orgIdEntity.setStatus(EntityStatus.INACTIVE);
+        MainOrgIdEntity orgIdEntity = entityMapper.constructOrgIdEntity(businessEntity, businessEntityKey,
+                aiId, EntityStatus.INACTIVE, txnId);
         String entityKey = KeyGenerationUtil.generateOrgIdEntityKey(orgIdEntity.getOrgId());
         orgIdEntity.setKey(entityKey);
         orgEntityRepository.save(orgIdEntity);

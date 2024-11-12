@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -16,7 +17,6 @@ public class AiOrgKycMapEntity extends Entity implements Serializable {
     @Serial
     private static final long serialVersionUID = -6425560926457654503L;
     private String aiId;
-    private String txnId;
     private String orgId;
-    private List<KycOuStatus> kycOuStatusList;
+    private Map<String, List<KycOuStatus>> ouKycStatusMap;
 }

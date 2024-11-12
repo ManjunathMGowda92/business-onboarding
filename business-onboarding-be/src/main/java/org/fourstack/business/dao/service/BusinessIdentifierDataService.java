@@ -2,7 +2,7 @@ package org.fourstack.business.dao.service;
 
 import lombok.RequiredArgsConstructor;
 import org.fourstack.business.dao.repository.BusinessIdentifierEntityRepository;
-import org.fourstack.business.entity.BusinessIdentifierEntity;
+import org.fourstack.business.entity.OrgIdentifierEntity;
 import org.fourstack.business.enums.EntityStatus;
 import org.fourstack.business.mapper.EntityMapper;
 import org.fourstack.business.model.BusinessIdentifier;
@@ -22,7 +22,7 @@ public class BusinessIdentifierDataService {
 
     public void createBusinessIdentifier(String businessRole, String aiId, String orgId,
                                          BusinessIdentifier identifier) {
-        BusinessIdentifierEntity identifierEntity = entityMapper.constructIdentifierEntity(businessRole,
+        OrgIdentifierEntity identifierEntity = entityMapper.constructIdentifierEntity(businessRole,
                 aiId, orgId, identifier);
         identifierEntity.setStatus(EntityStatus.INACTIVE);
         updateEntityKey(identifierEntity);
@@ -32,7 +32,7 @@ public class BusinessIdentifierDataService {
     public void createBusinessIdentifiers(String businessRole, String aiId, String orgId,
                                           List<BusinessIdentifier> businessIdentifiers) {
         if (BusinessUtil.isCollectionNotNullOrEmpty(businessIdentifiers)) {
-            List<BusinessIdentifierEntity> identifierEntities = businessIdentifiers.stream()
+            List<OrgIdentifierEntity> identifierEntities = businessIdentifiers.stream()
                     .map(identifier -> entityMapper.constructIdentifierEntity(businessRole, aiId, orgId, identifier))
                     .map(entity -> {
                         entity.setStatus(EntityStatus.INACTIVE);
@@ -43,13 +43,13 @@ public class BusinessIdentifierDataService {
         }
     }
 
-    private void updateEntityKey(BusinessIdentifierEntity entity) {
+    private void updateEntityKey(OrgIdentifierEntity entity) {
         BusinessIdentifier identifier = entity.getIdentifier();
         entity.setKey(KeyGenerationUtil.generateBusinessIdentifierKey(identifier.getDocumentName(),
                 identifier.getValue()));
     }
 
-    public Optional<BusinessIdentifierEntity> retrieveIdentifierEntity(String identifierType, String identifierValue) {
+    public Optional<OrgIdentifierEntity> retrieveIdentifierEntity(String identifierType, String identifierValue) {
         String entityKey = KeyGenerationUtil.generateBusinessIdentifierKey(identifierType, identifierValue);
         return identifierEntityRepository.findById(entityKey);
     }

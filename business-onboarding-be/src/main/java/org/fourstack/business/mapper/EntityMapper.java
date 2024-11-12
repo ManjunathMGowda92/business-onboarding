@@ -8,15 +8,18 @@ import org.fourstack.business.entity.AuditTransactionEntity;
 import org.fourstack.business.entity.B2BIdEntity;
 import org.fourstack.business.entity.B2BIdentifierEntity;
 import org.fourstack.business.entity.BusinessEntity;
-import org.fourstack.business.entity.BusinessIdentifierEntity;
+import org.fourstack.business.entity.OrgIdentifierEntity;
 import org.fourstack.business.entity.MainOrgIdEntity;
 import org.fourstack.business.entity.OrgIdTransactionEntity;
+import org.fourstack.business.entity.OrgVersions;
 import org.fourstack.business.entity.OuEntity;
+import org.fourstack.business.entity.SearchIdentifier;
 import org.fourstack.business.entity.TransactionEntity;
 import org.fourstack.business.enums.AiType;
 import org.fourstack.business.enums.B2BCreationReason;
 import org.fourstack.business.enums.BankAccountType;
 import org.fourstack.business.enums.BusinessRole;
+import org.fourstack.business.enums.BusinessType;
 import org.fourstack.business.enums.EntityStatus;
 import org.fourstack.business.enums.EventType;
 import org.fourstack.business.enums.PrivacyType;
@@ -24,6 +27,7 @@ import org.fourstack.business.enums.TransactionFlow;
 import org.fourstack.business.enums.TransactionStatus;
 import org.fourstack.business.enums.TransactionSubStatus;
 import org.fourstack.business.enums.TransactionType;
+import org.fourstack.business.model.Lei;
 import org.fourstack.business.model.backoffice.AiDetails;
 import org.fourstack.business.model.backoffice.AiOuMappingDetails;
 import org.fourstack.business.model.B2BId;
@@ -48,7 +52,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class EntityMapper {
@@ -132,9 +135,9 @@ public class EntityMapper {
         return entity;
     }
 
-    public BusinessIdentifierEntity constructIdentifierEntity(String role, String aiId, String orgId,
-                                                              BusinessIdentifier identifier) {
-        BusinessIdentifierEntity entity = new BusinessIdentifierEntity();
+    public OrgIdentifierEntity constructIdentifierEntity(String role, String aiId, String orgId,
+                                                         BusinessIdentifier identifier) {
+        OrgIdentifierEntity entity = new OrgIdentifierEntity();
         entity.setBusinessRole(role);
         entity.setAiId(aiId);
         entity.setOrgId(orgId);
@@ -148,52 +151,76 @@ public class EntityMapper {
         CommonRequestData commonData = request.getCommonData();
         entity.setHead(commonData.getHead());
         entity.setTxn(commonData.getTxn());
-        entity.setInstitute(request.getInstitute());
+        Institute institute = request.getInstitute();
+        String verificationLevel = getVerificationLevel(institute);
+        institute.setVerificationLevel(verificationLevel);
+        entity.setInstitute(institute);
         entity.setDevice(commonData.getDevice());
         entity.setAdditionalInfoList(request.getAdditionalInfoList());
         entity.setCreatedTimeStamp(BusinessUtil.getCurrentTimeStamp());
-        entity.setBusinessRole(getBusinessRole(request.getInstitute().getPrimaryIdentifier()));
+        entity.setBusinessRole(getBusinessRole(institute.getPrimaryIdentifier()));
         return entity;
     }
 
-    public MainOrgIdEntity consrtuctOrgIdEntity(BusinessEntity entity, String businessKey) {
+    private String getVerificationLevel(Institute institute) {
+        if (BusinessUtil.isNotNull(institute) && BusinessUtil.isNotNullOrEmpty(institute.getVerificationLevel())) {
+            return institute.getVerificationLevel();
+        }
+        return String.valueOf(5);
+    }
+
+    public MainOrgIdEntity constructOrgIdEntity(BusinessEntity entity, String businessKey, String aiId,
+                                                EntityStatus status, String txnId) {
         MainOrgIdEntity orgIdEntity = new MainOrgIdEntity();
-        orgIdEntity.setBusinessRole(entity.getBusinessRole());
         orgIdEntity.setBusinessKey(businessKey);
+        orgIdEntity.setBusinessRole(entity.getBusinessRole());
 
         Institute institute = entity.getInstitute();
         orgIdEntity.setOrgId(institute.getObjectId());
         orgIdEntity.setBusinessName(institute.getName());
         orgIdEntity.setLeiValue(institute.getLei().getValue());
         orgIdEntity.setLeiDocName(institute.getLei().getDocumentName());
-        orgIdEntity.setBusinessType(institute.getLei().getType());
+        orgIdEntity.setLeiType(institute.getLei().getType());
+        orgIdEntity.setBusinessType(getBusinessType(institute.getBusinessType()));
         orgIdEntity.setDefaultB2BId(institute.getDefaultB2bId());
-        orgIdEntity.setPrimaryContactNumber(institute.getPrimaryContact().getPhoneNumber());
-        orgIdEntity.setPrimaryEmail(institute.getPrimaryEmail());
         orgIdEntity.setAiId(entity.getHead().getAiId());
         orgIdEntity.setProductType(entity.getHead().getProdType());
-
-        addPublicB2bIds(orgIdEntity, institute);
-        addIdentifiers(orgIdEntity, institute);
-        addEmails(orgIdEntity, institute);
-        addContactNumbers(orgIdEntity, institute);
+        orgIdEntity.setCurrentVersion(1);
+        addPublicB2bIds(orgIdEntity, Set.of(institute.getDefaultB2bId()));
+        EntityVersion version = getEntityVersion(status, txnId, 1);
+        addAiIdToStatusMap(aiId, orgIdEntity, status, version);
+        orgIdEntity.setStatus(status);
         orgIdEntity.setCreatedTimeStamp(BusinessUtil.getCurrentTimeStamp());
         return orgIdEntity;
     }
 
-    private void addContactNumbers(MainOrgIdEntity orgIdEntity, Institute institute) {
+    private EntityVersion getEntityVersion(EntityStatus status, String txnId, int versionNumber) {
+        EntityVersion version = new EntityVersion();
+        version.setTxnId(txnId);
+        version.setStatus(status);
+        version.setVersion(versionNumber);
+        return version;
+    }
+
+    private BusinessType getBusinessType(String businessType) {
+        for (BusinessType value : BusinessType.values()) {
+            if (value.name().equals(businessType)) {
+                return value;
+            }
+        }
+        return BusinessType.MICRO;
+    }
+
+    private void addContactNumbers(AiOrgMapEntity orgIdEntity, Institute institute) {
         if (BusinessUtil.isCollectionNullOrEmpty(orgIdEntity.getContactNumbers())) {
             orgIdEntity.setContactNumbers(new HashSet<>());
         }
         if (BusinessUtil.isCollectionNotNullOrEmpty(institute.getContactNumbers())) {
-            Set<String> contactNumbers = institute.getContactNumbers().
-                    stream().map(ContactNumber::getPhoneNumber)
-                    .collect(Collectors.toSet());
-            orgIdEntity.getContactNumbers().addAll(contactNumbers);
+            orgIdEntity.getContactNumbers().addAll(institute.getContactNumbers());
         }
     }
 
-    private void addEmails(MainOrgIdEntity orgIdEntity, Institute institute) {
+    private void addEmails(AiOrgMapEntity orgIdEntity, Institute institute) {
         if (BusinessUtil.isCollectionNullOrEmpty(orgIdEntity.getEmails())) {
             orgIdEntity.setEmails(new HashSet<>());
         }
@@ -202,25 +229,34 @@ public class EntityMapper {
         }
     }
 
-    private void addIdentifiers(MainOrgIdEntity orgIdEntity, Institute institute) {
-        orgIdEntity.setPrimaryIdentifier(getIdentifier(institute.getPrimaryIdentifier()));
+    private void addIdentifiers(AiOrgMapEntity orgIdEntity, Institute institute) {
+        orgIdEntity.setPrimaryIdentifier(institute.getPrimaryIdentifier());
         if (BusinessUtil.isCollectionNullOrEmpty(orgIdEntity.getOtherIdentifiers())) {
             orgIdEntity.setOtherIdentifiers(new HashSet<>());
         }
         if (BusinessUtil.isCollectionNotNullOrEmpty(institute.getOtherIdentifiers())) {
-            Set<String> identifiers = institute.getOtherIdentifiers()
-                    .stream().map(this::getIdentifier)
-                    .collect(Collectors.toSet());
-            orgIdEntity.getOtherIdentifiers().addAll(identifiers);
+            orgIdEntity.getOtherIdentifiers().addAll(institute.getOtherIdentifiers());
         }
     }
 
-    private void addPublicB2bIds(MainOrgIdEntity orgIdEntity, Institute institute) {
-        if (BusinessUtil.isCollectionNullOrEmpty(orgIdEntity.getPublicB2BIds())) {
-            orgIdEntity.setPublicB2BIds(new HashSet<>());
+    private void addPublicB2bIds(MainOrgIdEntity orgIdEntity, Set<String> b2bIds) {
+        Set<String> publicB2BIds = BusinessUtil.isCollectionNotNullOrEmpty(orgIdEntity.getPublicB2BIds())
+                ? orgIdEntity.getPublicB2BIds() : new HashSet<>();
+        if (BusinessUtil.isCollectionNotNullOrEmpty(b2bIds)) {
+            publicB2BIds.addAll(b2bIds);
         }
-        orgIdEntity.getPublicB2BIds().add(institute.getDefaultB2bId());
+        orgIdEntity.setPublicB2BIds(publicB2BIds);
     }
+
+    private void addPrivateB2bIds(MainOrgIdEntity orgIdEntity, Set<String> b2bIds) {
+        Set<String> privateB2BIds = BusinessUtil.isCollectionNotNullOrEmpty(orgIdEntity.getPrivateB2BIds())
+                ? orgIdEntity.getPrivateB2BIds() : new HashSet<>();
+        if (BusinessUtil.isCollectionNotNullOrEmpty(b2bIds)) {
+            privateB2BIds.addAll(b2bIds);
+        }
+        orgIdEntity.setPrivateB2BIds(privateB2BIds);
+    }
+
 
     private String getIdentifier(BusinessIdentifier identifier) {
         return identifier.getDocumentName() + ":" + identifier.getValue();
@@ -280,7 +316,6 @@ public class EntityMapper {
         entity.setB2bIdValue(institute.getDefaultB2bId());
         CommonRequestData commonData = request.getCommonData();
         entity.setPrimaryAiId(commonData.getHead().getAiId());
-        entity.setPrimaryOuId(commonData.getHead().getOuId());
         entity.setBusinessRole(businessRole);
         RequesterB2B requesterB2B = new RequesterB2B();
         requesterB2B.setRequesterB2BId(institute.getDefaultB2bId());
@@ -317,7 +352,6 @@ public class EntityMapper {
         B2BIdentifierEntity entity = new B2BIdentifierEntity();
         entity.setB2bIdValue(b2BId.getValue());
         entity.setPrimaryAiId(aiId);
-        entity.setPrimaryOuId(ouId);
         entity.setBusinessRole(businessRole);
         entity.setOrgId(orgId);
         entity.setOnboardingB2BId(requesterB2B);
@@ -354,54 +388,110 @@ public class EntityMapper {
         return entity;
     }
 
-    public AiOrgMapEntity constructAiOrgMapEntity(MainOrgIdEntity orgIdEntity, String aiId, EntityStatus entityStatus) {
+    public AiOrgMapEntity constructAiOrgMapEntity(BusinessEntity businessEntity, String aiId, EntityStatus entityStatus) {
         AiOrgMapEntity aiOrgMapEntity = new AiOrgMapEntity();
-        aiOrgMapEntity.setBusinessKey(orgIdEntity.getBusinessKey());
-        aiOrgMapEntity.setOrgId(orgIdEntity.getOrgId());
-        aiOrgMapEntity.setBusinessName(orgIdEntity.getBusinessName());
-        aiOrgMapEntity.setLeiValue(orgIdEntity.getLeiValue());
-        aiOrgMapEntity.setLeiDocName(orgIdEntity.getLeiDocName());
-        aiOrgMapEntity.setBusinessType(orgIdEntity.getBusinessType());
-        aiOrgMapEntity.setBusinessRole(orgIdEntity.getBusinessRole());
-        aiOrgMapEntity.setCurrentVersion(orgIdEntity.getCurrentVersion());
-        aiOrgMapEntity.setActiveVersion(orgIdEntity.getActiveVersion());
-        aiOrgMapEntity.setAiId(orgIdEntity.getAiId());
-        aiOrgMapEntity.setProductType(orgIdEntity.getProductType());
-        aiOrgMapEntity.setPrimaryIdentifier(orgIdEntity.getPrimaryIdentifier());
-        addPreviousVersions(aiOrgMapEntity, orgIdEntity);
-        aiOrgMapEntity.setPublicB2BIds(orgIdEntity.getPublicB2BIds());
-        aiOrgMapEntity.setPrivateB2BIds(orgIdEntity.getPrivateB2BIds());
-        aiOrgMapEntity.setOtherIdentifiers(orgIdEntity.getOtherIdentifiers());
-        aiOrgMapEntity.setPrimaryContactNumber(orgIdEntity.getPrimaryContactNumber());
-        aiOrgMapEntity.setContactNumbers(orgIdEntity.getContactNumbers());
-        aiOrgMapEntity.setPrimaryEmail(orgIdEntity.getPrimaryEmail());
-        aiOrgMapEntity.setEmails(orgIdEntity.getEmails());
+        Institute institute = businessEntity.getInstitute();
+        aiOrgMapEntity.setOrgId(institute.getObjectId());
+        aiOrgMapEntity.setBusinessName(institute.getName());
+        populateLeiDetails(aiOrgMapEntity, institute.getLei());
+        aiOrgMapEntity.setBusinessType(getBusinessType(institute.getBusinessType()));
+        aiOrgMapEntity.setBusinessRole(businessEntity.getBusinessRole());
+        aiOrgMapEntity.setCurrentVersion(1);
+        aiOrgMapEntity.setActiveVersion(1);
+        aiOrgMapEntity.setAiId(aiId);
+        aiOrgMapEntity.setProductType(businessEntity.getHead().getProdType());
+        populatePublicB2BIds(aiOrgMapEntity, Set.of(institute.getDefaultB2bId()));
+        aiOrgMapEntity.setVerificationLevel(BusinessUtil.convertToInt(institute.getVerificationLevel(), 5));
+        populateBusinessIdentifiers(aiOrgMapEntity, institute);
+        populateContactNumbers(aiOrgMapEntity, institute);
+        populateBankAccounts(institute, aiOrgMapEntity);
+        populateEmails(aiOrgMapEntity, institute);
         aiOrgMapEntity.setStatus(entityStatus);
-        addAiIdToStatusMap(aiId, orgIdEntity, entityStatus);
+        aiOrgMapEntity.setCreatedTimeStamp(BusinessUtil.getCurrentTimeStamp());
         return aiOrgMapEntity;
     }
 
-    private void addPreviousVersions(AiOrgMapEntity aiOrgMapEntity, MainOrgIdEntity orgIdEntity) {
-        List<EntityVersion> previousVersions = orgIdEntity.getPreviousVersions();
-        List<EntityVersion> newVersions = new ArrayList<>();
-        if (BusinessUtil.isCollectionNotNullOrEmpty(newVersions)) {
-            for (EntityVersion previousVersion : previousVersions) {
-                if (previousVersion.getVersion() == orgIdEntity.getCurrentVersion()) {
-                    EntityVersion version = new EntityVersion();
-                    version.setVersion(previousVersion.getVersion());
-                    version.setTxnId(previousVersion.getTxnId());
-                    version.setStatus(EntityStatus.INACTIVE);
-                }
-            }
+    private void populateEmails(AiOrgMapEntity aiOrgMapEntity, Institute institute) {
+        aiOrgMapEntity.setPrimaryEmail(institute.getPrimaryEmail());
+        if (BusinessUtil.isCollectionNotNullOrEmpty(institute.getEmails())) {
+            HashSet<String> emails = new HashSet<>(institute.getEmails());
+            aiOrgMapEntity.setEmails(emails);
+        } else {
+            aiOrgMapEntity.setEmails(new HashSet<>());
         }
-        aiOrgMapEntity.setPreviousVersions(newVersions);
     }
 
-    private void addAiIdToStatusMap(String aiId, MainOrgIdEntity entity, EntityStatus entityStatus) {
-        Map<String, EntityStatus> aiStatusMap = entity.getAiStatusMap();
-        if (BusinessUtil.isNull(aiStatusMap)) {
-            aiStatusMap = new HashMap<>();
+    private void populateBankAccounts(Institute institute, AiOrgMapEntity aiOrgMapEntity) {
+        if (BusinessUtil.isCollectionNotNullOrEmpty(institute.getBankAccounts())) {
+            HashSet<BankAccount> bankAccounts = new HashSet<>(institute.getBankAccounts());
+            aiOrgMapEntity.setBankAccounts(bankAccounts);
+        } else {
+            aiOrgMapEntity.setBankAccounts(new HashSet<>());
         }
-        aiStatusMap.put(aiId, entityStatus);
+    }
+
+    private void populateContactNumbers(AiOrgMapEntity aiOrgMapEntity, Institute institute) {
+        aiOrgMapEntity.setPrimaryContactNumber(institute.getPrimaryContact());
+        if (BusinessUtil.isCollectionNotNullOrEmpty(institute.getContactNumbers())) {
+            HashSet<ContactNumber> contactNumbers = new HashSet<>(institute.getContactNumbers());
+            aiOrgMapEntity.setContactNumbers(contactNumbers);
+        } else {
+            aiOrgMapEntity.setContactNumbers(new HashSet<>());
+        }
+    }
+
+    private void populateBusinessIdentifiers(AiOrgMapEntity aiOrgMapEntity, Institute institute) {
+        aiOrgMapEntity.setPrimaryIdentifier(institute.getPrimaryIdentifier());
+        if (BusinessUtil.isCollectionNotNullOrEmpty(institute.getOtherIdentifiers())) {
+            HashSet<BusinessIdentifier> identifiers = new HashSet<>(institute.getOtherIdentifiers());
+            aiOrgMapEntity.setOtherIdentifiers(identifiers);
+        } else {
+            aiOrgMapEntity.setOtherIdentifiers(new HashSet<>());
+        }
+    }
+
+    private void populatePublicB2BIds(AiOrgMapEntity aiOrgMapEntity, Set<String> b2bIds) {
+        Set<String> publicB2BIds = BusinessUtil.isCollectionNotNullOrEmpty(aiOrgMapEntity.getPublicB2BIds())
+                ? aiOrgMapEntity.getPublicB2BIds() : new HashSet<>();
+        publicB2BIds.addAll(b2bIds);
+        aiOrgMapEntity.setPublicB2BIds(publicB2BIds);
+    }
+
+    private void populatePrivateB2BIds(AiOrgMapEntity aiOrgMapEntity, Set<String> b2bIds) {
+        Set<String> privateB2BIds = BusinessUtil.isCollectionNotNullOrEmpty(aiOrgMapEntity.getPrivateB2BIds())
+                ? aiOrgMapEntity.getPrivateB2BIds() : new HashSet<>();
+        privateB2BIds.addAll(b2bIds);
+        aiOrgMapEntity.setPrivateB2BIds(privateB2BIds);
+    }
+
+    private void populateLeiDetails(AiOrgMapEntity aiOrgMapEntity, Lei lei) {
+        if (BusinessUtil.isNotNull(lei)) {
+            aiOrgMapEntity.setLeiDocName(lei.getDocumentName());
+            aiOrgMapEntity.setLeiValue(lei.getValue());
+            aiOrgMapEntity.setLeiType(lei.getType());
+        }
+    }
+
+    private void addAiIdToStatusMap(String aiId, MainOrgIdEntity entity, EntityStatus entityStatus, EntityVersion version) {
+        Map<String, OrgVersions> aiStatusMap = BusinessUtil.isNotNull(entity.getAiStatusMap())
+                ? entity.getAiStatusMap() : new HashMap<>();
+        OrgVersions aiOrgVersion = aiStatusMap.getOrDefault(aiId, new OrgVersions());
+        aiOrgVersion.setAiOrgStatus(entityStatus);
+        List<EntityVersion> previousVersions = BusinessUtil.isCollectionNotNullOrEmpty(aiOrgVersion.getPreviousVersions())
+                ? aiOrgVersion.getPreviousVersions() : new ArrayList<>();
+        previousVersions.add(version);
+        aiOrgVersion.setPreviousVersions(previousVersions);
+    }
+
+    public SearchIdentifier constructSearchIdentifier(String identifierType, String identifierValue, String objectId) {
+        SearchIdentifier identifier = new SearchIdentifier();
+        identifier.setIdentifierType(identifierType);
+        identifier.setIdentifierValue(identifierValue);
+        Set<String> businessIds = BusinessUtil.isCollectionNotNullOrEmpty(identifier.getBusinessIds())
+                ? identifier.getBusinessIds() : new HashSet<>();
+        businessIds.add(objectId);
+        identifier.setBusinessIds(businessIds);
+        identifier.setCreatedTimeStamp(BusinessUtil.getCurrentTimeStamp());
+        return identifier;
     }
 }
