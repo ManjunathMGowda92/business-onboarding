@@ -11,7 +11,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Document(collection = "business_identifiers")
-public class BusinessIdentifierEntity extends Entity implements Serializable {
+public class OrgIdentifierEntity extends Entity implements Serializable {
     @Serial
     private static final long serialVersionUID = -4338507499438243382L;
     private String aiId;

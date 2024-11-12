@@ -31,13 +31,16 @@ public enum ErrorScenarioCode {
     BU_ONB_0007("ONB0007", "Requester B2B Id not active"),
     BU_ONB_0008("ONB0008", "Requested B2B Id value already exist"),
     BU_ONB_0009("ONB0009", "Business Identifier for requested B2B Id not exist"),
-    BU_ONB_0010("ONB0010", "Business Identifier for requested B2B Id not associated to Organization of Requester B2BId"),
+    BU_ONB_0010("ONB0010", "Business Identifier of requested B2B Id is not associated to Organization of Requester B2BId"),
     BU_ONB_0011("ONB0011", "Requester B2B Id not associated to originated AI"),
     BU_ONB_0012("ONB0012", "Organization not exist for Requester B2B Id"),
     BU_ONB_0013("ONB0013", "Organization associated to Requester B2B Id is not active"),
     BU_ONB_0014("ONB0014", "Unknown Search Parameter"),
     BU_ONB_0015("ONB0015", "Private B2B Id is not allowed as search parameter"),
-    BU_ONB_0016("ONB0016", "Business not found");
+    BU_ONB_0016("ONB0016", "Business not found"),
+    BU_ONB_0017("ONB0017", "Business-AI mapping not exist"),
+    BU_ONB_0018("ONB0018", "Business-AI mapping is not active"),
+    BU_ONB_0019("ONB0019", "AI-B2B ID association status is not active");
 
 
     private final String errorCode;

@@ -26,6 +26,8 @@ kafka:
       key-serializer: "org.apache.kafka.common.serialization.StringSerializer"
       value-serializer: "org.apache.kafka.common.serialization.StringSerializer"
       retries: 1
+      delivery-time-out: 60000
+      request-time-out: 60000
     consumer:
       bootstrap-servers: "localhost:9092"
       key-serializer: "org.apache.kafka.common.serialization.StringDeserializer"

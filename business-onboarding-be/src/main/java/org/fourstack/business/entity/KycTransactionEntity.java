@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -20,6 +21,5 @@ public class KycTransactionEntity extends Entity implements Serializable {
     private String txnId;
     private KycRequestType requestType;
     private String objectId;
-    private String aiId;
-    private List<KycStatusResponse> kycStatusList;
+    private Map<String, List<KycStatusResponse>> kycStatusMap;
 }

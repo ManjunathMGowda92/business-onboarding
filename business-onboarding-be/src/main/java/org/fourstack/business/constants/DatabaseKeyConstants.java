@@ -1,6 +1,7 @@
 package org.fourstack.business.constants;
 
 public final class DatabaseKeyConstants {
+
     private DatabaseKeyConstants(){
     }
 
@@ -21,6 +22,7 @@ public final class DatabaseKeyConstants {
     public static final String B2B_IDENTIFIER_KEY = "BUSINESS,V1,BUSINESS_ID,<B2B_ID>";
     public static final String KYC_TRANSACTION_KEY = "BUSINESS,V1,KYC,TXN,<TXN_ID>,BU_ID,<BU_ID>";
     public static final String KYC_ORG_AI_MAPPING_KEY = "BUSINESS,V1,KYC,AI,<AI_ID>,BU_ID,<BU_ID>";
+    public static final String SEARCH_IDENTIFIER_KEY = "BUSINESS,V1,SEARCH_TYPE,<SEARCH_TYPE>,SEARCH_VALUE,<SEARCH_VALUE>" ;
     public static final String KEY_AI_ID = "<AI_ID>";
     public static final String KEY_OU_ID = "<OU_ID>";
     public static final String KEY_LEI = "<LEI>";
@@ -28,6 +30,8 @@ public final class DatabaseKeyConstants {
     public static final String KEY_TXN_ID = "<TXN_ID>";
     public static final String KEY_IDENTIFIER_TYPE = "<IDENTIFIER_TYPE>";
     public static final String KEY_IDENTIFIER_VALUE = "<IDENTIFIER_VALUE>";
+    public static final String KEY_SEARCH_TYPE = "<SEARCH_TYPE>";
+    public static final String KEY_SEARCH_VALUE = "<SEARCH_VALUE>";
     public static final String KEY_B2B_ID = "<B2B_ID>";
     public static final String FLOW_TYPE = "<FLOW_TYPE>";
     public static final String TIMESTAMP = "<TIMESTAMP>";

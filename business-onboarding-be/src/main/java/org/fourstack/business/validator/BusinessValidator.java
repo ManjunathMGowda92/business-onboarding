@@ -3,16 +3,18 @@ package org.fourstack.business.validator;
 import lombok.RequiredArgsConstructor;
 import org.fourstack.business.config.MultipleBusinessAllowedConfig;
 import org.fourstack.business.constants.ValidationConstants;
+import org.fourstack.business.dao.service.AiOrgMapEntityService;
 import org.fourstack.business.dao.service.B2BIdDataService;
 import org.fourstack.business.dao.service.BusinessEntityDataService;
 import org.fourstack.business.dao.service.BusinessIdentifierDataService;
 import org.fourstack.business.dao.service.MasterDataService;
 import org.fourstack.business.dao.service.OrgEntityDataService;
 import org.fourstack.business.entity.AiEntity;
+import org.fourstack.business.entity.AiOrgMapEntity;
 import org.fourstack.business.entity.AiOuMapEntity;
 import org.fourstack.business.entity.B2BIdentifierEntity;
 import org.fourstack.business.entity.BusinessEntity;
-import org.fourstack.business.entity.BusinessIdentifierEntity;
+import org.fourstack.business.entity.OrgIdentifierEntity;
 import org.fourstack.business.entity.Entity;
 import org.fourstack.business.entity.MainOrgIdEntity;
 import org.fourstack.business.entity.OuEntity;
@@ -49,6 +51,7 @@ public class BusinessValidator {
     private final MasterDataService masterDataService;
     private final BusinessEntityDataService businessDataService;
     private final OrgEntityDataService orgEntityDataService;
+    private final AiOrgMapEntityService aiOrgMapEntityService;
     private final BusinessIdentifierDataService identifierDataService;
     private final B2BIdDataService b2BIdDataService;
     private final MultipleBusinessAllowedConfig multipleBusinessAllowedConfig;
@@ -73,29 +76,43 @@ public class BusinessValidator {
     }
 
     public void b2bBusinessRegisterValidations(B2BIdRegisterRequest request) {
-        validateAiAndOuEntities(request.getCommonData().getHead());
+        Head head = request.getCommonData().getHead();
+        validateAiAndOuEntities(head);
         B2BIdentifierEntity b2BIdentifierEntity =
                 validateAndRetrieveB2BIdentifierEntity(request.getOnboardingB2BIds().getRequesterB2BId(),
                         ValidationConstants.REQUESTER_B2B_ID, ErrorScenarioCode.BU_ONB_0006);
         validateEntityStatus(b2BIdentifierEntity, EntityStatus.ACTIVE, ValidationConstants.REQUESTER_B2B_ID,
                 ErrorScenarioCode.BU_ONB_0007);
-        checkIsB2bIdAssociatedToAiId(b2BIdentifierEntity, request.getCommonData().getHead().getAiId(),
+        checkIsB2bIdAssociatedToAiId(b2BIdentifierEntity, head.getAiId(),
                 ValidationConstants.REQUESTER_B2B_ID, ErrorScenarioCode.BU_ONB_0011);
         MainOrgIdEntity orgIdEntity = validateAndRetrieveOrgIdEntity(b2BIdentifierEntity.getOrgId(),
                 ValidationConstants.REQUESTER_B2B_ID, ErrorScenarioCode.BU_ONB_0012);
         validateEntityStatus(orgIdEntity, EntityStatus.ACTIVE, ValidationConstants.REQUESTER_B2B_ID,
                 ErrorScenarioCode.BU_ONB_0013);
+        AiOrgMapEntity aiOrgMapEntity = validateAndRetrieveAiOrgEntity(b2BIdentifierEntity.getOrgId(), head.getAiId(),
+                ValidationConstants.REQUESTER_B2B_ID, ErrorScenarioCode.BU_ONB_0017);
+        validateEntityStatus(aiOrgMapEntity, EntityStatus.ACTIVE,
+                ValidationConstants.REQUESTER_B2B_ID, ErrorScenarioCode.BU_ONB_0018);
 
         List<B2BId> b2BIdList = request.getRegB2BIds().getIds();
         for (B2BId b2BId : b2BIdList) {
             validateB2BIdentifierAvailability(b2BId.getValue(), ValidationConstants.REG_B2B_ID_VALUE,
                     ErrorScenarioCode.BU_ONB_0008);
-            BusinessIdentifierEntity businessIdentifierEntity =
+            OrgIdentifierEntity businessIdentifierEntity =
                     validateAndRetrieveBusinessIdentifier(b2BId.getBusinessIdentifier(),
                             ValidationConstants.REG_B2B_ID_IDENTIFIER, ErrorScenarioCode.BU_ONB_0009);
-            validateIsIdentifierAssociatedToOrgEntity(businessIdentifierEntity, orgIdEntity,
+            validateIsIdentifierAssociatedToOrgEntity(businessIdentifierEntity, aiOrgMapEntity,
                     ValidationConstants.REG_B2B_ID_IDENTIFIER, ErrorScenarioCode.BU_ONB_0010);
         }
+    }
+
+    private AiOrgMapEntity validateAndRetrieveAiOrgEntity(String objectId, String aiId, String fieldName, ErrorScenarioCode errorScenarioCode) {
+        Optional<AiOrgMapEntity> aiOrgMapEntity = aiOrgMapEntityService.retrieveAiOrgMapEntity(aiId, objectId);
+        if (aiOrgMapEntity.isEmpty()) {
+            generateValidationException("AiOrgMapEntity not exist for aiId : " + aiId + ", objectId: " + objectId,
+                    fieldName, errorScenarioCode);
+        }
+        return aiOrgMapEntity.get();
     }
 
     public CheckInstituteResponse checkBusinessValidations(CheckBusinessRequest request) {
@@ -118,6 +135,18 @@ public class BusinessValidator {
                 ErrorScenarioCode.BU_ONB_0007);
         checkIsB2bIdAssociatedToAiId(b2BIdentifierEntity, request.getCommonData().getHead().getAiId(),
                 ValidationConstants.REQUESTER_B2B_ID, ErrorScenarioCode.BU_ONB_0011);
+        validateAiB2BIdStatus(b2BIdentifierEntity, request.getCommonData().getHead().getAiId(),
+                ValidationConstants.REQUESTER_B2B_ID, ErrorScenarioCode.BU_ONB_0019);
+    }
+
+    private void validateAiB2BIdStatus(B2BIdentifierEntity b2BIdentifierEntity, String aiId,
+                                       String fieldName, ErrorScenarioCode errorScenarioCode) {
+        Map<String, EntityStatus> aiStatusMap = b2BIdentifierEntity.getAiStatusMap();
+        EntityStatus entityStatus = aiStatusMap.get(aiId);
+        if (BusinessUtil.isNull(entityStatus) || !EntityStatus.ACTIVE.equals(entityStatus)) {
+            generateValidationException("AI-B2B status mapping is Inactive for AI: " + aiId + ", B2B: "
+                    + b2BIdentifierEntity.getB2bIdValue(), fieldName, errorScenarioCode);
+        }
     }
 
     private boolean checkIsBusinessExist(String leiValue) {
@@ -125,7 +154,7 @@ public class BusinessValidator {
         return !businessEntities.isEmpty();
     }
 
-    private void validateIsIdentifierAssociatedToOrgEntity(BusinessIdentifierEntity identifierEntity, MainOrgIdEntity orgIdEntity,
+    private void validateIsIdentifierAssociatedToOrgEntity(OrgIdentifierEntity identifierEntity, AiOrgMapEntity orgIdEntity,
                                                            String fieldName, ErrorScenarioCode errorScenarioCode) {
         Set<String> orgIdentifiers = BusinessUtil.extractAllIdentifiers(orgIdEntity);
         BusinessIdentifier identifier = identifierEntity.getIdentifier();
@@ -158,14 +187,11 @@ public class BusinessValidator {
 
     private void checkIsB2bIdAssociatedToAiId(B2BIdentifierEntity b2BIdentifierEntity, String aiId,
                                               String fieldName, ErrorScenarioCode errorScenarioCode) {
-        String primaryAiId = b2BIdentifierEntity.getPrimaryAiId();
-        boolean isMatched = primaryAiId.equals(aiId);
-        if (!isMatched) {
-            Set<String> secondaryAiIds = b2BIdentifierEntity.getSecondaryAiIds();
-            if (!secondaryAiIds.contains(aiId)) {
-                generateValidationException("B2B Id : " + b2BIdentifierEntity.getB2bIdValue() + "not associated to AI Id : "
-                        + aiId, fieldName, errorScenarioCode);
-            }
+        Map<String, EntityStatus> aiStatusMap = b2BIdentifierEntity.getAiStatusMap();
+        boolean aiExists = aiStatusMap.containsKey(aiId);
+        if (!aiExists) {
+            generateValidationException("B2B Id : " + b2BIdentifierEntity.getB2bIdValue() + "not associated to AI Id : "
+                    + aiId, fieldName, errorScenarioCode);
         }
     }
 
@@ -177,7 +203,7 @@ public class BusinessValidator {
 
     private void checkBusinessIdentifierExistence(String identifierType, String identifierValue,
                                                   String fieldName, ErrorScenarioCode errorScenarioCode) {
-        Optional<BusinessIdentifierEntity> businessIdentifierEntity =
+        Optional<OrgIdentifierEntity> businessIdentifierEntity =
                 identifierDataService.retrieveIdentifierEntity(identifierType, identifierValue);
         if (businessIdentifierEntity.isPresent()) {
             generateValidationException("BusinessIdentifierEntity already exist for the identifier type: "
@@ -185,9 +211,9 @@ public class BusinessValidator {
         }
     }
 
-    private BusinessIdentifierEntity validateAndRetrieveBusinessIdentifier(BusinessIdentifier businessIdentifier,
-                                                                           String fieldName, ErrorScenarioCode errorScenarioCode) {
-        Optional<BusinessIdentifierEntity> businessIdentifierEntity =
+    private OrgIdentifierEntity validateAndRetrieveBusinessIdentifier(BusinessIdentifier businessIdentifier,
+                                                                      String fieldName, ErrorScenarioCode errorScenarioCode) {
+        Optional<OrgIdentifierEntity> businessIdentifierEntity =
                 identifierDataService.retrieveIdentifierEntity(businessIdentifier.getDocumentName(), businessIdentifier.getValue());
         if (businessIdentifierEntity.isEmpty()) {
             generateValidationException("BusinessIdentifierEntity not exist for the identifier type: "
@@ -233,7 +259,7 @@ public class BusinessValidator {
     private boolean checkMultipleBusinessAllowedForLeiType(String leiType) {
         Map<String, String> multipleBusinessConfigMap = multipleBusinessAllowedConfig.getMultipleBusinessConfig();
         if (BusinessUtil.isMapNotNullOrEmpty(multipleBusinessConfigMap)) {
-            return multipleBusinessConfigMap.get(leiType) != null && multipleBusinessConfigMap.get(leiType).equals("Yes");
+            return multipleBusinessConfigMap.get(leiType) != null && "Yes".equals(multipleBusinessConfigMap.get(leiType));
         }
         return false;
     }
