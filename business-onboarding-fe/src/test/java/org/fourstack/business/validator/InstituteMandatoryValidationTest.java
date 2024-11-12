@@ -271,4 +271,30 @@ class InstituteMandatoryValidationTest extends BaseTest {
             assertMissingFieldException(exception, "institute.otherIdentifiers.registeredName");
         }
     }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {""})
+    @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.businessType")
+    void testInstituteBusinessType(String businessType) {
+        BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
+        businessRequest.getInstitute().setBusinessType(businessType);
+        MissingFieldException exception = Assertions.assertThrows(MissingFieldException.class,
+                () -> formatValidator.validateBusiness(businessRequest));
+        assertMissingFieldException(exception, "institute.businessType");
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {""})
+    @DisplayName("InstituteMandatoryValidations: Mandatory validation for institute.verificationLevel")
+    void testInstituteVerificationLevel(String  verificationLevel) {
+        BusinessRegisterRequest businessRequest = getBusinessRequest();
+        setTimeStamp(businessRequest.getCommonData());
+        businessRequest.getInstitute().setVerificationLevel(verificationLevel);
+        MissingFieldException exception = Assertions.assertThrows(MissingFieldException.class,
+                () -> formatValidator.validateBusiness(businessRequest));
+        assertMissingFieldException(exception, "institute.verificationLevel");
+    }
 }
