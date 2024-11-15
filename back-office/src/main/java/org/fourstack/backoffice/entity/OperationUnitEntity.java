@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Document(collection = "ou_entity")
+@Document(collection = "operation_unit")
 public class OperationUnitEntity extends Entity{
     private String id;
     private String name;

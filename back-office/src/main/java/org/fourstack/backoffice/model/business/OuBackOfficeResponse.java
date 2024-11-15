@@ -1,12 +1,11 @@
-package org.fourstack.business.model.backoffice;
+package org.fourstack.backoffice.model.business;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.fourstack.business.model.Response;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class OuBackOfficeResponse extends OuDetails{
+public class OuBackOfficeResponse extends OuDetails {
     private Response response;
     protected String createdTimeStamp;
     protected String lastModifiedTimeStamp;

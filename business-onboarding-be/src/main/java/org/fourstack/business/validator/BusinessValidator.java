@@ -32,7 +32,7 @@ import org.fourstack.business.model.CheckInstituteResponse;
 import org.fourstack.business.model.Head;
 import org.fourstack.business.model.Institute;
 import org.fourstack.business.model.SearchBusinessRequest;
-import org.fourstack.business.model.backoffice.AiOuMappingDetails;
+import org.fourstack.business.model.backoffice.masterdata.AiOuMappingDetails;
 import org.fourstack.business.utils.BusinessUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -93,15 +93,14 @@ public class KafkaPublisherService {
             ProducerRecord<String, String> producerRecord = getProducerRecord(message, topicName);
             logger.info("Publishing message to kafka topic : {}", topicName);
             CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(producerRecord);
-            future.whenCompleteAsync((result, exception) -> {
-                if (BusinessUtil.isNull(exception)) {
-                    logger.info("Message published to kafka topic : {}", topicName);
-                    kafkaMessageService.saveKafkaAuditMessage(topicName, message);
-                } else {
-                    logger.error("Exception in publishing the message to topic : {}, message: {}",
-                            topicName, exception.getMessage());
-                    kafkaMessageService.saveKafkaAuditMessage(topicName, message, exception);
-                }
+            future.exceptionally(exception -> {
+                logger.error("Exception in publishing the message to topic : {}, message: {}",
+                        topicName, exception.getMessage());
+                kafkaMessageService.saveKafkaAuditMessage(topicName, message, exception);
+                return null;
+            }).thenAcceptAsync(result -> {
+                logger.info("Message published to kafka topic : {}", topicName);
+                kafkaMessageService.saveKafkaAuditMessage(topicName, message);
             });
         } else {
             logger.error("No Topic is configured for the event - {}", message.getEventType());
