@@ -9,3 +9,26 @@ spring:
 
 server:
   port: 8089
+
+kafka:
+  configurations:
+    producer:
+      bootstrap-servers: "localhost:9092, localhost:9093"
+      key-serializer: "org.apache.kafka.common.serialization.StringSerializer"
+      value-serializer: "org.apache.kafka.common.serialization.StringSerializer"
+      retries: 1
+      delivery-time-out: 60000
+      request-time-out: 60000
+  topic-details:
+    MASTER_DATA_PUBLISH:
+      topicName: MASTER-DATA
+      partitionCount: 8
+      replicaCount: 1
+      reAssignmentRequired: false
+    KYC_RESPONSE_PUBLISH:
+      topicName: KYC-RESPONSE
+      partitionCount: 8
+      replicaCount: 1
+      reAssignmentRequired: false
+
+

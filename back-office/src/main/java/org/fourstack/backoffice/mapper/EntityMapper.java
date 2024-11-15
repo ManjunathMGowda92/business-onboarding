@@ -9,11 +9,17 @@ import org.fourstack.backoffice.model.AiOuMappingRequest;
 import org.fourstack.backoffice.model.AiRequest;
 import org.fourstack.backoffice.model.EncryptionDetails;
 import org.fourstack.backoffice.model.OuRequest;
-import org.fourstack.backoffice.model.UpdateAiRequest;
+import org.fourstack.backoffice.model.AiUpdateRequest;
+import org.fourstack.backoffice.model.business.AiDetails;
+import org.fourstack.backoffice.model.business.AiOuEncryptionDetails;
+import org.fourstack.backoffice.model.business.AiOuMappingDetails;
+import org.fourstack.backoffice.model.business.MasterDataRequest;
+import org.fourstack.backoffice.model.business.OuDetails;
 import org.fourstack.backoffice.util.BackOfficeUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -46,7 +52,7 @@ public class EntityMapper {
         entity.setLastModifiedTimeStamp(BackOfficeUtil.getCurrentTimeStamp());
     }
 
-    public void updateAiEntity(AgentInstitutionEntity entity, UpdateAiRequest request) {
+    public void updateAiEntity(AgentInstitutionEntity entity, AiUpdateRequest request) {
         if (BackOfficeUtil.isNotNull(request)) {
             entity.setLastModifiedTimeStamp(BackOfficeUtil.getCurrentTimeStamp());
             entity.setName(request.getAgentInstitutionName());
@@ -75,6 +81,7 @@ public class EntityMapper {
         entity.setRegisteredAddress(request.getRegisteredAddress());
         entity.setCommunicationAddress(request.getCommunicationAddress());
         entity.setBankDetails(request.getBankDetails());
+        entity.setStatus(EntityStatus.ACTIVE);
         entity.setCreatedTimeStamp(BackOfficeUtil.getCurrentTimeStamp());
         return entity;
     }
@@ -86,9 +93,58 @@ public class EntityMapper {
         entity.setOuId(request.getOuId());
         entity.setOuName(request.getOuName());
         entity.setDescription(request.getDescription());
+        entity.setWebhookUrl(request.getWebhookUrl());
+        entity.setEncryptionDetails(request.getEncryptionDetails());
+        entity.setStatus(EntityStatus.ACTIVE);
         entity.setCreatedTimeStamp(BackOfficeUtil.getCurrentTimeStamp());
         return entity;
     }
 
+    public AiDetails convertToAiDetails(AgentInstitutionEntity entity) {
+        AiDetails details = new AiDetails();
+        details.setAiId(entity.getId());
+        details.setName(entity.getName());
+        details.setSubscriberId(entity.getSubscriberId());
+        details.setStatus(entity.getStatus().name());
+        details.setType(entity.getType().getType());
+        return details;
+    }
 
+    public OuDetails convertToOuDetails(OperationUnitEntity entity) {
+        OuDetails details = new OuDetails();
+        details.setOuId(entity.getId());
+        details.setName(entity.getName());
+        details.setStatus(entity.getStatus().name());
+        return details;
+    }
+
+    public AiOuMappingDetails convertToAiOuDetails(AiOuMappingEntity entity) {
+        AiOuMappingDetails details = new AiOuMappingDetails();
+        details.setAiId(entity.getAiId());
+        details.setOuId(entity.getOuId());
+        details.setStatus(entity.getStatus().name());
+        details.setWebhookUrl(entity.getWebhookUrl());
+        details.setEncryptionDetails(constructEncryptionDetails(entity.getEncryptionDetails()));
+        return details;
+    }
+
+    private AiOuEncryptionDetails constructEncryptionDetails(EncryptionDetails encryptionDetails) {
+        if (BackOfficeUtil.isNotNull(encryptionDetails)) {
+            AiOuEncryptionDetails details = new AiOuEncryptionDetails();
+            details.setKey(encryptionDetails.getKey());
+            details.setEffectiveStartDate(encryptionDetails.getEffectiveFrom());
+            details.setEffectiveEndDate(encryptionDetails.getEffectiveTill());
+            return details;
+        }
+        return null;
+    }
+
+    public MasterDataRequest constructMasterDataRequest(List<AiDetails> aiDetails, List<OuDetails> ouDetails,
+                                                        List<AiOuMappingDetails> aiOuDetails) {
+        return MasterDataRequest.builder()
+                .aiDetails(aiDetails)
+                .ouDetails(ouDetails)
+                .aiOuDetails(aiOuDetails)
+                .build();
+    }
 }

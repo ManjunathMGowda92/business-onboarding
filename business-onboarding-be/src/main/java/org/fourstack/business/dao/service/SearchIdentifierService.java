@@ -42,7 +42,7 @@ public class SearchIdentifierService {
 
     private void createSearchIdentifiersForEmails(Set<String> emails, String objectId) {
         if (BusinessUtil.isCollectionNotNullOrEmpty(emails)) {
-            emails.forEach(email -> createSearchIdentifier(objectId, SearchIdentifierType.EMAIL.name(), email));
+            emails.forEach(email -> createSearchIdentifier(objectId, SearchIdentifierType.EMAIL.name(), email.toUpperCase()));
         }
     }
 

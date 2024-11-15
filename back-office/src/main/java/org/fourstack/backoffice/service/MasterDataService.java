@@ -14,10 +14,9 @@ import org.fourstack.backoffice.model.AiRequest;
 import org.fourstack.backoffice.model.AiResponse;
 import org.fourstack.backoffice.model.BackOfficeListResponse;
 import org.fourstack.backoffice.model.BackOfficeResponse;
-import org.fourstack.backoffice.model.EncryptionDetails;
 import org.fourstack.backoffice.model.OuRequest;
 import org.fourstack.backoffice.model.OuResponse;
-import org.fourstack.backoffice.model.UpdateAiRequest;
+import org.fourstack.backoffice.model.AiUpdateRequest;
 import org.fourstack.backoffice.repository.AiEntityRepository;
 import org.fourstack.backoffice.repository.AiOuMappingRepository;
 import org.fourstack.backoffice.repository.OuEntityRepository;
@@ -39,6 +38,7 @@ public class MasterDataService {
     private final AiOuMappingRepository aiOuRepository;
     private final ResponseMapper responseMapper;
     private final EntityMapper entityMapper;
+    private final KafkaPublisherService publisherService;
 
     public ResponseEntity<BackOfficeListResponse> retrieveAiEntities() {
         List<AgentInstitutionEntity> aiEntities = aiRepository.findAll();
@@ -66,16 +66,18 @@ public class MasterDataService {
         String entityKey = KeyGenerationUtil.generateAiEntityKey(aiEntity.getId());
         aiEntity.setKey(entityKey);
         AgentInstitutionEntity savedObject = aiRepository.save(aiEntity);
+        publisherService.publishAiDetails(savedObject);
         return generateResponse(responseMapper.constructResponse(savedObject), HttpStatus.CREATED);
     }
 
-    public ResponseEntity<BackOfficeResponse> updateAiEntity(String aiId, UpdateAiRequest request) {
+    public ResponseEntity<BackOfficeResponse> updateAiEntity(String aiId, AiUpdateRequest request) {
         String entityKey = KeyGenerationUtil.generateAiEntityKey(aiId);
         Optional<AgentInstitutionEntity> optionalEntity = aiRepository.findById(entityKey);
         if (optionalEntity.isPresent()) {
             AgentInstitutionEntity entity = optionalEntity.get();
             entityMapper.updateAiEntity(entity, request);
-            aiRepository.save(entity);
+            AgentInstitutionEntity savedObject = aiRepository.save(entity);
+            publisherService.publishAiDetails(savedObject);
             return generateResponse(responseMapper.constructResponse(entity), HttpStatus.OK);
         } else {
             return generateResponse(responseMapper.constructFailureResponse(ErrorScenarioCode.BO_AI_0002,
@@ -89,7 +91,8 @@ public class MasterDataService {
         if (optionalEntity.isPresent()) {
             AiOuMappingEntity entity = optionalEntity.get();
             entityMapper.updateAiOuEntity(entity, encryptionDetails);
-            aiOuRepository.save(entity);
+            AiOuMappingEntity savedObject = aiOuRepository.save(entity);
+            publisherService.publishAiOuDetails(savedObject);
             return generateResponse(responseMapper.constructResponse(entity), HttpStatus.OK);
         } else {
             return generateResponse(responseMapper.constructFailureResponse(ErrorScenarioCode.BO_AI_0002,
@@ -128,6 +131,7 @@ public class MasterDataService {
         String entityKey = KeyGenerationUtil.generateOuEntityKey(entity.getId());
         entity.setKey(entityKey);
         OperationUnitEntity savedEntity = ouRepository.save(entity);
+        publisherService.publishOuDetails(savedEntity);
         OuResponse response = responseMapper.mapOuEntityToResponse(savedEntity);
         return generateResponse(responseMapper.constructResponse(response), HttpStatus.CREATED);
     }
@@ -181,6 +185,7 @@ public class MasterDataService {
         String entityKey = KeyGenerationUtil.generateAiOuEntityKey(request.getAiId(), request.getOuId());
         entity.setKey(entityKey);
         AiOuMappingEntity savedObj = aiOuRepository.save(entity);
+        publisherService.publishAiOuDetails(savedObj);
         AiOuMappingResponse response = responseMapper.mapToAiOuResponse(savedObj);
         return generateResponse(responseMapper.constructResponse(response), HttpStatus.CREATED);
     }

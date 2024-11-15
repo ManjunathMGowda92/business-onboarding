@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Document(collection = "ai_ou_entity")
+@Document(collection = "ai_ou_mappings")
 public class AiOuMappingEntity extends Entity{
     private String aiId;
     private String aiName;

@@ -1,4 +1,4 @@
-package org.fourstack.business.model.backoffice;
+package org.fourstack.backoffice.model.business;
 
 import lombok.Data;
 
@@ -14,5 +14,5 @@ public class AiOuMappingDetails implements Serializable {
     private String ouId;
     private String status;
     private String webhookUrl;
-    private EncryptionDetails encryptionDetails;
+    private AiOuEncryptionDetails encryptionDetails;
 }

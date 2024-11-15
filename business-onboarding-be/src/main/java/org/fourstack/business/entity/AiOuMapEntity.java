@@ -2,7 +2,7 @@ package org.fourstack.business.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.fourstack.business.model.backoffice.EncryptionDetails;
+import org.fourstack.business.model.backoffice.masterdata.EncryptionDetails;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serial;

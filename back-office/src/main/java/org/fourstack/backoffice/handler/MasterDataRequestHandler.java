@@ -7,7 +7,7 @@ import org.fourstack.backoffice.model.AiRequest;
 import org.fourstack.backoffice.model.BackOfficeListResponse;
 import org.fourstack.backoffice.model.BackOfficeResponse;
 import org.fourstack.backoffice.model.OuRequest;
-import org.fourstack.backoffice.model.UpdateAiRequest;
+import org.fourstack.backoffice.model.AiUpdateRequest;
 import org.fourstack.backoffice.service.MasterDataService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +42,7 @@ public class MasterDataRequestHandler {
 
     @PutMapping("/aiEntity/{aiId}")
     public ResponseEntity<BackOfficeResponse> updateAiEntity(@PathVariable String aiId,
-                                                             @RequestBody UpdateAiRequest request) {
+                                                             @RequestBody AiUpdateRequest request) {
         return masterDataService.updateAiEntity(aiId, request);
     }
 

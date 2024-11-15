@@ -10,6 +10,7 @@ import org.fourstack.business.entity.event.CheckInstituteEvent;
 import org.fourstack.business.entity.event.SearchBusinessEvent;
 import org.fourstack.business.enums.ErrorScenarioCode;
 import org.fourstack.business.enums.EventWebhookType;
+import org.fourstack.business.enums.OperationStatus;
 import org.fourstack.business.enums.TransactionStatus;
 import org.fourstack.business.enums.TransactionSubStatus;
 import org.fourstack.business.exception.HttpFailureException;
@@ -19,6 +20,7 @@ import org.fourstack.business.model.CheckB2BIdResponse;
 import org.fourstack.business.model.CheckBusinessResponse;
 import org.fourstack.business.model.Head;
 import org.fourstack.business.model.MessageTransaction;
+import org.fourstack.business.model.Response;
 import org.fourstack.business.model.SearchBusinessResponse;
 import org.fourstack.business.model.TransactionError;
 import org.fourstack.business.model.WebhookRequest;
@@ -46,12 +48,14 @@ public class HttpClientService {
     private final HttpClient httpClient;
     private final MasterDataService masterDataService;
     private final TransactionDataService transactionDataService;
+    private final KafkaBackofficePublisher kycPublisher;
 
     public HttpClientService(@Qualifier("httpClient") HttpClient httpClient, MasterDataService masterDataService,
-                             TransactionDataService transactionDataService) {
+                             TransactionDataService transactionDataService, KafkaBackofficePublisher kycPublisher) {
         this.httpClient = httpClient;
         this.masterDataService = masterDataService;
         this.transactionDataService = transactionDataService;
+        this.kycPublisher = kycPublisher;
     }
 
     public void constructAndSendOutboundRequest(MessageTransaction transaction) {
@@ -114,6 +118,10 @@ public class HttpClientService {
 
     private void constructAndSendBusinessResponse(BusinessEvent businessEvent, MessageTransaction transaction) {
         BusinessRegisterResponse response = businessEvent.getResponse();
+        Response resp = response.getCommonData().getResponse();
+        if (BusinessUtil.isNotNull(resp) && OperationStatus.SUCCESS.equals(resp.getResult())) {
+            kycPublisher.publishKycForCreateBusiness(businessEvent.getRequest());
+        }
         Head head = response.getCommonData().getHead();
         WebhookRequest webhookRequest = constructWebhookRequest(response, HttpMethod.POST,
                 EventWebhookType.RESP_CREATE_BUSINESS, head.getAiId(), head.getOuId());
