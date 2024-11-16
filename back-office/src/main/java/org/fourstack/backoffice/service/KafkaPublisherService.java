@@ -6,14 +6,17 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.fourstack.backoffice.config.BackOfficeKafkaPropData;
 import org.fourstack.backoffice.entity.AgentInstitutionEntity;
 import org.fourstack.backoffice.entity.AiOuMappingEntity;
+import org.fourstack.backoffice.entity.KafkaMessage;
 import org.fourstack.backoffice.entity.OperationUnitEntity;
 import org.fourstack.backoffice.entity.config.TopicConfigurations;
 import org.fourstack.backoffice.enums.EventType;
+import org.fourstack.backoffice.enums.OperationStatus;
 import org.fourstack.backoffice.mapper.EntityMapper;
 import org.fourstack.backoffice.model.business.AiDetails;
 import org.fourstack.backoffice.model.business.AiOuMappingDetails;
 import org.fourstack.backoffice.model.business.MasterDataRequest;
 import org.fourstack.backoffice.model.business.OuDetails;
+import org.fourstack.backoffice.repository.KafkaMessageRepository;
 import org.fourstack.backoffice.util.BackOfficeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -35,6 +39,7 @@ public class KafkaPublisherService {
     private final BackOfficeKafkaPropData kafkaPropertiesConfig;
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final EntityMapper mapper;
+    private final KafkaMessageRepository kafkaRepository;
 
     public void publishAiDetails(AgentInstitutionEntity entity) {
         AiDetails details = mapper.convertToAiDetails(entity);
@@ -75,11 +80,12 @@ public class KafkaPublisherService {
             String topicName = topicConfig.getTopicName();
             try {
                 ProducerRecord<String, String> producerRecord = getProducerRecord(request, topicName, key);
-                logger.info("Publishing Kafka message to topic  : {}", topicName);
+                logger.info("Publishing Kafka message to topic  : {} - {}", topicName, producerRecord.value());
                 CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(producerRecord);
                 future.exceptionally(exception -> {
                     logger.error("Exception in publishing message to topic : {}, message: {}",
                             topicName, exception.getMessage());
+                    constructAndSaveKafkaMessage(request, eventType, key, exception, topicName);
                     return null;
                 }).thenAcceptAsync(result -> {
                     if (BackOfficeUtil.isNotNull(result)) {
@@ -88,6 +94,7 @@ public class KafkaPublisherService {
                         int partition = recordMetadata.partition();
                         long offset = recordMetadata.offset();
                         logger.info("Message published to kafka topic : {} - partition : {} - offset : {}", topic, partition, offset);
+                        constructAndSaveKafkaMessage(request, eventType, key, recordMetadata);
                     }
                 });
             } catch (Exception exception) {
@@ -104,5 +111,36 @@ public class KafkaPublisherService {
     private TopicConfigurations getTopicConfiguration(EventType eventType) {
         Map<String, TopicConfigurations> topicDetails = kafkaPropertiesConfig.getTopicDetails();
         return topicDetails.get(eventType.name());
+    }
+
+    private void constructAndSaveKafkaMessage(Object request, EventType eventType, String key,
+                                              RecordMetadata recordMetadata) {
+        KafkaMessage kafkaMessage = constructKafkaMessage(recordMetadata.topic(), request,
+                OperationStatus.SUCCESS.name(), key, eventType);
+        kafkaMessage.setOffset(String.valueOf(recordMetadata.offset()));
+        kafkaMessage.setPartition(String.valueOf(recordMetadata.partition()));
+        kafkaRepository.save(kafkaMessage);
+    }
+
+    private void constructAndSaveKafkaMessage(Object request, EventType eventType, String key,
+                                              Throwable exception, String topicName) {
+        KafkaMessage kafkaMessage = constructKafkaMessage(topicName, request, OperationStatus.FAILURE.name(),
+                key, eventType);
+        kafkaMessage.setExceptionMessage(exception.getMessage());
+        kafkaRepository.save(kafkaMessage);
+    }
+
+    private KafkaMessage constructKafkaMessage(String topicName, Object message, String status,
+                                               String identifier, EventType eventType) {
+        KafkaMessage kafkaMessage = new KafkaMessage();
+        kafkaMessage.setId(UUID.randomUUID().toString());
+        kafkaMessage.setTopicName(topicName);
+        kafkaMessage.setIdentifier(identifier);
+        kafkaMessage.setEventType(eventType.name());
+        kafkaMessage.setMessageData(BackOfficeUtil.convertToString(message));
+        kafkaMessage.setStatus(status);
+        kafkaMessage.setDate(BackOfficeUtil.getCurrentDate());
+        kafkaMessage.setTimestamp(BackOfficeUtil.getCurrentTimeStamp());
+        return kafkaMessage;
     }
 }

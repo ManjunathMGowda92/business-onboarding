@@ -6,6 +6,7 @@ import org.apache.kafka.clients.admin.NewTopic;
 import org.fourstack.backoffice.exception.InvalidInputException;
 import org.springframework.kafka.config.TopicBuilder;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -65,5 +66,11 @@ public final class BackOfficeUtil {
                 .partitions(partitions)
                 .replicas(replicaCount)
                 .build();
+    }
+
+    public static String getCurrentDate() {
+        LocalDate date = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+        return date.format(formatter);
     }
 }

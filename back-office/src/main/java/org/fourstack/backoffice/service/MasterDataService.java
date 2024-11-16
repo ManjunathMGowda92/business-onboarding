@@ -54,14 +54,23 @@ public class MasterDataService {
     }
 
     public ResponseEntity<BackOfficeResponse> retrieveAiEntity(String aiId) {
-        String entityKey = KeyGenerationUtil.generateAiEntityKey(aiId);
-        Optional<AgentInstitutionEntity> aiEntity = aiRepository.findById(entityKey);
+        Optional<AgentInstitutionEntity> aiEntity = retrieveAgentInstitution(aiId);
         return aiEntity.map(entity -> generateResponse(responseMapper.constructResponse(entity), HttpStatus.OK))
                 .orElseGet(() -> generateResponse(responseMapper.constructFailureResponse(ErrorScenarioCode.BO_AI_0002,
                         "aiId"), HttpStatus.NOT_FOUND));
     }
 
+    private Optional<AgentInstitutionEntity> retrieveAgentInstitution(String aiId) {
+        String entityKey = KeyGenerationUtil.generateAiEntityKey(aiId);
+        return aiRepository.findById(entityKey);
+    }
+
     public ResponseEntity<BackOfficeResponse> createAiEntity(AiRequest request) {
+        Optional<AgentInstitutionEntity> optionalAiEntity = retrieveAgentInstitution(request.getAgentInstitutionId());
+        if (optionalAiEntity.isPresent()) {
+            return generateResponse(responseMapper.constructFailureResponse(ErrorScenarioCode.BO_AI_0003,
+                    "agentInstitutionId"), HttpStatus.BAD_REQUEST);
+        }
         AgentInstitutionEntity aiEntity = entityMapper.convertToAiEntity(request);
         String entityKey = KeyGenerationUtil.generateAiEntityKey(aiEntity.getId());
         aiEntity.setKey(entityKey);
@@ -71,8 +80,7 @@ public class MasterDataService {
     }
 
     public ResponseEntity<BackOfficeResponse> updateAiEntity(String aiId, AiUpdateRequest request) {
-        String entityKey = KeyGenerationUtil.generateAiEntityKey(aiId);
-        Optional<AgentInstitutionEntity> optionalEntity = aiRepository.findById(entityKey);
+        Optional<AgentInstitutionEntity> optionalEntity = retrieveAgentInstitution(aiId);
         if (optionalEntity.isPresent()) {
             AgentInstitutionEntity entity = optionalEntity.get();
             entityMapper.updateAiEntity(entity, request);
@@ -86,8 +94,7 @@ public class MasterDataService {
     }
 
     public ResponseEntity<BackOfficeResponse> updateEncryptionDetails(AiOuEncryptionDetailsRequest encryptionDetails) {
-        String entityKey = KeyGenerationUtil.generateAiOuEntityKey(encryptionDetails.getAiId(), encryptionDetails.getOuId());
-        Optional<AiOuMappingEntity> optionalEntity = aiOuRepository.findById(entityKey);
+        Optional<AiOuMappingEntity> optionalEntity = retrieveAiOuMapEntity(encryptionDetails.getAiId(), encryptionDetails.getOuId());
         if (optionalEntity.isPresent()) {
             AiOuMappingEntity entity = optionalEntity.get();
             entityMapper.updateAiOuEntity(entity, encryptionDetails);
@@ -114,8 +121,7 @@ public class MasterDataService {
     }
 
     public ResponseEntity<BackOfficeResponse> retrieveOuEntity(String ouId) {
-        String entityKey = KeyGenerationUtil.generateOuEntityKey(ouId);
-        Optional<OperationUnitEntity> optionalEntity = ouRepository.findById(entityKey);
+        Optional<OperationUnitEntity> optionalEntity = retrieveOperationUnit(ouId);
         if (optionalEntity.isPresent()) {
             OuResponse response = responseMapper.mapOuEntityToResponse(optionalEntity.get());
             return generateResponse(responseMapper.constructResponse(response), HttpStatus.OK);
@@ -126,7 +132,17 @@ public class MasterDataService {
 
     }
 
+    private Optional<OperationUnitEntity> retrieveOperationUnit(String ouId) {
+        String entityKey = KeyGenerationUtil.generateOuEntityKey(ouId);
+        return ouRepository.findById(entityKey);
+    }
+
     public ResponseEntity<BackOfficeResponse> createOuEntity(OuRequest request) {
+        Optional<OperationUnitEntity> operationUnitEntity = retrieveOperationUnit(request.getOuId());
+        if (operationUnitEntity.isPresent()) {
+            return generateResponse(responseMapper.constructFailureResponse(ErrorScenarioCode.BO_OU_0003,
+                    "ouId"), HttpStatus.BAD_REQUEST);
+        }
         OperationUnitEntity entity = entityMapper.convertToOuEntity(request);
         String entityKey = KeyGenerationUtil.generateOuEntityKey(entity.getId());
         entity.setKey(entityKey);
@@ -161,8 +177,7 @@ public class MasterDataService {
     }
 
     public ResponseEntity<BackOfficeResponse> retrieveAiOuEntity(String aiId, String ouId) {
-        String entityKey = KeyGenerationUtil.generateAiOuEntityKey(aiId, ouId);
-        Optional<AiOuMappingEntity> optionalEntity = aiOuRepository.findById(entityKey);
+        Optional<AiOuMappingEntity> optionalEntity = retrieveAiOuMapEntity(aiId, ouId);
         if (optionalEntity.isPresent()) {
             AiOuMappingResponse response = responseMapper.mapToAiOuResponse(optionalEntity.get());
             return generateResponse(responseMapper.constructResponse(response), HttpStatus.OK);
@@ -170,6 +185,11 @@ public class MasterDataService {
             return generateResponse(responseMapper.constructFailureResponse(ErrorScenarioCode.BO_AI_OU_002,
                     null), HttpStatus.NOT_FOUND);
         }
+    }
+
+    private Optional<AiOuMappingEntity> retrieveAiOuMapEntity(String aiId, String ouId) {
+        String entityKey = KeyGenerationUtil.generateAiOuEntityKey(aiId, ouId);
+        return aiOuRepository.findById(entityKey);
     }
 
     private ResponseEntity<BackOfficeResponse> generateResponse(BackOfficeResponse response, HttpStatus status) {
@@ -181,6 +201,23 @@ public class MasterDataService {
     }
 
     public ResponseEntity<BackOfficeResponse> createAiOuEntity(AiOuMappingRequest request) {
+        Optional<AiOuMappingEntity> aiOuMappingEntity = retrieveAiOuMapEntity(request.getAiId(), request.getOuId());
+        if (aiOuMappingEntity.isPresent()) {
+            return generateResponse(responseMapper.constructFailureResponse(ErrorScenarioCode.BO_AI_OU_004,
+                    null), HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<AgentInstitutionEntity> agentInstitutionEntity = retrieveAgentInstitution(request.getAiId());
+        if (agentInstitutionEntity.isEmpty()) {
+            return generateResponse(responseMapper.constructFailureResponse(ErrorScenarioCode.BO_AI_OU_005,
+                    "aiId"), HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<OperationUnitEntity> operationUnitEntity = retrieveOperationUnit(request.getOuId());
+        if (operationUnitEntity.isEmpty()) {
+            return generateResponse(responseMapper.constructFailureResponse(ErrorScenarioCode.BO_AI_OU_006,
+                    "ouId"), HttpStatus.BAD_REQUEST);
+        }
         AiOuMappingEntity entity = entityMapper.convertToAiOuMapEntity(request);
         String entityKey = KeyGenerationUtil.generateAiOuEntityKey(request.getAiId(), request.getOuId());
         entity.setKey(entityKey);
