@@ -1,4 +1,4 @@
-package org.fourstack.business.entity;
+package org.fourstack.backoffice.entity;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
