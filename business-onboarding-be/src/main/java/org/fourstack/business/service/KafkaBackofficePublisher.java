@@ -1,8 +1,9 @@
 package org.fourstack.business.service;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.fourstack.business.config.KafkaPropertiesConfig;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.fourstack.business.config.KafkaBackOfficePropertiesConfig;
+import org.fourstack.business.dao.service.BackOfficeRequestAuditService;
 import org.fourstack.business.entity.config.TopicConfig;
 import org.fourstack.business.enums.EventType;
 import org.fourstack.business.enums.KycRequestType;
@@ -14,7 +15,7 @@ import org.fourstack.business.utils.BusinessUtil;
 import org.fourstack.business.utils.JsonUtilityHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
@@ -23,12 +24,20 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = @Lazy)
 public class KafkaBackofficePublisher {
     private static final Logger logger = LoggerFactory.getLogger(KafkaBackofficePublisher.class);
 
-    private final KafkaPropertiesConfig kafkaPropertiesConfig;
+    private final KafkaBackOfficePropertiesConfig kafkaPropertiesConfig;
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final BackOfficeRequestAuditService auditService;
+
+    public KafkaBackofficePublisher(KafkaBackOfficePropertiesConfig kafkaPropertiesConfig,
+                                    @Qualifier("backOfficeKafkaTemplate") KafkaTemplate<String, String> kafkaTemplate,
+                                    BackOfficeRequestAuditService auditService) {
+        this.kafkaPropertiesConfig = kafkaPropertiesConfig;
+        this.kafkaTemplate = kafkaTemplate;
+        this.auditService = auditService;
+    }
 
     public void publishKycForCreateBusiness(BusinessRegisterRequest request) {
         String requestType = KycRequestType.CREATE_BUSINESS.getRequestType();
@@ -68,11 +77,14 @@ public class KafkaBackofficePublisher {
                     if (BusinessUtil.isNotNull(exception)) {
                         logger.error("Exception in publishing KYC message to topic : {}, message: {}",
                                 topicName, exception.getMessage());
+                        auditService.saveBackOfficeRequestAudit(request, key, eventType, topicName, null, exception);
                     }
                     return result;
                 }).thenAcceptAsync(result -> {
                     if (BusinessUtil.isNotNull(result)) {
                         logger.info("Message published to KYC kafka topic : {}", topicName);
+                        RecordMetadata recordMetadata = result.getRecordMetadata();
+                        auditService.saveBackOfficeRequestAudit(request, key, eventType, topicName, recordMetadata, null);
                     }
                 });
             } catch (Exception exception) {

@@ -1,16 +1,16 @@
 package org.fourstack.business.bootstrap;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.fourstack.business.config.KafkaBackOfficePropertiesConfig;
 import org.fourstack.business.config.KafkaPropertiesConfig;
 import org.fourstack.business.entity.config.TopicConfig;
 import org.fourstack.business.utils.BusinessUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +20,22 @@ import java.util.Map;
 import java.util.Set;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = @Lazy)
 public class KafkaTopicsLoader implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(KafkaTopicsLoader.class);
     private final KafkaAdmin kafkaAdmin;
     private final KafkaPropertiesConfig kafkaPropertiesConfig;
+    private final KafkaAdmin backOfficeKafkaAdmin;
+    private final KafkaBackOfficePropertiesConfig backOfficeConfig;
+
+    public KafkaTopicsLoader(@Qualifier("kafkaAdmin") KafkaAdmin kafkaAdmin,
+                             KafkaPropertiesConfig kafkaPropertiesConfig,
+                             @Qualifier("backOfficeKafkaAdmin") KafkaAdmin backOfficeKafkaAdmin,
+                             KafkaBackOfficePropertiesConfig backOfficeConfig) {
+        this.kafkaAdmin = kafkaAdmin;
+        this.kafkaPropertiesConfig = kafkaPropertiesConfig;
+        this.backOfficeKafkaAdmin = backOfficeKafkaAdmin;
+        this.backOfficeConfig = backOfficeConfig;
+    }
 
     @Override
     public void run(String... args) throws Exception {
@@ -36,6 +47,14 @@ public class KafkaTopicsLoader implements CommandLineRunner {
 
             List<NewTopic> newTopics = getTopicsForCreationOrModification(topicConfigurations, topicNames);
             admin.createTopics(newTopics);
+        }
+
+        try(AdminClient adminClient = AdminClient.create(backOfficeKafkaAdmin.getConfigurationProperties())) {
+            ListTopicsResult topics = adminClient.listTopics();
+            Set<String> topicNames = topics.names().get();
+            Map<String, TopicConfig> topicDetails = backOfficeConfig.getTopicDetails();
+            List<NewTopic> newTopics = getTopicsForCreationOrModification(topicDetails, topicNames);
+            adminClient.createTopics(newTopics);
         }
     }
 
