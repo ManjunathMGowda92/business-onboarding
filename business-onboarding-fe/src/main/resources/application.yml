@@ -24,32 +24,32 @@ kafka:
   topic-details:
     REQ_CREATE_BUSINESS:
       topicName: BUSINESS-REQUEST
-      partitionCount: 4
+      partitionCount: 8
       replicaCount: 1
       reAssignmentRequired: false
     REQ_ADD_B2B:
       topicName: B2B-CREATE-REQUEST
-      partitionCount: 4
+      partitionCount: 8
       replicaCount: 1
       reAssignmentRequired: false
     REQ_CHECK_BUSINESS:
       topicName: CHECK-BUSINESS-REQUEST
-      partitionCount: 4
+      partitionCount: 8
       replicaCount: 1
       reAssignmentRequired: false
     REQ_SEARCH_BUSINESS:
       topicName: SEARCH-BUSINESS-REQUEST
-      partitionCount: 4
+      partitionCount: 8
       replicaCount: 1
       reAssignmentRequired: false
     REQ_EDIT_B2B:
       topicName: B2B-EDIT-REQUEST
-      partitionCount: 4
+      partitionCount: 8
       replicaCount: 1
       reAssignmentRequired: false
     REQ_ACTIVATE_B2B:
       topicName: ACTIVATE-DEACTIVATE-B2B
-      partitionCount: 4
+      partitionCount: 8
       replicaCount: 1
       reAssignmentRequired: false
 

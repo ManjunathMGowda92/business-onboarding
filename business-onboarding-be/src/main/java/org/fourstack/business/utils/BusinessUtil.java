@@ -13,6 +13,7 @@ import org.springframework.kafka.config.TopicBuilder;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -38,6 +39,12 @@ public final class BusinessUtil {
         OffsetDateTime dateTime = OffsetDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
         return dateTime.format(formatter);
+    }
+
+    public static String getCurrentDate() {
+        LocalDate date = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+        return date.format(formatter);
     }
 
     public static long getTimeDifference(Instant instant) {

@@ -25,7 +25,7 @@ import java.util.Map;
 public class KafkaConfigurations {
     private final KafkaPropertiesConfig configs;
 
-    @Bean
+    @Bean(name = "kafkaAdmin")
     public KafkaAdmin kafkaAdmin() {
         return new KafkaAdmin(producerConfig());
     }
@@ -49,7 +49,7 @@ public class KafkaConfigurations {
         return new DefaultKafkaProducerFactory<>(producerConfig());
     }
 
-    @Bean
+    @Bean(name = "kafkaTemplate")
     public KafkaTemplate<String, String> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }

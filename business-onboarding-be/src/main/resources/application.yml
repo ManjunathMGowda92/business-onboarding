@@ -33,13 +33,24 @@ kafka:
       key-serializer: "org.apache.kafka.common.serialization.StringDeserializer"
       value-serializer: "org.apache.kafka.common.serialization.StringDeserializer"
   topic-details:
-    REQ_KYC_PUBLISH:
-      topicName: KYC-REQUEST
-      partitionCount: 4
-      replicaCount: 1
-      reAssignmentRequired: false
     REQ_BROADCAST_MSG:
       topicName: BROADCAST-REQUEST
+      partitionCount: 8
+      replicaCount: 1
+      reAssignmentRequired: false
+
+back-office-kafka:
+  configurations:
+    producer:
+      bootstrap-servers: "localhost:9092, localhost:9093"
+      key-serializer: "org.apache.kafka.common.serialization.StringSerializer"
+      value-serializer: "org.apache.kafka.common.serialization.StringSerializer"
+      retries: 1
+      delivery-time-out: 60000
+      request-time-out: 60000
+  topic-details:
+    REQ_KYC_PUBLISH:
+      topicName: BUSINESS-KYC-REQUEST
       partitionCount: 8
       replicaCount: 1
       reAssignmentRequired: false
