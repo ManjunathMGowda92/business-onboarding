@@ -6,7 +6,6 @@ import org.fourstack.business.entity.event.CheckB2BIdEvent;
 import org.fourstack.business.entity.event.Message;
 import org.fourstack.business.mapper.ResponseMapper;
 import org.fourstack.business.model.B2BAvailabilityResponse;
-import org.fourstack.business.model.CheckB2BIdRequest;
 import org.fourstack.business.model.CheckB2BIdResponse;
 import org.fourstack.business.model.MessageTransaction;
 import org.fourstack.business.processor.inbound.CheckB2BIdInboundProcessor;

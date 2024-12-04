@@ -10,5 +10,6 @@ public class KycBusinessRequest {
     private Head head;
     private Transaction txn;
     private Institute institute;
+    private EditInstitute editInstitute;
     private List<AdditionalInfo> additionalInfos;
 }
