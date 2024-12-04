@@ -7,7 +7,7 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class Institute extends CommonInstitute{
-    private BusinessIdentifier primaryIdentifier;
-    private List<BusinessIdentifier> otherIdentifiers;
+public class EditInstitute extends CommonInstitute{
+    private EditBusinessIdentifier primaryIdentifier;
+    private List<EditBusinessIdentifier> otherIdentifiers;
 }
