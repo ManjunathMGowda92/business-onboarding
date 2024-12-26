@@ -3,7 +3,7 @@ package org.fourstack.business.dao.service;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.fourstack.business.dao.repository.BackOfficeRequestAuditRepository;
-import org.fourstack.business.entity.BackOfficeRequestAudit;
+import org.fourstack.business.entity.backoffice.BackOfficeRequestAudit;
 import org.fourstack.business.enums.EventType;
 import org.fourstack.business.enums.OperationStatus;
 import org.fourstack.business.exception.ObjectMappingException;

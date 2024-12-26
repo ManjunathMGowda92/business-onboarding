@@ -1,8 +1,8 @@
 package org.fourstack.business.utils;
 
 import org.apache.kafka.clients.admin.NewTopic;
-import org.fourstack.business.entity.AiOrgMapEntity;
-import org.fourstack.business.entity.MainOrgIdEntity;
+import org.fourstack.business.entity.business.AiOrgMapEntity;
+import org.fourstack.business.entity.business.MainOrgIdEntity;
 import org.fourstack.business.enums.ErrorScenarioCode;
 import org.fourstack.business.exception.InvalidInputException;
 import org.fourstack.business.exception.InvalidTransactionException;

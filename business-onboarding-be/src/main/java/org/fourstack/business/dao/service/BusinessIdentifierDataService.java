@@ -2,7 +2,7 @@ package org.fourstack.business.dao.service;
 
 import lombok.RequiredArgsConstructor;
 import org.fourstack.business.dao.repository.BusinessIdentifierEntityRepository;
-import org.fourstack.business.entity.OrgIdentifierEntity;
+import org.fourstack.business.entity.business.OrgIdentifierEntity;
 import org.fourstack.business.enums.EntityStatus;
 import org.fourstack.business.mapper.EntityMapper;
 import org.fourstack.business.model.BusinessIdentifier;

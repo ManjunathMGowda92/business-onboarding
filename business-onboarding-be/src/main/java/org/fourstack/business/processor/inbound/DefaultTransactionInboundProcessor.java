@@ -3,7 +3,7 @@ package org.fourstack.business.processor.inbound;
 import org.fourstack.business.config.ApplicationConfig;
 import org.fourstack.business.constants.BusinessConstants;
 import org.fourstack.business.dao.service.TransactionDataService;
-import org.fourstack.business.entity.TransactionEntity;
+import org.fourstack.business.entity.common.TransactionEntity;
 import org.fourstack.business.entity.event.Message;
 import org.fourstack.business.enums.ErrorScenarioCode;
 import org.fourstack.business.enums.TransactionStatus;

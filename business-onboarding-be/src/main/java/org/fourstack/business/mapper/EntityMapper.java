@@ -1,20 +1,20 @@
 package org.fourstack.business.mapper;
 
 import org.fourstack.business.constants.BusinessConstants;
-import org.fourstack.business.entity.AiEntity;
-import org.fourstack.business.entity.AiOrgMapEntity;
-import org.fourstack.business.entity.AiOuMapEntity;
-import org.fourstack.business.entity.AuditTransactionEntity;
-import org.fourstack.business.entity.B2BIdEntity;
-import org.fourstack.business.entity.B2BIdentifierEntity;
-import org.fourstack.business.entity.BusinessEntity;
-import org.fourstack.business.entity.OrgIdentifierEntity;
-import org.fourstack.business.entity.MainOrgIdEntity;
-import org.fourstack.business.entity.OrgIdTransactionEntity;
-import org.fourstack.business.entity.OrgVersions;
-import org.fourstack.business.entity.OuEntity;
-import org.fourstack.business.entity.SearchIdentifier;
-import org.fourstack.business.entity.TransactionEntity;
+import org.fourstack.business.entity.master.AiEntity;
+import org.fourstack.business.entity.business.AiOrgMapEntity;
+import org.fourstack.business.entity.master.AiOuMapEntity;
+import org.fourstack.business.entity.common.TransactionAuditEntity;
+import org.fourstack.business.model.B2BIdDetails;
+import org.fourstack.business.entity.business.B2BIdentifierEntity;
+import org.fourstack.business.entity.business.BusinessEntity;
+import org.fourstack.business.entity.business.OrgIdentifierEntity;
+import org.fourstack.business.entity.business.MainOrgIdEntity;
+import org.fourstack.business.entity.business.MainOrgAuditEntity;
+import org.fourstack.business.model.OrgVersions;
+import org.fourstack.business.entity.master.OuEntity;
+import org.fourstack.business.entity.business.SearchIdentifier;
+import org.fourstack.business.entity.common.TransactionEntity;
 import org.fourstack.business.enums.AiType;
 import org.fourstack.business.enums.B2BCreationReason;
 import org.fourstack.business.enums.BankAccountType;
@@ -46,6 +46,7 @@ import org.fourstack.business.utils.BusinessUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -187,6 +188,7 @@ public class EntityMapper {
         orgIdEntity.setProductType(entity.getHead().getProdType());
         orgIdEntity.setCurrentVersion(1);
         addPublicB2bIds(orgIdEntity, Set.of(institute.getDefaultB2bId()));
+        orgIdEntity.setPrivateB2BIds(Collections.emptySet());
         EntityVersion version = getEntityVersion(status, txnId, 1);
         addAiIdToStatusMap(aiId, orgIdEntity, status, version);
         orgIdEntity.setStatus(status);
@@ -211,34 +213,6 @@ public class EntityMapper {
         return BusinessType.MICRO;
     }
 
-    private void addContactNumbers(AiOrgMapEntity orgIdEntity, Institute institute) {
-        if (BusinessUtil.isCollectionNullOrEmpty(orgIdEntity.getContactNumbers())) {
-            orgIdEntity.setContactNumbers(new HashSet<>());
-        }
-        if (BusinessUtil.isCollectionNotNullOrEmpty(institute.getContactNumbers())) {
-            orgIdEntity.getContactNumbers().addAll(institute.getContactNumbers());
-        }
-    }
-
-    private void addEmails(AiOrgMapEntity orgIdEntity, Institute institute) {
-        if (BusinessUtil.isCollectionNullOrEmpty(orgIdEntity.getEmails())) {
-            orgIdEntity.setEmails(new HashSet<>());
-        }
-        if (BusinessUtil.isCollectionNotNullOrEmpty(institute.getEmails())) {
-            orgIdEntity.getEmails().addAll(institute.getEmails());
-        }
-    }
-
-    private void addIdentifiers(AiOrgMapEntity orgIdEntity, Institute institute) {
-        orgIdEntity.setPrimaryIdentifier(institute.getPrimaryIdentifier());
-        if (BusinessUtil.isCollectionNullOrEmpty(orgIdEntity.getOtherIdentifiers())) {
-            orgIdEntity.setOtherIdentifiers(new HashSet<>());
-        }
-        if (BusinessUtil.isCollectionNotNullOrEmpty(institute.getOtherIdentifiers())) {
-            orgIdEntity.getOtherIdentifiers().addAll(institute.getOtherIdentifiers());
-        }
-    }
-
     private void addPublicB2bIds(MainOrgIdEntity orgIdEntity, Set<String> b2bIds) {
         Set<String> publicB2BIds = BusinessUtil.isCollectionNotNullOrEmpty(orgIdEntity.getPublicB2BIds())
                 ? orgIdEntity.getPublicB2BIds() : new HashSet<>();
@@ -246,20 +220,6 @@ public class EntityMapper {
             publicB2BIds.addAll(b2bIds);
         }
         orgIdEntity.setPublicB2BIds(publicB2BIds);
-    }
-
-    private void addPrivateB2bIds(MainOrgIdEntity orgIdEntity, Set<String> b2bIds) {
-        Set<String> privateB2BIds = BusinessUtil.isCollectionNotNullOrEmpty(orgIdEntity.getPrivateB2BIds())
-                ? orgIdEntity.getPrivateB2BIds() : new HashSet<>();
-        if (BusinessUtil.isCollectionNotNullOrEmpty(b2bIds)) {
-            privateB2BIds.addAll(b2bIds);
-        }
-        orgIdEntity.setPrivateB2BIds(privateB2BIds);
-    }
-
-
-    private String getIdentifier(BusinessIdentifier identifier) {
-        return identifier.getDocumentName() + ":" + identifier.getValue();
     }
 
     private String getBusinessRole(BusinessIdentifier primaryIdentifier) {
@@ -300,8 +260,8 @@ public class EntityMapper {
         return transactionEntity;
     }
 
-    public AuditTransactionEntity generateAuditTransactionEntity(MessageTransaction transaction, TransactionFlow flowType) {
-        AuditTransactionEntity entity = new AuditTransactionEntity();
+    public TransactionAuditEntity generateAuditTransactionEntity(MessageTransaction transaction, TransactionFlow flowType) {
+        TransactionAuditEntity entity = new TransactionAuditEntity();
         entity.setTransaction(transaction);
         entity.setTransactionId(transaction.getTransactionId());
         entity.setFlowType(flowType);
@@ -337,8 +297,8 @@ public class EntityMapper {
         return optionalBankAccount.orElse(null);
     }
 
-    private B2BIdEntity getB2BId(Institute institute) {
-        B2BIdEntity b2BId = new B2BIdEntity();
+    private B2BIdDetails getB2BId(Institute institute) {
+        B2BIdDetails b2BId = new B2BIdDetails();
         b2BId.setValue(institute.getDefaultB2bId());
         b2BId.setReason(B2BCreationReason.OTHER.name());
         b2BId.setDescription("Default B2B Id");
@@ -347,7 +307,7 @@ public class EntityMapper {
         return b2BId;
     }
 
-    public B2BIdentifierEntity constructB2BIdEntity(String businessRole, String aiId, String ouId, String orgId,
+    public B2BIdentifierEntity constructB2BIdEntity(String businessRole, String aiId, String orgId,
                                                     RequesterB2B requesterB2B, B2BId b2BId) {
         B2BIdentifierEntity entity = new B2BIdentifierEntity();
         entity.setB2bIdValue(b2BId.getValue());
@@ -370,18 +330,18 @@ public class EntityMapper {
         aiStatusMap.put(aiId, entityStatus);
     }
 
-    private B2BIdEntity getB2bEntity(B2BId b2BId) {
-        B2BIdEntity b2BIdEntity = new B2BIdEntity();
-        b2BIdEntity.setValue(b2BId.getValue());
-        b2BIdEntity.setReason(b2BId.getReason());
-        b2BIdEntity.setDescription(b2BId.getDescription());
-        b2BIdEntity.setPrivacyType(b2BId.getPrivacyType());
-        b2BIdEntity.setBusinessIdentifier(b2BId.getBusinessIdentifier());
-        return b2BIdEntity;
+    private B2BIdDetails getB2bEntity(B2BId b2BId) {
+        B2BIdDetails b2BIdDetails = new B2BIdDetails();
+        b2BIdDetails.setValue(b2BId.getValue());
+        b2BIdDetails.setReason(b2BId.getReason());
+        b2BIdDetails.setDescription(b2BId.getDescription());
+        b2BIdDetails.setPrivacyType(b2BId.getPrivacyType());
+        b2BIdDetails.setBusinessIdentifier(b2BId.getBusinessIdentifier());
+        return b2BIdDetails;
     }
 
-    public OrgIdTransactionEntity constructOrgTransactionEntity(MainOrgIdEntity orgIdEntity, EntityStatus status) {
-        OrgIdTransactionEntity entity = new OrgIdTransactionEntity();
+    public MainOrgAuditEntity constructOrgTransactionEntity(MainOrgIdEntity orgIdEntity, EntityStatus status) {
+        MainOrgAuditEntity entity = new MainOrgAuditEntity();
         entity.setStatus(status);
         entity.setCreatedTimeStamp(BusinessUtil.getCurrentTimeStamp());
         entity.setOrgIdEntity(orgIdEntity);
@@ -455,13 +415,6 @@ public class EntityMapper {
                 ? aiOrgMapEntity.getPublicB2BIds() : new HashSet<>();
         publicB2BIds.addAll(b2bIds);
         aiOrgMapEntity.setPublicB2BIds(publicB2BIds);
-    }
-
-    private void populatePrivateB2BIds(AiOrgMapEntity aiOrgMapEntity, Set<String> b2bIds) {
-        Set<String> privateB2BIds = BusinessUtil.isCollectionNotNullOrEmpty(aiOrgMapEntity.getPrivateB2BIds())
-                ? aiOrgMapEntity.getPrivateB2BIds() : new HashSet<>();
-        privateB2BIds.addAll(b2bIds);
-        aiOrgMapEntity.setPrivateB2BIds(privateB2BIds);
     }
 
     private void populateLeiDetails(AiOrgMapEntity aiOrgMapEntity, Lei lei) {

@@ -1,10 +1,10 @@
 package org.fourstack.business.dao.service;
 
 import lombok.RequiredArgsConstructor;
-import org.fourstack.business.dao.repository.AuditTransactionEntityRepository;
+import org.fourstack.business.dao.repository.TransactionAuditRepository;
 import org.fourstack.business.dao.repository.TransactionEntityRepository;
-import org.fourstack.business.entity.AuditTransactionEntity;
-import org.fourstack.business.entity.TransactionEntity;
+import org.fourstack.business.entity.common.TransactionAuditEntity;
+import org.fourstack.business.entity.common.TransactionEntity;
 import org.fourstack.business.enums.TransactionFlow;
 import org.fourstack.business.enums.TransactionStatus;
 import org.fourstack.business.enums.TransactionSubStatus;
@@ -25,7 +25,7 @@ import java.util.Set;
 @RequiredArgsConstructor(onConstructor_ = @Lazy)
 public class TransactionDataService {
     private final TransactionEntityRepository transactionRepository;
-    private final AuditTransactionEntityRepository auditTransactionRepository;
+    private final TransactionAuditRepository auditTransactionRepository;
     private final EntityMapper entityMapper;
 
     private static final Set<TransactionStatus> exceptionStatusSet = Set.of(TransactionStatus.FAILED, TransactionStatus.OUTBOUND_FAILURE,
@@ -79,7 +79,7 @@ public class TransactionDataService {
     }
 
     public void saveAuditTransactionEntity(MessageTransaction transaction, TransactionFlow flowType) {
-        AuditTransactionEntity entity = entityMapper.generateAuditTransactionEntity(transaction, flowType);
+        TransactionAuditEntity entity = entityMapper.generateAuditTransactionEntity(transaction, flowType);
         String entityKey = KeyGenerationUtil.generateTxnAuditEntityKey(transaction.getTransactionId(), flowType.name());
         entity.setKey(entityKey);
         auditTransactionRepository.save(entity);

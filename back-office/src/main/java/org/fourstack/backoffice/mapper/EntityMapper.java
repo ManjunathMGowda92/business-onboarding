@@ -1,8 +1,8 @@
 package org.fourstack.backoffice.mapper;
 
-import org.fourstack.backoffice.entity.AgentInstitutionEntity;
+import org.fourstack.backoffice.entity.AgentInstitution;
 import org.fourstack.backoffice.entity.AiOuMappingEntity;
-import org.fourstack.backoffice.entity.OperationUnitEntity;
+import org.fourstack.backoffice.entity.OperationUnit;
 import org.fourstack.backoffice.entity.kyc.KycRequestAuditEntity;
 import org.fourstack.backoffice.entity.kyc.KycRequestEntity;
 import org.fourstack.backoffice.enums.AiType;
@@ -34,8 +34,8 @@ import java.util.Optional;
 @Component
 public class EntityMapper {
 
-    public AgentInstitutionEntity convertToAiEntity(AiRequest request) {
-        AgentInstitutionEntity entity = new AgentInstitutionEntity();
+    public AgentInstitution convertToAiEntity(AiRequest request) {
+        AgentInstitution entity = new AgentInstitution();
         entity.setId(request.getAgentInstitutionId());
         entity.setName(request.getAgentInstitutionName());
         entity.setAlias(request.getAgentInstitutionAliasName());
@@ -61,7 +61,7 @@ public class EntityMapper {
         entity.setLastModifiedTimeStamp(BackOfficeUtil.getCurrentTimeStamp());
     }
 
-    public void updateAiEntity(AgentInstitutionEntity entity, AiUpdateRequest request) {
+    public void updateAiEntity(AgentInstitution entity, AiUpdateRequest request) {
         if (BackOfficeUtil.isNotNull(request)) {
             entity.setLastModifiedTimeStamp(BackOfficeUtil.getCurrentTimeStamp());
             entity.setName(request.getAgentInstitutionName());
@@ -80,8 +80,8 @@ public class EntityMapper {
         }
     }
 
-    public OperationUnitEntity convertToOuEntity(OuRequest request) {
-        OperationUnitEntity entity = new OperationUnitEntity();
+    public OperationUnit convertToOuEntity(OuRequest request) {
+        OperationUnit entity = new OperationUnit();
         entity.setId(request.getOuId());
         entity.setName(request.getOperationUnitName());
         entity.setAlias(request.getOperationUnitAliasName());
@@ -109,7 +109,7 @@ public class EntityMapper {
         return entity;
     }
 
-    public AiDetails convertToAiDetails(AgentInstitutionEntity entity) {
+    public AiDetails convertToAiDetails(AgentInstitution entity) {
         AiDetails details = new AiDetails();
         details.setAiId(entity.getId());
         details.setName(entity.getName());
@@ -119,7 +119,7 @@ public class EntityMapper {
         return details;
     }
 
-    public OuDetails convertToOuDetails(OperationUnitEntity entity) {
+    public OuDetails convertToOuDetails(OperationUnit entity) {
         OuDetails details = new OuDetails();
         details.setOuId(entity.getId());
         details.setName(entity.getName());

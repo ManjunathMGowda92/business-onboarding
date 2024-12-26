@@ -1,6 +1,6 @@
 package org.fourstack.business.dao.repository;
 
-import org.fourstack.business.entity.OuAuditEntity;
+import org.fourstack.business.entity.master.OuAuditEntity;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

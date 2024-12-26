@@ -1,8 +1,6 @@
 package org.fourstack.business.config;
 
 import lombok.Data;
-import org.fourstack.business.entity.config.KafkaConfig;
-import org.fourstack.business.entity.config.TopicConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 

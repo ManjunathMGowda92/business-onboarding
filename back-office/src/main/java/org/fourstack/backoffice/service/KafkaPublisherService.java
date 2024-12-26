@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.fourstack.backoffice.config.BackOfficeKafkaPropData;
-import org.fourstack.backoffice.entity.AgentInstitutionEntity;
+import org.fourstack.backoffice.entity.AgentInstitution;
 import org.fourstack.backoffice.entity.AiOuMappingEntity;
 import org.fourstack.backoffice.entity.KafkaMessage;
-import org.fourstack.backoffice.entity.OperationUnitEntity;
+import org.fourstack.backoffice.entity.OperationUnit;
 import org.fourstack.backoffice.config.TopicConfigurations;
 import org.fourstack.backoffice.enums.EventType;
 import org.fourstack.backoffice.enums.OperationStatus;
@@ -43,14 +43,14 @@ public class KafkaPublisherService {
   private final KafkaMessageRepository kafkaRepository;
   private final KafkaResponseAuditService failureAuditsService;
 
-  public void publishAiDetails(AgentInstitutionEntity entity) {
+  public void publishAiDetails(AgentInstitution entity) {
     AiDetails details = mapper.convertToAiDetails(entity);
     MasterDataRequest masterDataRequest = mapper.constructMasterDataRequest(List.of(details),
             Collections.emptyList(), Collections.emptyList());
     publishMasterData(masterDataRequest, details.getAiId());
   }
 
-  public void publishOuDetails(OperationUnitEntity entity) {
+  public void publishOuDetails(OperationUnit entity) {
     OuDetails details = mapper.convertToOuDetails(entity);
     MasterDataRequest masterDataRequest = mapper.constructMasterDataRequest(Collections.emptyList(),
             List.of(details), Collections.emptyList());
