@@ -4,7 +4,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.fourstack.business.config.KafkaBackOfficePropertiesConfig;
 import org.fourstack.business.dao.service.BackOfficeRequestAuditService;
-import org.fourstack.business.entity.config.TopicConfig;
+import org.fourstack.business.config.TopicConfig;
 import org.fourstack.business.enums.EventType;
 import org.fourstack.business.enums.KycRequestType;
 import org.fourstack.business.exception.ObjectMappingException;

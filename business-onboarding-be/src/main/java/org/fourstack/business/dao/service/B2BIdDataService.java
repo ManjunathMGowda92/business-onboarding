@@ -2,7 +2,7 @@ package org.fourstack.business.dao.service;
 
 import lombok.RequiredArgsConstructor;
 import org.fourstack.business.dao.repository.B2BIdentifierEntityRepository;
-import org.fourstack.business.entity.B2BIdentifierEntity;
+import org.fourstack.business.entity.business.B2BIdentifierEntity;
 import org.fourstack.business.enums.EntityStatus;
 import org.fourstack.business.mapper.EntityMapper;
 import org.fourstack.business.model.B2BId;
@@ -29,12 +29,12 @@ public class B2BIdDataService {
         b2bIdRepository.save(entity);
     }
 
-    public void createB2BIdEntities(String role, String aiId, String ouId, String orgId,
+    public void createB2BIdEntities(String role, String aiId, String orgId,
                                     RequesterB2B requesterB2B, List<B2BId> b2BIds) {
         if (BusinessUtil.isCollectionNotNullOrEmpty(b2BIds)) {
             List<B2BIdentifierEntity> identifierEntities = b2BIds.stream()
                     .map(b2BId -> {
-                        B2BIdentifierEntity entity = entityMapper.constructB2BIdEntity(role, aiId, ouId,
+                        B2BIdentifierEntity entity = entityMapper.constructB2BIdEntity(role, aiId,
                                 orgId, requesterB2B, b2BId);
                         entity.setStatus(EntityStatus.ACTIVE);
                         entity.setKey(KeyGenerationUtil.generateB2BIdentifierKey(entity.getB2bIdValue()));

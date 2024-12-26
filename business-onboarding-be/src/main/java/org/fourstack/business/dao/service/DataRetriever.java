@@ -3,11 +3,11 @@ package org.fourstack.business.dao.service;
 import lombok.RequiredArgsConstructor;
 import org.fourstack.business.constants.BusinessConstants;
 import org.fourstack.business.constants.ValidationConstants;
-import org.fourstack.business.entity.B2BIdEntity;
-import org.fourstack.business.entity.B2BIdentifierEntity;
-import org.fourstack.business.entity.BusinessEntity;
-import org.fourstack.business.entity.OrgIdentifierEntity;
-import org.fourstack.business.entity.MainOrgIdEntity;
+import org.fourstack.business.model.B2BIdDetails;
+import org.fourstack.business.entity.business.B2BIdentifierEntity;
+import org.fourstack.business.entity.business.BusinessEntity;
+import org.fourstack.business.entity.business.OrgIdentifierEntity;
+import org.fourstack.business.entity.business.MainOrgIdEntity;
 import org.fourstack.business.enums.AddressType;
 import org.fourstack.business.enums.BooleanStatus;
 import org.fourstack.business.enums.EntityStatus;
@@ -136,7 +136,7 @@ public class DataRetriever {
     private ResponseB2BId constructResponseB2BInfo(B2BIdentifierEntity identifierEntity) {
         ResponseB2BId responseB2BId = new ResponseB2BId();
         responseB2BId.setB2bId(identifierEntity.getB2bIdValue());
-        B2BIdEntity b2BId = identifierEntity.getB2BId();
+        B2BIdDetails b2BId = identifierEntity.getB2BId();
         if (BusinessUtil.isNotNull(b2BId)) {
             responseB2BId.setDescription(b2BId.getDescription());
             responseB2BId.setBusinessIdentifier(b2BId.getBusinessIdentifier());

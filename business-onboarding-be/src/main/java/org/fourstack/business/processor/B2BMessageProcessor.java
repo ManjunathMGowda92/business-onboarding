@@ -3,7 +3,7 @@ package org.fourstack.business.processor;
 import lombok.RequiredArgsConstructor;
 import org.fourstack.business.processor.inbound.B2BIdTransactionInboundProcessor;
 import org.fourstack.business.dao.service.B2BIdDataService;
-import org.fourstack.business.entity.B2BIdentifierEntity;
+import org.fourstack.business.entity.business.B2BIdentifierEntity;
 import org.fourstack.business.entity.event.B2BIdRegisterEvent;
 import org.fourstack.business.entity.event.Message;
 import org.fourstack.business.mapper.ResponseMapper;
@@ -40,7 +40,7 @@ public class B2BMessageProcessor implements MessageProcessor {
             if (b2BIdentifierEntity.isPresent()) {
                 Head head = request.getCommonData().getHead();
                 B2BIdentifierEntity entity = b2BIdentifierEntity.get();
-                b2BIdDataService.createB2BIdEntities(entity.getBusinessRole(), head.getAiId(), head.getOuId(),
+                b2BIdDataService.createB2BIdEntities(entity.getBusinessRole(), head.getAiId(),
                         entity.getOrgId(), request.getOnboardingB2BIds(), request.getRegB2BIds().getIds());
             }
 

@@ -8,7 +8,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 @Data
-@Document(collection = "ai_ou_audit_entity")
+@Document(collection = "ai_ou_mapping_audits")
 public class AiOuMapAuditEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 7373200203728282317L;

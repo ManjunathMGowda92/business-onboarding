@@ -1,11 +1,11 @@
 package org.fourstack.business.dao.service;
 
 import lombok.RequiredArgsConstructor;
-import org.fourstack.business.dao.repository.OrgEntityTransactionRepository;
+import org.fourstack.business.dao.repository.MainOrgAuditRepository;
 import org.fourstack.business.dao.repository.OrgIdEntityRepository;
-import org.fourstack.business.entity.BusinessEntity;
-import org.fourstack.business.entity.MainOrgIdEntity;
-import org.fourstack.business.entity.OrgIdTransactionEntity;
+import org.fourstack.business.entity.business.BusinessEntity;
+import org.fourstack.business.entity.business.MainOrgIdEntity;
+import org.fourstack.business.entity.business.MainOrgAuditEntity;
 import org.fourstack.business.enums.EntityStatus;
 import org.fourstack.business.mapper.EntityMapper;
 import org.fourstack.business.model.Institute;
@@ -20,7 +20,7 @@ import java.util.Optional;
 public class OrgEntityDataService {
     private final EntityMapper entityMapper;
     private final OrgIdEntityRepository orgEntityRepository;
-    private final OrgEntityTransactionRepository orgTransactionRepository;
+    private final MainOrgAuditRepository orgTransactionRepository;
 
     public void createOrgIdEntity(BusinessEntity businessEntity, String aiId, String txnId) {
         Institute institute = businessEntity.getInstitute();
@@ -42,7 +42,7 @@ public class OrgEntityDataService {
 
     public void createOrgTransactionData(String txnId, MainOrgIdEntity orgIdEntity, EntityStatus status) {
         String entityKey = KeyGenerationUtil.generateOrgIdTransactionKey(orgIdEntity.getOrgId(), txnId);
-        OrgIdTransactionEntity entity = entityMapper.constructOrgTransactionEntity(orgIdEntity, status);
+        MainOrgAuditEntity entity = entityMapper.constructOrgTransactionEntity(orgIdEntity, status);
         entity.setKey(entityKey);
         orgTransactionRepository.save(entity);
     }

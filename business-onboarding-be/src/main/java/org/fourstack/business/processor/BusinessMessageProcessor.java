@@ -8,7 +8,7 @@ import org.fourstack.business.dao.service.B2BIdDataService;
 import org.fourstack.business.dao.service.BusinessEntityDataService;
 import org.fourstack.business.dao.service.BusinessIdentifierDataService;
 import org.fourstack.business.dao.service.OrgEntityDataService;
-import org.fourstack.business.entity.BusinessEntity;
+import org.fourstack.business.entity.business.BusinessEntity;
 import org.fourstack.business.entity.event.BusinessEvent;
 import org.fourstack.business.entity.event.Message;
 import org.fourstack.business.mapper.ResponseMapper;

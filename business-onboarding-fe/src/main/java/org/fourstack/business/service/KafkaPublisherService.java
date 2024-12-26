@@ -5,7 +5,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.fourstack.business.config.KafkaPropertiesConfig;
 import org.fourstack.business.dao.KafkaMessagePersisterService;
 import org.fourstack.business.entity.event.Message;
-import org.fourstack.business.entity.event.TopicConfig;
+import org.fourstack.business.config.TopicConfig;
 import org.fourstack.business.enums.EventType;
 import org.fourstack.business.exceptions.InvalidInputException;
 import org.fourstack.business.mapper.ResponseMapper;

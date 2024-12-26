@@ -8,11 +8,11 @@ import java.io.Serial;
 import java.io.Serializable;
 
 @Data
-@Document(collection = "operation_unit_audit")
+@Document(collection = "operation_unit_audits")
 public class OuAuditEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 1439798599331434884L;
     @Id
     private String key;
-    private OperationUnitEntity entity;
+    private OperationUnit entity;
 }

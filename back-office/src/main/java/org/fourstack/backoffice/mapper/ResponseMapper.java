@@ -1,8 +1,8 @@
 package org.fourstack.backoffice.mapper;
 
-import org.fourstack.backoffice.entity.AgentInstitutionEntity;
+import org.fourstack.backoffice.entity.AgentInstitution;
 import org.fourstack.backoffice.entity.AiOuMappingEntity;
-import org.fourstack.backoffice.entity.OperationUnitEntity;
+import org.fourstack.backoffice.entity.OperationUnit;
 import org.fourstack.backoffice.enums.ErrorScenarioCode;
 import org.fourstack.backoffice.enums.OperationStatus;
 import org.fourstack.backoffice.model.AiOuMappingResponse;
@@ -25,7 +25,7 @@ import java.util.Optional;
 @Component
 public class ResponseMapper {
 
-  public AiResponse mapAiEntityToResponse(AgentInstitutionEntity aiEntity) {
+  public AiResponse mapAiEntityToResponse(AgentInstitution aiEntity) {
     AiResponse response = new AiResponse();
     response.setAgentInstitutionId(aiEntity.getId());
     response.setAgentInstitutionName(aiEntity.getName());
@@ -89,7 +89,7 @@ public class ResponseMapper {
     return ack;
   }
 
-  public OuResponse mapOuEntityToResponse(OperationUnitEntity ouEntity) {
+  public OuResponse mapOuEntityToResponse(OperationUnit ouEntity) {
     OuResponse response = new OuResponse();
     response.setOuId(ouEntity.getId());
     response.setOperationUnitName(ouEntity.getName());
