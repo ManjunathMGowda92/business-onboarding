@@ -8,6 +8,7 @@ import org.fourstack.business.model.backoffice.masterdata.AiDetails;
 import org.fourstack.business.model.backoffice.masterdata.AiOuMappingDetails;
 import org.fourstack.business.model.backoffice.masterdata.MasterDataRequest;
 import org.fourstack.business.model.backoffice.masterdata.OuDetails;
+import org.fourstack.business.processor.kyc.KycResponseProcessor;
 import org.fourstack.business.utils.BusinessUtil;
 import org.fourstack.business.utils.JsonUtilityHelper;
 import org.slf4j.Logger;
@@ -21,64 +22,67 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Lazy)
 public class BackOfficeMessageConsumer {
-    private static final Logger logger = LoggerFactory.getLogger(BackOfficeMessageConsumer.class);
-    private final MasterDataService masterDataService;
+  private static final Logger logger = LoggerFactory.getLogger(BackOfficeMessageConsumer.class);
+  private final MasterDataService masterDataService;
+  private final KycResponseProcessor kycResponseProcessor;
 
-    @KafkaListener(topics = {"KYC-RESPONSE", "MASTER-DATA"})
-    public void consumeMessages(ConsumerRecord<?, ?> consumerRecord) {
-        logger.info("Back-office message received from Kafka");
-        String topic = consumerRecord.topic();
-        Object value = consumerRecord.value();
-        if (value instanceof String str) {
-            logger.info("Consumed the request from topic : {} - {}", topic, str);
-            processMessage(str, topic);
-        }
+  @KafkaListener(topics = {"KYC-RESPONSE", "MASTER-DATA"})
+  public void consumeMessages(ConsumerRecord<?, ?> consumerRecord) {
+    logger.info("Back-office message received from Kafka");
+    String topic = consumerRecord.topic();
+    Object value = consumerRecord.value();
+    if (value instanceof String str) {
+      logger.info("Consumed the request from topic : {} - {}", topic, str);
+      processMessage(str, topic);
+    }
+  }
+
+  private void processMessage(String message, String topic) {
+    if (topic.equals("MASTER-DATA")) {
+      processMasterData(message);
+    } else if (topic.equals("KYC-RESPONSE")) {
+      kycResponseProcessor.processKycResponse(message);
+    } else {
+      throw new IllegalStateException("Unexpected value: " + topic);
+    }
+  }
+
+  private void processMasterData(String message) {
+    try {
+      MasterDataRequest masterDataRequest = JsonUtilityHelper.convertToObject(message, MasterDataRequest.class);
+      createAiDetails(masterDataRequest);
+      createOuDetails(masterDataRequest);
+      createAiOuDetails(masterDataRequest);
+    } catch (ObjectMappingException e) {
+      throw new RuntimeException(e);
     }
 
-    private void processMessage(String message, String topic) {
-        if (topic.equals("MASTER-DATA")) {
-            processMasterData(message);
-        } else {
-            throw new IllegalStateException("Unexpected value: " + topic);
-        }
-    }
+  }
 
-    private void processMasterData(String message) {
-        try {
-            MasterDataRequest masterDataRequest = JsonUtilityHelper.convertToObject(message, MasterDataRequest.class);
-            createAiDetails(masterDataRequest);
-            createOuDetails(masterDataRequest);
-            createAiOuDetails(masterDataRequest);
-        } catch (ObjectMappingException e) {
-            throw new RuntimeException(e);
-        }
-
+  private void createAiOuDetails(MasterDataRequest masterDataRequest) {
+    if (BusinessUtil.isCollectionNotNullOrEmpty(masterDataRequest.getAiOuDetails())) {
+      List<AiOuMappingDetails> aiOuDetails = masterDataRequest.getAiOuDetails();
+      for (AiOuMappingDetails aiOuDetail : aiOuDetails) {
+        masterDataService.saveEntity(aiOuDetail);
+      }
     }
+  }
 
-    private void createAiOuDetails(MasterDataRequest masterDataRequest) {
-        if (BusinessUtil.isCollectionNotNullOrEmpty(masterDataRequest.getAiOuDetails())) {
-            List<AiOuMappingDetails> aiOuDetails = masterDataRequest.getAiOuDetails();
-            for (AiOuMappingDetails aiOuDetail : aiOuDetails) {
-                masterDataService.saveEntity(aiOuDetail);
-            }
-        }
+  private void createOuDetails(MasterDataRequest masterDataRequest) {
+    if (BusinessUtil.isCollectionNotNullOrEmpty(masterDataRequest.getOuDetails())) {
+      List<OuDetails> ouDetails = masterDataRequest.getOuDetails();
+      for (OuDetails ouDetail : ouDetails) {
+        masterDataService.saveEntity(ouDetail);
+      }
     }
+  }
 
-    private void createOuDetails(MasterDataRequest masterDataRequest) {
-        if (BusinessUtil.isCollectionNotNullOrEmpty(masterDataRequest.getOuDetails())) {
-            List<OuDetails> ouDetails = masterDataRequest.getOuDetails();
-            for (OuDetails ouDetail : ouDetails) {
-                masterDataService.saveEntity(ouDetail);
-            }
-        }
+  private void createAiDetails(MasterDataRequest masterDataRequest) {
+    if (BusinessUtil.isCollectionNotNullOrEmpty(masterDataRequest.getAiDetails())) {
+      List<AiDetails> aiDetails = masterDataRequest.getAiDetails();
+      for (AiDetails aiDetail : aiDetails) {
+        masterDataService.saveEntity(aiDetail);
+      }
     }
-
-    private void createAiDetails(MasterDataRequest masterDataRequest) {
-        if (BusinessUtil.isCollectionNotNullOrEmpty(masterDataRequest.getAiDetails())) {
-            List<AiDetails> aiDetails = masterDataRequest.getAiDetails();
-            for (AiDetails aiDetail : aiDetails) {
-                masterDataService.saveEntity(aiDetail);
-            }
-        }
-    }
+  }
 }

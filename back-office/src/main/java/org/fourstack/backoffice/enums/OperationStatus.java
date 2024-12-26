@@ -1,5 +1,5 @@
 package org.fourstack.backoffice.enums;
 
 public enum OperationStatus {
-    SUCCESS, FAILURE
+    SUCCESS, FAILURE,PARTIAL
 }

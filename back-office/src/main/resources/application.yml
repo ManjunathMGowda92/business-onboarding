@@ -6,6 +6,9 @@ spring:
       host: localhost
       port: 27017
       database: back-office-data
+  threads:
+    virtual:
+      enabled: true
 
 server:
   port: 8089
@@ -19,6 +22,10 @@ kafka:
       retries: 1
       delivery-time-out: 60000
       request-time-out: 60000
+    consumer:
+      bootstrap-servers: "localhost:9092"
+      key-serializer: "org.apache.kafka.common.serialization.StringSerializer"
+      value-serializer: "org.apache.kafka.common.serialization.StringSerializer"
   topic-details:
     MASTER_DATA_PUBLISH:
       topicName: MASTER-DATA

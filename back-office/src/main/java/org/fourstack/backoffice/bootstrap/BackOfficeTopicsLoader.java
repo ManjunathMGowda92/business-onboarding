@@ -5,7 +5,7 @@ import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.fourstack.backoffice.config.BackOfficeKafkaPropData;
-import org.fourstack.backoffice.entity.config.TopicConfigurations;
+import org.fourstack.backoffice.config.TopicConfigurations;
 import org.fourstack.backoffice.util.BackOfficeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

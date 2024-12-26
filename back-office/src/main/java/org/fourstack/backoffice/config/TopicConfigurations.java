@@ -1,4 +1,4 @@
-package org.fourstack.backoffice.entity.config;
+package org.fourstack.backoffice.config;
 
 import lombok.Data;
 

@@ -4,6 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum ErrorScenarioCode {
+    BO_KYC_INP_FAIL_001("BOINP0001", "Invalid Kafka message received."),
+    BO_KYC_INVALID_REQ_001("BOINV0001", "Invalid KYC request type"),
+    BO_KYC_OU_FAIL_0001("BOU0001", "OU Entity doesn't exist / not in active status"),
     BO_AI_0001("AI0001", "No Agent Institute Entities exists in BO"),
     BO_AI_0002("AI0002", "No Agent Institute Entity exist for Id"),
     BO_AI_0003("AI0003", "Agent Institute Entity already exist for Id"),

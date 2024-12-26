@@ -3,8 +3,11 @@ package org.fourstack.backoffice.mapper;
 import org.fourstack.backoffice.entity.AgentInstitutionEntity;
 import org.fourstack.backoffice.entity.AiOuMappingEntity;
 import org.fourstack.backoffice.entity.OperationUnitEntity;
+import org.fourstack.backoffice.entity.kyc.KycRequestAuditEntity;
+import org.fourstack.backoffice.entity.kyc.KycRequestEntity;
 import org.fourstack.backoffice.enums.AiType;
 import org.fourstack.backoffice.enums.EntityStatus;
+import org.fourstack.backoffice.enums.KycRequestType;
 import org.fourstack.backoffice.model.AiOuMappingRequest;
 import org.fourstack.backoffice.model.AiRequest;
 import org.fourstack.backoffice.model.EncryptionDetails;
@@ -15,11 +18,17 @@ import org.fourstack.backoffice.model.business.AiOuEncryptionDetails;
 import org.fourstack.backoffice.model.business.AiOuMappingDetails;
 import org.fourstack.backoffice.model.business.MasterDataRequest;
 import org.fourstack.backoffice.model.business.OuDetails;
+import org.fourstack.backoffice.model.business.kyc.BusinessIdentifier;
+import org.fourstack.backoffice.model.business.kyc.EditBusinessIdentifier;
+import org.fourstack.backoffice.model.business.kyc.EditInstitute;
+import org.fourstack.backoffice.model.business.kyc.Institute;
+import org.fourstack.backoffice.model.business.kyc.KycBusinessRequest;
 import org.fourstack.backoffice.util.BackOfficeUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -146,5 +155,84 @@ public class EntityMapper {
                 .ouDetails(ouDetails)
                 .aiOuDetails(aiOuDetails)
                 .build();
+    }
+
+    public KycRequestEntity constructKycEntityForEditBusiness(KycBusinessRequest request, KycRequestEntity entity) {
+        if (BackOfficeUtil.isNotNull(entity)) {
+            constructCommonData(request, entity, KycRequestType.EDIT_BUSINESS.getRequestType());
+            EditInstitute editInstitute = request.getEditInstitute();
+            Institute institute = convertToInstitute(editInstitute);
+            entity.setInstitute(institute);
+            entity.setLastModifiedTimeStamp(BackOfficeUtil.getCurrentTimeStamp());
+            return entity;
+        } else {
+            return constructKycEntityForNewBusiness(request);
+        }
+    }
+
+    private void constructCommonData(KycBusinessRequest request, KycRequestEntity entity, String requestType) {
+        entity.setRequestType(requestType);
+        entity.setHead(request.getHead());
+        entity.getHead().setOuId(null);
+        entity.setTxn(request.getTxn());
+        entity.setKycRequestedOuIds(request.getKycRequestedOuIds());
+        entity.setAdditionalInfos(request.getAdditionalInfos());
+    }
+
+    private Institute convertToInstitute(EditInstitute editInstitute) {
+        Institute institute = new Institute();
+        institute.setObjectId(editInstitute.getObjectId());
+        institute.setName(editInstitute.getName());
+        institute.setAlias(editInstitute.getAlias());
+        institute.setDefaultB2bId(editInstitute.getDefaultB2bId());
+        institute.setMccCode(editInstitute.getMccCode());
+        institute.setBusinessType(editInstitute.getBusinessType());
+        institute.setVerificationLevel(editInstitute.getVerificationLevel());
+        institute.setLei(editInstitute.getLei());
+        institute.setAddresses(editInstitute.getAddresses());
+        institute.setBankAccounts(editInstitute.getBankAccounts());
+        institute.setContactNumbers(editInstitute.getContactNumbers());
+        institute.setPrimaryContact(editInstitute.getPrimaryContact());
+        institute.setEmails(editInstitute.getEmails());
+        institute.setPrimaryEmail(editInstitute.getPrimaryEmail());
+        updateBusinessIdentifiers(editInstitute, institute);
+        return institute;
+    }
+
+    private void updateBusinessIdentifiers(EditInstitute editInstitute, Institute institute) {
+        EditBusinessIdentifier primaryIdentifier = editInstitute.getPrimaryIdentifier();
+        if (BackOfficeUtil.isNotNull(primaryIdentifier) && BackOfficeUtil.isNotNull(primaryIdentifier.getNewIdentifier())) {
+            institute.setPrimaryIdentifier(primaryIdentifier.getNewIdentifier());
+        }
+        List<EditBusinessIdentifier> otherIdentifiers = editInstitute.getOtherIdentifiers();
+        if (BackOfficeUtil.isCollectionNotNullOrEmpty(otherIdentifiers)) {
+            List<BusinessIdentifier> identifiers = otherIdentifiers.stream()
+                    .map(EditBusinessIdentifier::getNewIdentifier)
+                    .filter(Objects::nonNull)
+                    .toList();
+            institute.setOtherIdentifiers(identifiers);
+        }
+    }
+
+    public KycRequestEntity constructKycEntityForNewBusiness(KycBusinessRequest request) {
+        KycRequestEntity entity = new KycRequestEntity();
+        constructCommonData(request, entity, KycRequestType.CREATE_BUSINESS.getRequestType());
+        entity.setObjectId(request.getInstitute().getObjectId());
+        entity.setInstitute(request.getInstitute());
+        entity.setCreatedTimeStamp(BackOfficeUtil.getCurrentTimeStamp());
+        return entity;
+    }
+
+    public KycRequestAuditEntity constructKycAuditEntity(KycRequestEntity entity) {
+        KycRequestAuditEntity auditEntity = new KycRequestAuditEntity();
+        auditEntity.setObjectId(entity.getObjectId());
+        auditEntity.setRequestType(entity.getRequestType());
+        auditEntity.setHead(entity.getHead());
+        auditEntity.setTxn(entity.getTxn());
+        auditEntity.setInstitute(entity.getInstitute());
+        auditEntity.setKycOuMap(entity.getKycOuMap());
+        auditEntity.setAdditionalInfos(entity.getAdditionalInfos());
+        auditEntity.setTimeStamp(BackOfficeUtil.getCurrentTimeStamp());
+        return auditEntity;
     }
 }
