@@ -1,10 +1,10 @@
-package org.fourstack.backoffice.model.business.kyc;
+package org.fourstack.business.model.backoffice.kyc;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.fourstack.backoffice.enums.OperationStatus;
+import org.fourstack.business.enums.OperationStatus;
 
 @Data
 @AllArgsConstructor

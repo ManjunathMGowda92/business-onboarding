@@ -6,6 +6,9 @@ spring:
       host: localhost
       port: 27017
       database: business-onboarding
+  threads:
+    virtual:
+      enabled: true
 
 server:
   port: 8086
