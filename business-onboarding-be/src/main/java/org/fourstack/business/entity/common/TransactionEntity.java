@@ -1,6 +1,7 @@
 package org.fourstack.business.entity.common;
 
 import lombok.Data;
+import org.fourstack.business.enums.EventType;
 import org.fourstack.business.enums.TransactionStatus;
 import org.fourstack.business.enums.TransactionSubStatus;
 import org.fourstack.business.enums.TransactionType;
@@ -20,7 +21,8 @@ public class TransactionEntity implements Serializable {
     @Id
     private String key;
     private final String transactionId;
-    private final TransactionType type;
+    private final TransactionType txnType;
+    private final EventType eventType;
     private TransactionStatus status;
     private TransactionSubStatus subStatus;
     private Map<String, TransactionError> txnErrors;
