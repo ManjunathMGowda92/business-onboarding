@@ -239,7 +239,7 @@ public class EntityMapper {
 
     public TransactionEntity generateTransactionEntity(MessageTransaction transaction) {
         TransactionEntity entity = new TransactionEntity(transaction.getTransactionId(),
-                transaction.getTransactionType());
+                transaction.getTransactionType(), transaction.getEventType());
         entity.setStatus(TransactionStatus.CREATED);
         entity.setTxnErrors(new HashMap<>());
         entity.setCreatedTimeStamp(BusinessUtil.getCurrentTimeStamp());
